@@ -1,0 +1,136 @@
+<div class="modal-dialog modal-xl">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Edit Subcategory</h4>
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="subcategory-form" enctype="multipart/form-data">
+        @csrf
+
+        <div class="form-row">
+          {{-- Categories --}}
+          <div class="form-group col-md-6">
+            <label>Select Categories</label>
+            <div class="form-control" style="height:150px; overflow-y:scroll;">
+              @foreach($categories as $category)
+          <div class="form-check">
+          <input type="checkbox" name="category_ids[]" value="{{ $category->id }}" class="form-check-input" {{ in_array($category->id, $subcategory->categories->pluck('id')->toArray()) ? 'checked' : '' }}>
+          <label class="form-check-label">{{ $category->name }}</label>
+          </div>
+        @endforeach
+            </div>
+            <div class="text-danger validation-err" id="category_ids-err"></div>
+          </div>
+          {{-- Description --}}
+          <div class="form-group col-md-6">
+            <label>Description</label>
+            <textarea name="description" id="description" class="form-control"
+              rows="5">{{ $subcategory->description }}</textarea>
+          </div>
+        </div>
+
+           <div class="form-row">
+             {{-- Name --}}
+             <div class="form-group col-md-6">
+               <label>Name</label>
+               <input type="text" name="name" id="name" class="form-control" value="{{ $subcategory->name }}">
+               <div class="text-danger validation-err" id="name-err"></div>
+             </div>
+
+             {{-- Thumbnail --}}
+             <div class="form-group col-md-6">
+               <label>Thumbnail</label>
+               <input type="file" name="thumbnail" class="form-control">
+               @if($subcategory->thumbnail)
+             <div class="mt-2">
+             <img src="{{ asset('storage/' . $subcategory->thumbnail) }}" class="img-thumbnail"
+               style="height:100px; width:100px; object-fit:cover;">
+             </div>
+           @endif
+             </div>
+           </div>
+
+
+        {{-- Gallery --}}
+        <div class="form-group">
+          <label>Gallery (multiple)</label>
+          <input type="file" id="gallery-input" name="gallery[]" class="form-control" multiple>
+
+          <div class="row mt-2" id="gallery-preview-list">
+            @foreach($subcategory->gallery as $imagePath)
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3 existing-image" data-path="{{ $imagePath }}">
+          <div class="position-relative border rounded mx-auto"
+          style="width: 100px; height: 100px; overflow: hidden;">
+          <img src="{{ asset('storage/' . $imagePath) }}" class="img-fluid w-100 h-100"
+            style="object-fit: cover;">
+
+          <button type="button" class="btn btn-sm btn-danger btn-remove-existing-image"
+            data-path="{{ $imagePath }}"
+            style="position: absolute; top: 5px; right: 5px; border-radius: 50%; padding: 0.2rem 0.45rem; font-size: 0.7rem; line-height: 1;">
+            &times;
+          </button>
+          </div>
+        </div>
+      @endforeach
+          </div>
+
+        </div>
+
+
+
+        <input type="hidden" name="deleted_image_paths" id="deleted-image-paths">
+
+        {{-- Tabbed Sections --}}
+        <ul class="nav nav-tabs">
+          <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#info">Information</a></li>
+          <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sizes">Available Sizes</a></li>
+          <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#binding">Binding Options</a></li>
+          <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#paper">Paper Types</a></li>
+        </ul>
+
+        <div class="tab-content pt-2">
+          <div class="tab-pane fade show active" id="info">
+            <textarea name="information" id="information" class="form-control"
+              rows="4">{{ $subcategory->details->information ?? '' }}</textarea>
+          </div>
+          <div class="tab-pane fade" id="sizes">
+            <textarea name="available_sizes" id="available_sizes" class="form-control"
+              rows="4">{{ $subcategory->details->available_sizes ?? '' }}</textarea>
+          </div>
+          <div class="tab-pane fade" id="binding">
+            <textarea name="binding_options" id="binding_options" class="form-control"
+              rows="4">{{ $subcategory->details->binding_options ?? '' }}</textarea>
+          </div>
+          <div class="tab-pane fade" id="paper">
+            <textarea name="paper_types" id="paper_types" class="form-control"
+              rows="4">{{ $subcategory->details->paper_types ?? '' }}</textarea>
+          </div>
+        </div>
+
+        <div class="form-row pt-1">
+          {{-- Calculator Required --}}
+          <div class="form-group col-md-6">
+            <label>Calculator Required</label>
+            <select name="calculator_required" id="calculator_required" class="form-control">
+              <option value="0" {{ !$subcategory->calculator_required ? 'selected' : '' }}>No</option>
+              <option value="1" {{ $subcategory->calculator_required ? 'selected' : '' }}>Yes</option>
+            </select>
+            <div class="text-danger validation-err" id="calculator_required-err"></div>
+          </div>
+          {{-- Status --}}
+          <div class="form-group col-md-6">
+            <label>Status</label>
+            <select name="status" class="form-control">
+              <option value="active" {{ $subcategory->status == 'active' ? 'selected' : '' }}>Active</option>
+              <option value="inactive" {{ $subcategory->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="update-subcategory-btn"
+          subcategory_id="{{ $subcategory->id }}">Update</button>
+      </form>
+    </div>
+  </div>
+</div>
