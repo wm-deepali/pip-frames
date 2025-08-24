@@ -116,12 +116,15 @@
                 href="{{ route('admin.pricing-rules.index') }}"><span>Price Rule Setting
                 </span></a></li>
             <li><a class="dropdown-item d-flex align-items-center"
+                href="{{ route('admin.images.index') }}"><span>Images Settings
+                </span></a></li>
+            <!-- <li><a class="dropdown-item d-flex align-items-center"
                 href="{{ route('admin.centralized-paper-pricing.index') }}"><span>Centralized Paper
-                  Pricing</span></a></li>
-            <li><a class="dropdown-item d-flex align-items-center"
-                href="{{ route('admin.attribute-groups.index') }}"><span>Attributes Grouping</span></a></li>
-            <li><a class="dropdown-item d-flex align-items-center"
-                href="{{ route('admin.group-assignments.index') }}"><span>Attributes Group Mapping</span></a></li>
+                  Pricing</span></a></li> -->
+            <!-- <li><a class="dropdown-item d-flex align-items-center"
+                href="{{ route('admin.attribute-groups.index') }}"><span>Attributes Grouping</span></a></li> -->
+            <!-- <li><a class="dropdown-item d-flex align-items-center"
+                href="{{ route('admin.group-assignments.index') }}"><span>Attributes Group Mapping</span></a></li> -->
             <li><a class="dropdown-item d-flex align-items-center"
                 href="{{ route('admin.attribute-conditions.index') }}"><span>Attributes Conditions</span></a></li>
 

@@ -3,7 +3,7 @@
 <div class="drag-target"></div>
 
 <footer class="footer footer-static footer-light">
-  <title>Nuvem Print Admin</title>
+  <title>Pip Frames</title>
   <p class="clearfix mb-0 text-center"><span class="d-block d-md-inline-block mt-25">Copyright  &copy; 2025<a class="ml-25" href="#" target="_blank">Nuvem Print </a> | <span class="d-sm-inline-block"> All rights Reserved.</span></span>
   </p>
 </footer>

@@ -16,9 +16,9 @@ class PricingRuleAttribute extends Model
         'price_modifier_type',
         'price_modifier_value',
         'base_charges_type',
-        'extra_copy_charge',
-        'extra_copy_charge_type',
-        'flat_rate_per_page',
+        // 'extra_copy_charge',
+        // 'extra_copy_charge_type',
+        // 'flat_rate_per_page',
         'is_default',
         'max_width',
         'max_height'

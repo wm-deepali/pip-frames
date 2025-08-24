@@ -5,6 +5,14 @@ use App\Models\Subcategory;
 use App\Models\MasterSetting;
 use App\Models\Country;
 
+
+// Helper to round up to nearest even integer
+function roundUpToEven($num) {
+    $int = ceil($num);
+    return ($int % 2 === 0) ? $int : $int + 1;
+}
+
+
 if (!function_exists('ageInYear')) {
 	function ageInYear($dob) 
 	{

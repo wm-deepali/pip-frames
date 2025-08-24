@@ -50,28 +50,6 @@
           </select>
           </div>
 
-          <div class="form-group col-md-3">
-          <label for="centralized_paper_rates">Apply Centralized Paper Rates</label>
-          <select class="form-control" name="centralized_paper_rates" id="centralized_paper_rates" required>
-            <option value="">-- Select --</option>
-            <option value="1">Yes</option>
-            <option value="0">No</option>
-          </select>
-          </div>
-
-          <div class="form-group col-md-3">
-          <label for="centralized_weight_rates">Apply Centralized Paper Weight-Based Rates</label>
-          <select class="form-control" name="centralized_weight_rates" id="centralized_weight_rates" required>
-            <option value="">-- Select --</option>
-            <option value="1">Yes</option>
-            <option value="0">No</option>
-          </select>
-          </div>
-
-        </div>
-
-        <!-- New row just for the checkbox -->
-        <div class="form-row d-flex align-items-end" style="display: flex;">
 
           <div class="form-group col-md-2">
           <label for="proof_reading_required">Proof Reading Required</label>
@@ -91,59 +69,82 @@
           </select>
           </div>
 
-          <div class="form-group col-md-2" id="pages_dragger_required-wrapper" style="display: none;">
-          <label for="pages_dragger_required">Pages Dragger Required</label>
-          <select class="form-control" name="pages_dragger_required" id="pages_dragger_required">
-            <option value="">-- Select --</option>
-            <option value="1">Yes</option>
-            <option value="0">No</option>
-          </select>
-          </div>
-
-          <div class="form-group col-md-2">
-          <label for="default_quantity">Default Quantity</label>
-          <input type="number" name="default_quantity" id="default_quantity" class="form-control"
-            placeholder="e.g. 1" min="1">
-          </div>
-
-          <div class="form-group col-md-2">
-          <label for="min_quantity">Min Qty</label>
-          <input type="number" name="min_quantity" id="min_quantity" class="form-control" min="1">
-          </div>
-
-          <div class="form-group col-md-2">
-          <label for="max_quantity">Max Qty</label>
-          <input type="number" name="max_quantity" id="max_quantity" class="form-control" min="1">
-          </div>
-
         </div>
 
-        <div id="pages-settings-group" style="display: none;" class="form-row">
+        <!-- New row just for the checkbox -->
+        <!-- <div class="form-row d-flex align-items-end" style="display: flex;"> -->
 
-          <div class="form-group col-md-2">
-          <label for="pages-dragger-dependency">Dependency Attribute</label>
-          <select id="pages-dragger-dependency" class="form-control" name="pages_dragger_dependency">
-            <option value="">-- Select Attribute --</option>
-          </select>
-          </div>
+        <!-- <div class="form-group col-md-3">
+      <label for="centralized_paper_rates">Apply Centralized Paper Rates</label>
+      <select class="form-control" name="centralized_paper_rates" id="centralized_paper_rates" required>
+      <option value="">-- Select --</option>
+      <option value="1">Yes</option>
+      <option value="0">No</option>
+      </select>
+      </div> -->
 
-          <div class="form-group col-md-2">
-          <label for="default_pages">Default Pages</label>
-          <input type="number" id="default_pages" name="default_pages" class="form-control" placeholder="e.g. 1"
-            min="1">
-          </div>
+        <!-- <div class="form-group col-md-3">
+      <label for="centralized_weight_rates">Apply Centralized Paper Weight-Based Rates</label>
+      <select class="form-control" name="centralized_weight_rates" id="centralized_weight_rates" required>
+      <option value="">-- Select --</option>
+      <option value="1">Yes</option>
+      <option value="0">No</option>
+      </select>
+      </div> -->
+        <!--       
+        <div class="form-group col-md-2" id="pages_dragger_required-wrapper" style="display: none;">
+        <label for="pages_dragger_required">Pages Dragger Required</label>
+        <select class="form-control" name="pages_dragger_required" id="pages_dragger_required">
+        <option value="">-- Select --</option>
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+        </select>
+        </div> -->
 
-          <div class="form-group col-md-2">
-          <label for="min_pages">Min Pages</label>
-          <input type="number" id="min_pages" name="min_pages" class="form-control" min="1">
-          </div>
-
-          <div class="form-group col-md-2">
-          <label for="max_pages">Max Pages</label>
-          <input type="number" id="max_pages" name="max_pages" class="form-control" min="1">
-          </div>
-
+        <!-- <div class="form-group col-md-2">
+        <label for="default_quantity">Default Quantity</label>
+        <input type="number" name="default_quantity" id="default_quantity" class="form-control"
+        placeholder="e.g. 1" min="1">
         </div>
+
+        <div class="form-group col-md-2">
+        <label for="min_quantity">Min Qty</label>
+        <input type="number" name="min_quantity" id="min_quantity" class="form-control" min="1">
+        </div> -->
+
+        <!-- <div class="form-group col-md-2">
+        <label for="max_quantity">Max Qty</label>
+        <input type="number" name="max_quantity" id="max_quantity" class="form-control" min="1">
+        </div>
+
+      </div> -->
+
+        <!-- <div id="pages-settings-group" style="display: none;" class="form-row">
+
+        <div class="form-group col-md-2">
+        <label for="pages-dragger-dependency">Dependency Attribute</label>
+        <select id="pages-dragger-dependency" class="form-control" name="pages_dragger_dependency">
+        <option value="">-- Select Attribute --</option>
+        </select>
+        </div>
+
+        <div class="form-group col-md-2">
+        <label for="default_pages">Default Pages</label>
+        <input type="number" id="default_pages" name="default_pages" class="form-control" placeholder="e.g. 1"
+        min="1">
+        </div>
+
+        <div class="form-group col-md-2">
+        <label for="min_pages">Min Pages</label>
+        <input type="number" id="min_pages" name="min_pages" class="form-control" min="1">
+        </div>
+
+        <div class="form-group col-md-2">
+        <label for="max_pages">Max Pages</label>
+        <input type="number" id="max_pages" name="max_pages" class="form-control" min="1">
+        </div>
+
+      </div> -->
 
         <hr>
 
@@ -181,28 +182,28 @@
     document.getElementById('attribute-modifier-container').innerHTML = '<p class="text-muted">Select a subcategory to load attributes.</p>';
     });
 
-    document.getElementById('pages_dragger_required').addEventListener('change', function () {
-    const pagesSettingsGroup = document.getElementById('pages-settings-group');
-    const select = document.getElementById('pages-dragger-dependency');
+    // document.getElementById('pages_dragger_required').addEventListener('change', function () {
+    // const pagesSettingsGroup = document.getElementById('pages-settings-group');
+    // const select = document.getElementById('pages-dragger-dependency');
 
-    if (this.value === '1') {
-      pagesSettingsGroup.style.display = 'flex'; // or 'block' based on your layout
+    // if (this.value === '1') {
+    //   pagesSettingsGroup.style.display = 'flex'; // or 'block' based on your layout
 
-      // Reset and populate the select dropdown
-      select.innerHTML = '<option value="">-- Select Attribute --</option>';
-      subcategoryAttributes.forEach(attr => {
-      if (!attr.is_composite && attr.values?.length) {
-        const option = document.createElement('option');
-        option.value = attr.id;
-        option.textContent = attr.name;
-        select.appendChild(option);
-      }
-      });
+    //   // Reset and populate the select dropdown
+    //   select.innerHTML = '<option value="">-- Select Attribute --</option>';
+    //   subcategoryAttributes.forEach(attr => {
+    //   if (!attr.is_composite && attr.values?.length) {
+    //     const option = document.createElement('option');
+    //     option.value = attr.id;
+    //     option.textContent = attr.name;
+    //     select.appendChild(option);
+    //   }
+    //   });
 
-    } else {
-      pagesSettingsGroup.style.display = 'none';
-    }
-    });
+    // } else {
+    //   pagesSettingsGroup.style.display = 'none';
+    // }
+    // });
 
 
 
@@ -290,10 +291,6 @@
       <label>Base Charges</label>
       <div class="input-group">
       <input type="text" class="form-control" name="rows[${index}][modifier_value]">
-      <select class="form-control col-auto" name="rows[${index}][base_charges_type]" style="max-width: 100px;">
-      <option value="amount">amount</option>
-      <option value="percentage">%</option>
-      </select>
       </div>
       </div>
 
@@ -383,7 +380,25 @@
 
       if (inputType === 'select_area') {
       if (valueSelectGroup) valueSelectGroup.style.display = 'none';
-      dimensionInputs.forEach(el => el.style.display = 'block');
+      dimensionInputs.forEach(el => {
+        el.style.display = 'block';
+        // Update unit label here for width and height:
+        const label = el.querySelector('label');
+        if (label) {
+        if (label.textContent.toLowerCase().includes('max width')) {
+          label.textContent = `Max Width (${selectedAttr.area_unit ?? 'unit'})`;
+        } else if (label.textContent.toLowerCase().includes('max height')) {
+          label.textContent = `Max Height (${selectedAttr.area_unit ?? 'unit'})`;
+        }
+        }
+      });
+      const baseChargesGroup = row.querySelector('.base-charges-group');
+      if (baseChargesGroup) {
+        const baseChargeLabel = baseChargesGroup.querySelector('label');
+        if (baseChargeLabel) {
+        baseChargeLabel.textContent = `Base charges (${selectedAttr?.area_unit ?? 'unit'})`;
+        }
+      }
       } else {
       if (valueSelectGroup) valueSelectGroup.style.display = 'block';
       dimensionInputs.forEach(el => el.style.display = 'none');

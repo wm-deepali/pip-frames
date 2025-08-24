@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-xl">
+<div class="modal-dialog modal-lg">
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title">Add Subcategory</h4>
@@ -10,7 +10,7 @@
 
                 <div class="form-row">
                     {{-- Categories --}}
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-12">
                         <label>Select Categories</label>
                         <div class="form-control" style="height:150px; overflow-y:scroll;">
                             @foreach($categories as $category)
@@ -25,11 +25,11 @@
                     </div>
 
                     {{-- Description --}}
-                    <div class="form-group col-md-6">
+                    <!-- <div class="form-group col-md-6">
                         <label>Description</label>
                         <textarea name="description" id="description" class="form-control" rows="3"
                             style="height:110px;"></textarea>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="form-row">
@@ -54,7 +54,7 @@
                 </div>
 
                 {{-- Tabbed Sections --}}
-                <ul class="nav nav-tabs" id="tabContent">
+                <!-- <ul class="nav nav-tabs" id="tabContent">
                     <li class="nav-item">
                         <a class="nav-link active" data-toggle="tab" href="#info">Information</a>
                     </li>
@@ -67,9 +67,9 @@
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#paper">Paper Types</a>
                     </li>
-                </ul>
+                </ul> -->
 
-                <div class="tab-content pt-2">
+                <!-- <div class="tab-content pt-2">
                     <div class="tab-pane fade show active" id="info">
                         <textarea name="information" id="information" class="form-control" rows="4"></textarea>
                     </div>
@@ -82,7 +82,7 @@
                     <div class="tab-pane fade" id="paper">
                         <textarea name="paper_types" id="paper_types" class="form-control" rows="4"></textarea>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="form-row pt-1">
                     {{-- Calculator Required --}}

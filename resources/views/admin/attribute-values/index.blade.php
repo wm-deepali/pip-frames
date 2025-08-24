@@ -39,11 +39,11 @@
             <tr>
               <th>#</th>
               <th>Attribute</th>
-              <th>is Composite Value</th>
+              <!-- <th>is Composite Value</th> -->
               <th>Value</th>
               <th>Image</th>
-              <th>Icon</th>
-              <th>Custom Input Label</th>
+              <!-- <th>Icon</th> -->
+              <!-- <th>Custom Input Label</th> -->
               <th>Created At</th>
               <th width="100px">Action</th>
             </tr>
@@ -53,16 +53,14 @@
           <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $value->attribute->name ?? '-' }}</td>
-            <td>
+            <!-- <td>
             <span class="badge badge-{{ $value->is_composite_value ? 'success' : 'secondary' }}">
             {{ $value->is_composite_value ? 'Yes' : 'No' }}
             </span>
-            </td>
+            </td> -->
             <td>
             {{ $value->value }}
-            @if ($value->is_composite_value)
-          <span>({{ $value->components->pluck('value')->implode(', ') }})</span>
-        @endif
+          
             </td>
             <td>
             @if ($value->image_path)
@@ -71,8 +69,8 @@
           -
         @endif
             </td>
-            <td>{!! $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-' !!}</td>
-            <td>{{ $value->custom_input_label ?? '-' }}</td>
+            <!-- <td>{!! $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-' !!}</td> -->
+            <!-- <td>{{ $value->custom_input_label ?? '-' }}</td> -->
            
             <td>{{ $value->created_at->format('d M Y') }}</td>
             <td>

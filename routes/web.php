@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ContactInfoController;
 use App\Http\Controllers\Admin\CustomerEstimateController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\ImageSettingController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PaperRatesController;
 use App\Http\Controllers\Admin\PaperWeightRatesController;
@@ -24,6 +25,8 @@ use App\Http\Controllers\Admin\VatController;
 use App\Http\Controllers\DeliveryChargeController;
 use App\Http\Controllers\PostalCodeController;
 use App\Http\Controllers\ProofReadingController;
+use App\Models\Attribute;
+use App\Models\Subcategory;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\{
     HomeController,
@@ -168,6 +171,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('pricing-rules', PricingRuleController::class);
         Route::resource('quotes', QuoteController::class);
 
+        Route::resource('images', ImageSettingController::class);
+
+
+
         Route::prefix('centralized-paper-pricing')->name('centralized-paper-pricing.')->group(function () {
             Route::resource('/', CentralizedPaperPricingController::class);
         });
@@ -178,7 +185,7 @@ Route::group(['middleware' => 'auth'], function () {
             ]);
         });
 
-         Route::prefix('paper-rates')->name('paper-rates.')->group(function () {
+        Route::prefix('paper-rates')->name('paper-rates.')->group(function () {
             Route::resource('/', PaperRatesController::class)->only(['create', 'edit', 'store', 'update'])->parameters([
                 '' => 'attribute' // means resource will use {attribute} instead of {sra3_sheet}
             ]);

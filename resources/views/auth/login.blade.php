@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
   <meta name="description" content="Nuvem Print Ltd">
   <meta name="keywords" content="Nuvem Print Ltd">
-  <title>Nuvem Print Admin</title>
+  <title>Pip Frames</title>
   <link rel="shortcut icon" type="image/x-icon" href="{{ asset('admin_assets') }}/images/favicon.png">
   <link rel="stylesheet" type="text/css" href="{{ asset('admin_assets') }}/css/flatpickr.min.css">
   <link rel="stylesheet" type="text/css" href="{{ asset('admin_assets') }}/css/bootstrap.min.css">

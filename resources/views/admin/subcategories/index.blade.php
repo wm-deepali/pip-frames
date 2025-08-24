@@ -42,6 +42,7 @@
               <th>Categories</th>
               <th>Name</th>
               <th>Slug</th>
+              <th>Thumbnail</th>
               <th>Calculator Required</th>
               <th>Status</th>
               <th>Created At</th>
@@ -59,6 +60,8 @@
             </td>
             <td>{{ $subcategory->name }}</td>
             <td>{{ $subcategory->slug }}</td>
+            <td> <img src="{{ asset('storage/' . $subcategory->thumbnail) }}" class="img-thumbnail"
+               style="height:100px; width:100px; object-fit:cover;"></td>
             <td>
             <span class="badge badge-{{ $subcategory->calculator_required ? 'success' : 'secondary' }}">
             {{ $subcategory->calculator_required ? 'Yes' : 'No' }}
@@ -66,7 +69,7 @@
             </td>
             <td>{{ ucfirst($subcategory->status) }}</td>
 
-             <td>{{ $subcategory->created_at->format('d M Y, h:i A') }}</td>
+            <td>{{ $subcategory->created_at->format('d M Y, h:i A') }}</td>
 
             <td>
             <ul class="list-inline">
@@ -156,9 +159,9 @@
       <div class="position-relative border rounded mx-auto" style="width:100px; height:100px; overflow:hidden;">
       <img src="${e.target.result}" class="w-100 h-100" style="object-fit:cover;">
       <button type="button" class="btn btn-sm btn-danger btn-remove-image"
-        data-index="${index}"
-        style="position:absolute; top:5px; right:5px; border-radius: 50%; padding: 0.2rem 0.45rem; font-size: 0.7rem;">
-        &times;
+      data-index="${index}"
+      style="position:absolute; top:5px; right:5px; border-radius: 50%; padding: 0.2rem 0.45rem; font-size: 0.7rem;">
+      &times;
       </button>
       </div>
       </div>`;

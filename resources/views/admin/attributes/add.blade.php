@@ -23,8 +23,8 @@
                 <div class="form-group">
                   <label>Input Type <span class="text-danger">*</span></label>
                   <select name="attributes[0][input_type]" class="form-control">
-                    <option value="dropdown">Dropdown</option>
-                    <option value="radio">Radio</option>
+                    <!-- <option value="dropdown">Dropdown</option> -->
+                    <!-- <option value="radio">Radio</option> -->
                     <option value="select_image">Select Image</option>
                     <option value="select_area">Select Area</option>
                     <!-- <option value="checkbox">Checkbox</option> -->
@@ -40,7 +40,7 @@
                 </div>
               </div>
 
-              <div class="col-md-6">
+              <!-- <div class="col-md-6">
                 <div class="form-group">
                   <label>Pricing Basis</label>
                   <select name="attributes[0][pricing_basis]" class="form-control">
@@ -52,7 +52,7 @@
                   </select>
                   <small class="text-danger validation-err" id="attributes_0_pricing_basis-err"></small>
                 </div>
-              </div>
+              </div> -->
 
               <div class="col-md-6 area-unit-wrapper d-none">
                 <div class="form-group">
@@ -66,7 +66,7 @@
                 </div>
               </div>
 
-              <div class="col-md-6">
+              <!-- <div class="col-md-6">
                 <div class="form-group">
                   <label>Custom Input Type</label>
                   <select name="attributes[0][custom_input_type]" class="form-control">
@@ -78,7 +78,7 @@
                   </select>
                   <small class="text-danger validation-err" id="attributes_0_custom_input_type-err"></small>
                 </div>
-              </div>
+              </div> -->
 
               <div class="col-md-12">
                 <div class="form-group">
@@ -110,7 +110,7 @@
                   </select>
                 </div>
               </div> -->
-
+<!-- 
               <div class="col-md-3">
                 <div class="form-group">
                   <label for="composite-0">Is Composite</label>
@@ -120,10 +120,10 @@
                     <option value="0">No</option>
                   </select>
                 </div>
-              </div>
+              </div> -->
 
 
-              <div class="col-md-3">
+              <!-- <div class="col-md-3">
                 <div class="form-group">
                   <label for="image-0">Supports Images</label>
                   <select name="attributes[0][has_image]" id="image-0" class="form-control">
@@ -132,9 +132,9 @@
                     <option value="0">No</option>
                   </select>
                 </div>
-              </div>
+              </div> -->
 
-              <div class="col-md-3">
+              <!-- <div class="col-md-3">
                 <div class="form-group">
                   <label for="icon-0">Supports Icons</label>
                   <select name="attributes[0][has_icon]" id="icon-0" class="form-control">
@@ -143,7 +143,7 @@
                     <option value="0">No</option>
                   </select>
                 </div>
-              </div>
+              </div> -->
 
               <div class="col-md-3">
                 <div class="form-group">
@@ -314,54 +314,13 @@
       <div class="form-group">
         <label>Input Type <span class="text-danger">*</span></label>
         <select name="attributes[${attributeIndex}][input_type]" class="form-control">
-          <option value="dropdown">Dropdown</option>
-          <option value="radio">Radio</option>
           <option value="select_image">Select Image</option>
-            <option value="select_area">Select Area</option>
-         
         </select>
         <small class="text-danger" id="attributes.${attributeIndex}.input_type-err"></small>
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="form-group">
-        <label>Pricing Basis</label>
-        <select name="attributes[${attributeIndex}][pricing_basis]" class="form-control">
-          <option value="">-- Select --</option>
-          <option value="per_page">Depends Upon No. of Pages</option>
-          <option value="fixed_per_page">Fixed Price Per Page</option>
-          <option value="per_product">Depends Upon Quantity Range</option>
-          <option value="per_extra_copy">Per Extra Copy (Multiply by Product Qnty)</option>
-        </select>
-        <small class="text-danger" id="attributes.${attributeIndex}.pricing_basis-err"></small>
-      </div>
-    </div>
-
-    <div class="col-md-6 area-unit-wrapper d-none">
-  <div class="form-group">
-    <label>Area Unit for Pricing</label>
-    <select class="form-control area-unit-select" name="attributes[${attributeIndex}][area_unit]">
-      <option value="">-- Select Unit --</option>
-      <option value="sq_inch">Square Inch</option>
-      <option value="sq_feet">Square Feet</option>
-      <option value="sq_meter">Square Meter</option>
-    </select>
-  </div>
-</div>
-
-    <div class="col-md-6">
-      <div class="form-group">
-        <label>Custom Input Type</label>
-        <select name="attributes[${attributeIndex}][custom_input_type]" class="form-control">
-          <option value="">-- Select --</option>
-          <option value="number">Number</option>
-          <option value="text">Text</option>
-          <option value="file">File</option>
-          <option value="none">None</option>
-        </select>
-        <small class="text-danger" id="attributes.${attributeIndex}.custom_input_type-err"></small>
-      </div>
-    </div>
+  
+    
     <div class="col-md-12">
       <div class="form-group">
         <label>Detail</label>
@@ -382,40 +341,6 @@
         </div>
     </div>
 
-    <div class="col-md-3">
-      <div class="form-group">
-        <label for="composite-${attributeIndex}">Is Composite</label>
-        <select name="attributes[${attributeIndex}][is_composite]" class="form-control"
-          id="composite-${attributeIndex}">
-          <option value="">-- Select --</option>
-          <option value="1">Yes</option>
-          <option value="0" selected>No</option>
-        </select>
-      </div>
-    </div>
-
-    
-    <div class="col-md-3">
-    <div class="form-group">
-    <label for="image-${attributeIndex}">Supports Images</label>
-    <select name="attributes[${attributeIndex}][has_image]" class="form-control" id="image-${attributeIndex}">
-    <option value="">-- Select --</option>
-    <option value="1">Yes</option>
-    <option value="0" selected>No</option>
-    </select>
-    </div>
-    </div>
-    
-    <div class="col-md-3">
-    <div class="form-">
-    <label for="icon-${attributeIndex}">Supports Icons</label>
-    <select name="attributes[${attributeIndex}][has_icon]" class="form-control" id="icon-${attributeIndex}">
-    <option value="">-- Select --</option>
-    <option value="1">Yes</option>
-    <option value="0" selected>No</option>
-    </select>
-    </div>
-    </div>
     
     <div class="col-md-3">
       <div class="form-group">

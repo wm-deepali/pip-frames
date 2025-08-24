@@ -21,8 +21,8 @@
             <div class="form-group">
               <label>Input Type <span class="text-danger">*</span></label>
               <select name="input_type" class="form-control">
-                <option value="dropdown" {{ $attribute->input_type == 'dropdown' ? 'selected' : '' }}>Dropdown</option>
-                <option value="radio" {{ $attribute->input_type == 'radio' ? 'selected' : '' }}>Radio</option>
+                <!-- <option value="dropdown" {{ $attribute->input_type == 'dropdown' ? 'selected' : '' }}>Dropdown</option> -->
+                <!-- <option value="radio" {{ $attribute->input_type == 'radio' ? 'selected' : '' }}>Radio</option> -->
                 <option value="select_image" {{ $attribute->input_type == 'select_image' ? 'selected' : '' }}>Select Image
                 </option>
                 <option value="select_area" {{ $attribute->input_type == 'select_area' ? 'selected' : '' }}>Select Area
@@ -42,7 +42,7 @@
           </div>
 
 
-          <div class="col-md-6">
+          <!-- <div class="col-md-6">
             <div class="form-group">
               <label>Custom Input Type</label>
               <select name="custom_input_type" class="form-control">
@@ -53,9 +53,9 @@
                 <option value="none" {{ $attribute->custom_input_type == 'none' ? 'selected' : '' }}>None</option>
               </select>
             </div>
-          </div>
+          </div> -->
 
-          <div class="col-md-6">
+          <!-- <div class="col-md-6">
             <div class="form-group">
               <label>Pricing Basis</label>
               <select name="pricing_basis" class="form-control">
@@ -70,7 +70,7 @@
                   Extra Copy (Multiply by Product Qnty)</option>
               </select>
             </div>
-          </div>
+          </div> -->
 
           <div class="col-md-6 area-unit-wrapper"
             style="{{ $attribute->input_type == 'select_area' ? '' : 'display: none;' }}">
@@ -116,7 +116,7 @@
             </div>
           </div> -->
 
-          <div class="col-md-3">
+          <!-- <div class="col-md-3">
             <div class="form-group">
               <label for="edit-composite">Is Composite</label>
               <select name="is_composite" class="form-control" id="edit-composite">
@@ -124,9 +124,9 @@
                 <option value="0" {{ !$attribute->is_composite ? 'selected' : '' }}>No</option>
               </select>
             </div>
-          </div>
+          </div> -->
 
-          <div class="col-md-3">
+          <!-- <div class="col-md-3">
             <div class="form-group">
               <label for="edit-image">Supports Images</label>
               <select name="has_image" class="form-control" id="edit-image">
@@ -134,9 +134,9 @@
                 <option value="0" {{ !$attribute->has_image ? 'selected' : '' }}>No</option>
               </select>
             </div>
-          </div>
+          </div> -->
 
-          <div class="col-md-3">
+          <!-- <div class="col-md-3">
             <div class="form-group">
               <label for="edit-icon">Supports Icons</label>
               <select name="has_icon" class="form-control" id="edit-icon">
@@ -144,7 +144,7 @@
                 <option value="0" {{ !$attribute->has_icon ? 'selected' : '' }}>No</option>
               </select>
             </div>
-          </div>
+          </div> -->
 
           <div class="col-md-3">
             <div class="form-group">

@@ -56,11 +56,36 @@
             <strong>{{ $cond->parentValue->value ?? '' }}</strong>
             </td>
             <td>
+    @switch($cond->action)
+        @case('hide_attribute')
+            Hide the <strong>({{ $cond->affectedAttribute->name }})</strong> attribute.
+            @break
+        @case('show_attribute')
+            Always show <strong>({{ $cond->affectedAttribute->name }})</strong>.
+            @break
+        @case('hide_values')
+            Hide these <strong>({{ $cond->affectedAttribute->name }})</strong> values: 
+            <strong>
+               {{ $cond->affectedValues ? implode(', ', $cond->affectedValues->pluck('value')->toArray()) : '' }}
+            </strong>
+            @break
+        @case('show_values')
+            Show only these <strong>({{ $cond->affectedAttribute->name }})</strong> values: 
+            <strong>
+              {{ $cond->affectedValues ? implode(', ', $cond->affectedValues->pluck('value')->toArray()) : '' }}
+            </strong>
+            @break
+        @default
+            {{ $cond->action }}
+    @endswitch
+</td>
+
+            <!-- <td>
             <strong>{{ $cond->affectedAttribute->name ?? '' }}</strong>
             @if($cond->affected_value_id)
           = <strong>{{ $cond->affectedValue->value ?? '' }}</strong>
         @endif
-            </td>
+            </td> -->
             <td><span class="badge badge-light-info text-capitalize">{{ $cond->action }}</span></td>
             <td>{{ $cond->created_at->format('d M Y') }}</td>
             <td>

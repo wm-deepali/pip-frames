@@ -6,9 +6,9 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-  <meta name="description" content="Nuvem Print Admin">
-  <meta name="keywords" content="Nuvem Print Admin">
-  <title>Nuvem Print Admin</title>
+  <meta name="description" content="Pip Frames">
+  <meta name="keywords" content="Pip Frames">
+  <title>Pip Frames</title>
   <link rel="shortcut icon" type="image/x-icon" href="{{ URL::asset('admin_assets/images/favicon.png') }}">
   <link rel="stylesheet" type="text/css" href="{{ URL::asset('admin_assets/css/flatpickr.min.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ URL::asset('admin_assets/css/bootstrap.min.css') }}">

@@ -46,9 +46,12 @@ class SubcategoryAttributeController extends Controller
             'is_required.*' => 'boolean',
             'sort_order' => 'required|array',
             'sort_order.*' => 'required|integer|min:0',
+            'step_number' => 'required|array',
+            'step_number.*' => 'required|integer|min:1',
         ], [
             'attribute_id.*.distinct' => 'You cannot assign the same attribute more than once.',
         ]);
+
 
         if ($validator->fails()) {
             return $this->validationError($validator);
@@ -59,7 +62,7 @@ class SubcategoryAttributeController extends Controller
 
         foreach ($request->attribute_id as $index => $attrId) {
             $attribute = Attribute::find($attrId);
-            // dd($attribute && $attribute->input_type !== 'select_area');
+            // dd( $attribute->toArray());
             // If input_type is NOT 'select_area', then value must be provided
             if ($attribute && $attribute->input_type !== 'select_area') {
                 $valueIds = $request->attribute_value_ids[$attrId] ?? null;
@@ -96,6 +99,7 @@ class SubcategoryAttributeController extends Controller
                 'attribute_id' => $attrId,
                 'is_required' => $request->is_required[$index] ?? false,
                 'sort_order' => $request->sort_order[$index] ?? null,
+                'step_number' => $request->step_number[$index] ?? 1,  // <-- Add here
             ]);
 
             $valueIds = $request->attribute_value_ids[$attrId] ?? [];
@@ -179,6 +183,8 @@ class SubcategoryAttributeController extends Controller
             'attribute_id' => 'required|exists:attributes,id',
             'is_required' => 'sometimes|boolean',
             'sort_order' => 'required|integer|min:0',
+            'step_number' => 'required|integer|min:1',  // <-- Add here
+
         ];
 
         if ($requiresValues) {
@@ -224,7 +230,8 @@ class SubcategoryAttributeController extends Controller
             'subcategory_id',
             'attribute_id',
             'is_required',
-            'sort_order'
+            'sort_order',
+            'step_number'
         ]));
 
         SubcategoryAttributeValue::where([

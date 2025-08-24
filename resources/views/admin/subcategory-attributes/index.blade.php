@@ -41,6 +41,7 @@
               <th>Subcategory</th>
               <th>Attribute</th>
               <th>Required</th>
+              <th>Step Number</th>
               <th>Sort Order</th>
               <th>Created</th>
               <th width="100px">Action</th>
@@ -53,6 +54,7 @@
           <td>{{ $link->subcategory->name ?? '-' }}</td>
           <td>{{ $link->attribute->name ?? '-' }}</td>
           <td>{{ $link->is_required ? 'Yes' : 'No' }}</td>
+          <td>{{ $link->step_number ?? '-' }}</td>
           <td>{{ $link->sort_order ?? '-' }}</td>
           <td>{{ $link->created_at->format('d M Y') }}</td>
           <td>

@@ -41,15 +41,15 @@
               <th>Name</th>
               <th>Detail</th>
               <th>Input Type</th>
-              <th>Custom Input</th>
-              <th>Pricing Basis</th>
+              <!-- <th>Custom Input</th> -->
+              <!-- <th>Pricing Basis</th> -->
               <th>Has Dependency</th>
               <th>Parent Attribute</th>
               <th>Has Setup Charge</th>
-              <th>Allow Quantity</th>
-              <th>Is Composite</th>
-              <th>Has Image</th>
-              <th>Has Icon</th>
+              <!-- <th>Allow Quantity</th> -->
+              <!-- <th>Is Composite</th> -->
+              <!-- <th>Has Image</th> -->
+              <!-- <th>Has Icon</th> -->
               <th>Created At</th>
               <th width="100px">Action</th>
             </tr>
@@ -61,10 +61,10 @@
             <td>{{ $attribute->name }}</td>
             <td>{{ $attribute->detail }}</td>
             <td>{{ ucfirst(str_replace('_', ' ', $attribute->input_type)) }}</td>
-            <td>
+            <!-- <td>
             {{ ucfirst($attribute->custom_input_type ?? 'N/A') }}
-            </td>
-            <td>{{ ucfirst(str_replace('_', ' ', $attribute->pricing_basis))  }}</td>
+            </td> -->
+            <!-- <td>{{ ucfirst(str_replace('_', ' ', $attribute->pricing_basis))  }}</td> -->
             <td>
             <span class="badge badge-{{ $attribute->has_dependency ? 'success' : 'secondary' }}">
             {{ $attribute->has_dependency ? 'Yes' : 'No' }}
@@ -85,26 +85,26 @@
             {{ $attribute->has_setup_charge ? 'Yes' : 'No' }}
             </span>
             </td>
-            <td>
+            <!-- <td>
             <span class="badge badge-{{ $attribute->allow_quantity ? 'success' : 'secondary' }}">
             {{ $attribute->allow_quantity ? 'Yes' : 'No' }}
             </span>
-            </td>
-            <td>
+            </td> -->
+            <!-- <td>
             <span class="badge badge-{{ $attribute->is_composite ? 'success' : 'secondary' }}">
             {{ $attribute->is_composite ? 'Yes' : 'No' }}
             </span>
-            </td>
-            <td>
+            </td> -->
+            <!-- <td>
             <span class="badge badge-{{ $attribute->has_image ? 'success' : 'secondary' }}">
             {{ $attribute->has_image ? 'Yes' : 'No' }}
             </span>
-            </td>
-            <td>
+            </td> -->
+            <!-- <td>
             <span class="badge badge-{{ $attribute->has_icon ? 'success' : 'secondary' }}">
             {{ $attribute->has_icon ? 'Yes' : 'No' }}
             </span>
-            </td>
+            </td> -->
             <td>{{ $attribute->created_at->format('d M Y') }}</td>
             <td>
             <ul class="list-inline mb-0">

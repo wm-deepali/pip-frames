@@ -35,14 +35,22 @@
 
         <div class="form-group">
           <label><strong>Action</strong></label>
-          <select name="action" class="form-control">
-            <option value="hide" {{ $condition->action == 'hide' ? 'selected' : '' }}>Hide</option>
-            <option value="change_options" {{ $condition->action == 'change_options' ? 'selected' : '' }}>Change Options</option>
+          <select name="action" class="form-control" id="edit-action">
+            <option value="">-- Select Action --</option>
+            <option value="hide_attribute" {{ $condition->action == 'hide_attribute' ? 'selected' : '' }}>Hide the entire
+              attribute</option>
+            <option value="show_attribute" {{ $condition->action == 'show_attribute' ? 'selected' : '' }}>Always show the
+              entire attribute</option>
+            <option value="hide_values" {{ $condition->action == 'hide_values' ? 'selected' : '' }}>Hide selected options
+              in the attribute</option>
+            <option value="show_values" {{ $condition->action == 'show_values' ? 'selected' : '' }}>Show only selected
+              options in the attribute</option>
           </select>
+
           <span class="text-danger validation-err" id="action-err"></span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="affected-values">
           <label><strong>Affected Values</strong></label>
           <div class="scrollable-checkbox-box" id="edit-affected-values">
             <p class="text-muted">Select values after choosing affected attribute.</p>
@@ -130,6 +138,24 @@
         `);
       });
     }
+
+    function toggleAffectedValuesVisibility() {
+      const action = $('#edit-action').val();
+
+      if (action === 'hide_values' || action === 'show_values') {
+        $('#affected-values').show();
+      } else {
+        $('#affected-values').hide();
+      }
+    }
+
+    $('#edit-action').on('change', function () {
+      toggleAffectedValuesVisibility();
+    });
+
+    // Initialize on page load
+    toggleAffectedValuesVisibility();
+
 
     $('#edit-attribute-condition-form').submit(function (e) {
       e.preventDefault();

@@ -26,7 +26,9 @@
                 <select name="attribute_id[]" class="form-control attribute-select">
                   <option value="">-- Select Attribute --</option>
                   @foreach($attributes as $attribute)
-            <option value="{{ $attribute->id }}" data-input-type="{{ $attribute->input_type }}">{{ $attribute->name }}</option>
+            <option value="{{ $attribute->id }}" data-input-type="{{ $attribute->input_type }}">
+            {{ $attribute->name }}
+            </option>
           @endforeach
                 </select>
               </div>
@@ -39,7 +41,7 @@
                 </select>
               </div>
 
-              <div class="form-group col-md-8">
+              <div class="form-group col-md-6">
                 <label><strong>Attribute Values <span class="text-danger">*</span></strong></label>
                 <div class="scrollable-checkbox-box attribute-values-container">
                   <!-- checkboxes will be appended dynamically -->
@@ -47,11 +49,22 @@
                 <span class="text-danger validation-err attribute-values-error"></span> <!-- Add this -->
               </div>
 
-              <div class="form-group col-md-4">
+              <div class="form-group col-md-3">
                 <label><strong>Sort Order</strong></label>
                 <input type="number" name="sort_order[]" class="form-control" placeholder="e.g. 1">
               </div>
-               <span class="text-danger validation-err" id="sort_order-error"></span>
+              <span class="text-danger validation-err" id="sort_order-error"></span>
+              <div class="form-group col-md-3">
+                <label><strong>Step Number</strong></label>
+                <select name="step_number[]" class="form-control">
+                  <option value="">-- Select Step --</option>
+                  <option value="1">Step 1</option>
+                  <option value="2">Step 2</option>
+                  <option value="3">Step 3</option>
+                  <!-- You can add more depending on how many steps you want to support -->
+                </select>
+                <span class="text-danger validation-err step_number-error"></span>
+              </div>
             </div>
 
             <div class="text-right">

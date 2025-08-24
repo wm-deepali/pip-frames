@@ -51,18 +51,21 @@
               </div>
               <div class="form-group col-md-6">
                 <label><strong>Action <span class="text-danger">*</span></strong></label>
-                <select name="conditions[0][action]" class="form-control">
-                  <option value="">-- Select Action --</option>
-                  <option value="hide">Hide</option>
-                  <option value="change_options">Change Options</option>
+
+                <select name="conditions[0][action]" class="form-control" id="add-action">
+                    <option value="">-- Select Action --</option>
+                  <option value="hide_attribute">Hide the entire attribute</option>
+                  <option value="show_attribute">Always show the entire attribute</option>
+                  <option value="hide_values">Hide selected options in the attribute</option>
+                  <option value="show_values">Show only selected options in the attribute</option>
                 </select>
-                
+
               </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="add-affected-values"> 
               <label><strong>Affected Value(s)</strong></label>
-              <div class="scrollable-checkbox-box affected-values-checkboxes">
+              <div class="scrollable-checkbox-box affected-values-checkboxes" >
                 <p class="text-muted">Select values after choosing affected attribute.</p>
               </div>
               <span class="text-danger validation-err affected_value_id-err"></span>
@@ -153,7 +156,7 @@
       newBlock.find('select, input').val('');
       newBlock.find('.affected-values-checkboxes').html('<p class="text-muted">Select values after choosing affected attribute.</p>');
       newBlock.find('.remove-condition-btn').removeClass('d-none');
-      
+
       // Update name attributes with new index
       newBlock.find('select, input').each(function () {
         const name = $(this).attr('name');
@@ -166,6 +169,21 @@
       $('#conditions-container').append(newBlock);
       conditionIndex++;
     });
+
+    function toggleAffectedValuesVisibility() {
+      const action = $('#add-action').val();
+
+      if (action === 'hide_values' || action === 'show_values') {
+        $('#add-affected-values').show();
+      } else {
+        $('#add-affected-values').hide();
+      }
+    }
+
+    $('#add-action').on('change', function () {
+      toggleAffectedValuesVisibility();
+    });
+
 
     // Remove Condition Block
     $(document).on('click', '.remove-condition-btn', function () {

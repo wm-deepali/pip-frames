@@ -10,12 +10,12 @@ class AttributeValue extends Model
         'attribute_id',
         'value',
         'image_path',
-        'icon_class',
+        // 'icon_class',
         'description',
         'title',
-        'custom_input_label',
-        'is_composite_value',
-        'fixed_extra_charges'
+        // 'custom_input_label',
+        // 'is_composite_value',
+        // 'fixed_extra_charges'
     ];
 
     protected $casts = [

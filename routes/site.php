@@ -36,11 +36,12 @@ Route::get('/stl', function () {
     dd('linked');
 });
 Route::get('/', [SiteController::class, 'index'])->name('home');
-Route::get('{slug}/details', [SiteController::class, 'subcateDetails'])->name('subcategory-details');
 
 Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
 
-Route::post('/calculate-price', [SiteController::class, 'calculate'])->name('calculate.price');
+Route::get('/attributes', [SiteController::class, 'attributes'])->name('attributes');
+Route::get('/get-attribute-images', [SiteController::class, 'AttributeImages'])->name('get-attribute-images');
+Route::post('/get-price', [SiteController::class, 'calculatePrice'])->name('get-price');
 
 
 Route::get('/thank-you', function () {
@@ -48,7 +49,19 @@ Route::get('/thank-you', function () {
 })->name('thank-you');
 
 
-Route::post('/cart/update-delivery', [CartController::class, 'updateDelivery'])->name('cart.update.delivery');
+Route::get('/top-form', function () {
+    return view('front.top-form');
+})->name('top-form');
+
+
+
+
+Route::get('/cart', [CartController::class, 'cart'])->name('cart');
+
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+
+Route::post('/cart/update/{index}', [CartController::class, 'update'])->name('cart.update');
+Route::get('/cart/remove/{index}', [CartController::class, 'remove'])->name('cart.remove');
 
 
 

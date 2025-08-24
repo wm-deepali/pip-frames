@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SubcategoryAttribute extends Model
 {
-    protected $fillable = ['subcategory_id', 'attribute_id', 'is_required', 'sort_order'];
+    protected $fillable = ['subcategory_id', 'attribute_id', 'is_required', 'sort_order','step_number'];
 
     protected $casts = [
         'is_required' => 'boolean',

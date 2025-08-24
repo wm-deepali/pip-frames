@@ -87,7 +87,7 @@ class PricingRuleController extends Controller
             'subcategory_id' => 'required|exists:subcategories,id',
             'pages_dragger_required' => 'nullable',
             'pages_dragger_dependency' => 'nullable|numeric',
-            'default_quantity' => 'required|integer|min:1',
+            'default_quantity' => 'nullable|integer|min:1',
             'proof_reading_required' => 'nullable|boolean',
             'delivery_charges_required' => 'nullable|boolean',
             'centralized_paper_rates' => 'nullable|boolean',
@@ -247,6 +247,7 @@ class PricingRuleController extends Controller
                 'id' => $sa->attribute->id,
                 'name' => $sa->attribute->name,
                 'input_type' => $sa->attribute->input_type,
+                'area_unit' => $sa->attribute->area_unit ?? 'inch',
                 'values' => $values,
                 'pricing_basis' => $sa->attribute->pricing_basis,
                 'has_setup_charge' => $sa->attribute->has_setup_charge,
@@ -255,7 +256,7 @@ class PricingRuleController extends Controller
             ];
 
         });
-        // dd($attributes->toArray());
+        // dd($pricingRule->toArray());
         return view('admin.pricing-rules.edit', [
             'pricingRule' => $pricingRule,
             'subcategoryAttributes' => $attributes,
@@ -273,7 +274,7 @@ class PricingRuleController extends Controller
             'subcategory_id' => 'required|exists:subcategories,id',
             'pages_dragger_required' => 'nullable|boolean',
             'pages_dragger_dependency' => 'nullable|numeric',
-            'default_quantity' => 'required|integer|min:1',
+            'default_quantity' => 'nullable|integer|min:1',
             'proof_reading_required' => 'nullable|boolean',
             'delivery_charges_required' => 'nullable|boolean',
             'min_quantity' => 'nullable|integer|min:1|lte:max_quantity',

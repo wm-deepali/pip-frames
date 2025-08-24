@@ -53,6 +53,17 @@
           <span class="text-danger validation-err" id="sort_order-err"></span> <!-- Add this -->
         </div>
 
+        <div class="form-group">
+          <label><strong>Step Number</strong></label>
+          <select name="step_number" class="form-control">
+            <option value="">-- Select Step --</option>
+            <option value="1" {{ $subcategoryAttribute->step_number == 1 ? 'selected' : '' }}>Step 1</option>
+            <option value="2"{{ $subcategoryAttribute->step_number == 2 ? 'selected' : '' }}>Step 2</option>
+            <option value="3" {{ $subcategoryAttribute->step_number == 3 ? 'selected' : '' }}>Step 3</option>
+            <!-- You can add more depending on how many steps you want to support -->
+          </select>
+          <span class="text-danger validation-err step_number-error"></span>
+        </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -138,7 +149,7 @@
 
     function toggleAttributeValuesSection() {
       console.log('her');
-      
+
       const selectedOption = $('select[name="attribute_id"]').find('option:selected');
       const inputType = selectedOption.data('input-type');
       const $valuesGroup = $('#attribute-values-checkboxes').closest('.form-group');

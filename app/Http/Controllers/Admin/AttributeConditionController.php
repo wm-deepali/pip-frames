@@ -53,6 +53,7 @@ class AttributeConditionController extends Controller
                 'id' => $sa->attribute->id,
                 'name' => $sa->attribute->name,
                 'input_type' => $sa->attribute->input_type,
+                'area_unit' => $sa->attribute->area_unit,
                 'values' => $values,
                 'pricing_basis' => $sa->attribute->pricing_basis,
                 'has_setup_charge' => $sa->attribute->has_setup_charge,
@@ -89,7 +90,7 @@ class AttributeConditionController extends Controller
             'conditions.*.parent_attribute_id' => 'required|exists:attributes,id',
             'conditions.*.parent_value_id' => 'required|exists:attribute_values,id',
             'conditions.*.affected_attribute_id' => 'required|exists:attributes,id',
-            'conditions.*.action' => 'required|in:show,hide,change_options',
+            'conditions.*.action' => 'required|in:hide_attribute,show_attribute,hide_values,show_values',
             'conditions.*.affected_value_ids' => 'nullable|array',
             'conditions.*.affected_value_ids.*' => 'exists:attribute_values,id',
         ]);
@@ -163,7 +164,7 @@ class AttributeConditionController extends Controller
             'parent_attribute_id' => 'required|exists:attributes,id',
             'parent_value_id' => 'required|exists:attribute_values,id',
             'affected_attribute_id' => 'required|exists:attributes,id',
-            'action' => 'required|in:show,hide,change_options',
+            'action' => 'required|in:hide_attribute,show_attribute,hide_values,show_values',
             'affected_value_ids' => 'nullable|array',
             'affected_value_ids.*' => 'exists:attribute_values,id',
         ]);
