@@ -16,6 +16,7 @@ class AttributeValue extends Model
         // 'custom_input_label',
         // 'is_composite_value',
         // 'fixed_extra_charges'
+        'colour_code'
     ];
 
     protected $casts = [

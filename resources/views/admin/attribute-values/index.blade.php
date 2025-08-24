@@ -50,45 +50,54 @@
             </thead>
             <tbody>
             @foreach ($values as $value)
-          <tr>
+            <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $value->attribute->name ?? '-' }}</td>
             <!-- <td>
-            <span class="badge badge-{{ $value->is_composite_value ? 'success' : 'secondary' }}">
-            {{ $value->is_composite_value ? 'Yes' : 'No' }}
-            </span>
-            </td> -->
+        <span class="badge badge-{{ $value->is_composite_value ? 'success' : 'secondary' }}">
+        {{ $value->is_composite_value ? 'Yes' : 'No' }}
+        </span>
+        </td> -->
             <td>
-            {{ $value->value }}
-          
+            @if($value->colour_code)
+          <div style="display: flex; align-items: center; gap: 8px;">
+          <span>{{ $value->value }}</span>
+          <span
+          style="width: 20px; height: 20px; border-radius: 4px; display: inline-block; background-color: {{ $value->colour_code }}; border: 1px solid #ccc;"></span>
+          <span>{{ $value->colour_code }}</span>
+          </div>
+          @else
+          {{ $value->value }}
+          @endif
             </td>
+
             <td>
             @if ($value->image_path)
           <img src="{{ asset('storage/' . $value->image_path) }}" width="40">
-        @else
+          @else
           -
-        @endif
+          @endif
             </td>
             <!-- <td>{!! $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-' !!}</td> -->
             <!-- <td>{{ $value->custom_input_label ?? '-' }}</td> -->
-           
+
             <td>{{ $value->created_at->format('d M Y') }}</td>
             <td>
             <ul class="list-inline mb-0">
-            <li class="list-inline-item">
-            <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-attribute-value"
+              <li class="list-inline-item">
+              <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-attribute-value"
               data-id="{{ $value->id }}">
               <i class="fas fa-pencil-alt"></i>
-            </a>
-            </li>
-            <li class="list-inline-item">
-            <a href="javascript:void(0)" onclick="deleteValue({{ $value->id }})">
+              </a>
+              </li>
+              <li class="list-inline-item">
+              <a href="javascript:void(0)" onclick="deleteValue({{ $value->id }})">
               <i class="fa fa-trash text-danger"></i>
-            </a>
-            </li>
+              </a>
+              </li>
             </ul>
             </td>
-          </tr>
+            </tr>
         @endforeach
             </tbody>
           </table>

@@ -27,6 +27,8 @@
                 </option>
                 <option value="select_area" {{ $attribute->input_type == 'select_area' ? 'selected' : '' }}>Select Area
                 </option>
+                <option value="select_colour" {{ $attribute->input_type == 'select_colour' ? 'selected' : '' }}></option>
+                Select colours</option>
                 <!-- <option value="checkbox" {{ $attribute->input_type == 'checkbox' ? 'selected' : '' }}>Checkbox</option> -->
                 <!-- <option value="text" {{ $attribute->input_type == 'text' ? 'selected' : '' }}>Text</option> -->
                 <!-- <option value="number" {{ $attribute->input_type == 'number' ? 'selected' : '' }}>Number</option> -->

@@ -34,7 +34,7 @@ class AttributeController extends Controller
         $validator = Validator::make($request->all(), [
             'attributes' => 'required|array',
             'attributes.*.name' => 'required|string|max:255|distinct|unique:attributes,name',
-            'attributes.*.input_type' => 'required|in:dropdown,radio,select_image,select_area',
+            'attributes.*.input_type' => 'required|in:dropdown,radio,select_image,select_area,select_colour',
             'attributes.*.custom_input_type' => 'nullable|in:number,text,file,none',
             'attributes.*.has_image' => 'nullable|boolean',
             'attributes.*.has_icon' => 'nullable|boolean',
@@ -111,7 +111,7 @@ class AttributeController extends Controller
         $attribute = Attribute::findOrFail($id);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:attributes,name,' . $attribute->id,
-            'input_type' => 'required|in:dropdown,radio,select_area,select_image',
+            'input_type' => 'required|in:dropdown,radio,select_area,select_image,select_colour',
             'has_image' => 'sometimes|boolean',
             'has_icon' => 'sometimes|boolean',
             'has_dependency' => 'sometimes|boolean',

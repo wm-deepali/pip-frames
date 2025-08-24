@@ -129,6 +129,11 @@ class AttributeValueController extends Controller
                 $data['image_path'] = $uploadedImage->store('attribute_values', 'public');
             }
 
+            if ($inputType === 'select_colour') {
+                $data['value'] = $valueData['value']; // colour name
+                $data['colour_code'] = $valueData['colour_code'] ?? null;
+            }
+
             // Save record
             $attributeValue = AttributeValue::create($data);
 
@@ -213,6 +218,11 @@ class AttributeValueController extends Controller
             $rules['title'] = 'nullable|string|max:255';
         }
 
+        if ($inputType === 'select_colour') {
+            $rules['value'] = 'required|string|max:255'; // colour name
+            $rules['colour_code'] = 'nullable|string|max:20';
+        }
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -242,6 +252,12 @@ class AttributeValueController extends Controller
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('attribute_values', 'public');
         }
+
+        if ($inputType === 'select_colour') {
+            $data['value'] = $request->input('value');        // colour name
+            $data['colour_code'] = $request->input('colour_code') ?? null;
+        }
+
 
         $attributeValue->update($data);
 

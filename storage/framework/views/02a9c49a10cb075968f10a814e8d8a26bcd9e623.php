@@ -7,18 +7,18 @@
       </div>
 
       <div class="modal-body">
-        {{-- Attribute Select --}}
+        
         <div class="form-group">
           <label>Attribute <span class="text-danger">*</span></label>
           <select name="attribute_id" class="form-control" id="attribute-select">
-            @foreach ($attributes as $attribute)
-        <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
-      @endforeach
+            <?php $__currentLoopData = $attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attribute): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <option value="<?php echo e($attribute->id); ?>"><?php echo e($attribute->name); ?></option>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </select>
           <span class="text-danger validation-err" id="attribute_id-err"></span>
         </div>
 
-        {{-- Values Wrapper --}}
+        
         <div id="attribute-values-wrapper">
           <div class="value-block border p-2 mb-2">
             <div class="form-group" id="value-input-wrapper-0">
@@ -104,8 +104,8 @@
 
 <script>
   function initAttributeModalScripts() {
-    const existingValuesGrouped = @json($existingValuesGrouped);
-    const attributeConfigs = @json($attributeConfigs);
+    const existingValuesGrouped = <?php echo json_encode($existingValuesGrouped, 15, 512) ?>;
+    const attributeConfigs = <?php echo json_encode($attributeConfigs, 15, 512) ?>;
     let valueIndex = $('#attribute-values-wrapper .value-block').length;
 
     function renderValueField(index, isFileType) {
@@ -319,4 +319,4 @@
     }
 
   }
-</script>
+</script><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/admin/attribute-values/add.blade.php ENDPATH**/ ?>

@@ -111,6 +111,29 @@
         </div>
     <?php endif; ?>
 
+    
+<?php if($inputType === 'select_colour'): ?>
+  <div class="form-group" id="colour-fields-wrapper">
+    <label>Colour Code</label>
+    <input type="text" name="colour_code" 
+           class="form-control colour-code-input" 
+           value="<?php echo e($attributeValue->colour_code ?? ''); ?>" 
+           placeholder="#FF0000">
+
+    <label class="mt-2">Select Colour</label>
+    <input type="color" name="colour_picker" 
+           class="form-control form-control-color colour-picker-input" 
+           value="<?php echo e($attributeValue->colour_code ?? '#ffffff'); ?>" 
+           style="width: 60px; height: 38px; padding: 2px;">
+
+    <label class="mt-2">Preview</label>
+    <div class="colour-preview border rounded" 
+         style="width: 60px; height: 38px; background: <?php echo e($attributeValue->colour_code ?? '#ffffff'); ?>">
+    </div>
+  </div>
+<?php endif; ?>
+
+
       </div>
 
       <div class="modal-footer">
@@ -125,57 +148,59 @@
 </div>
 
 <script>
-  $(document).ready(function () {
+$(document).ready(function () {
     const inputType = <?php echo json_encode($attributeConfigs[$attribute->id]['input_type'] ?? 'text', 15, 512) ?>;
 
+    // --- Composite toggle ---
     function toggleComposedWrapper() {
-      const isComposite = $('#is_composite_value').val() === '1';
-      $('#composed-of-wrapper').toggleClass('d-none', !isComposite);
-      $('#composed-of-select-wrapper input[type="checkbox"]').prop('disabled', !isComposite);
+        const isComposite = $('#is_composite_value').val() === '1';
+        $('#composed-of-wrapper').toggleClass('d-none', !isComposite);
+        $('#composed-of-select-wrapper input[type="checkbox"]').prop('disabled', !isComposite);
     }
-
     $('#is_composite_value').on('change', toggleComposedWrapper);
     toggleComposedWrapper();
 
-    // Hide value wrapper entirely for select_area
+    // --- Value wrapper visibility ---
     if (inputType === 'select_area') {
-      $('#value-wrapper').addClass('d-none');
+        $('#value-wrapper').addClass('d-none');
     } else {
-      $('#value-wrapper').removeClass('d-none');
+        $('#value-wrapper').removeClass('d-none');
     }
 
+    // --- Title field visibility ---
     if (['select_image', 'select_icon'].includes(inputType)) {
-      $('#title-wrapper').show();
+        $('#title-wrapper').show();
     } else {
-      $('#title-wrapper').hide();
+        $('#title-wrapper').hide();
     }
 
+    // --- Hide existing preview on new file selection ---
     $('input[name="value"]').on('change', function () {
-      $(this).siblings('.existing-preview').hide();
+        $(this).siblings('.existing-preview').hide();
     });
-  });
 
-  const inputType = <?php echo json_encode($attributeConfigs[$attribute->id]['input_type'] ?? 'text', 15, 512) ?>;
+    // --- Colour picker sync (only if colour input type) ---
+    if (inputType === 'select_colour') {
+        const $codeInput = $('.colour-code-input');
+        const $picker = $('.colour-picker-input');
+        const $preview = $('.colour-preview');
 
-  function toggleComposedWrapper() {
-    const isComposite = $('#is_composite_value').val() === '1';
-    $('#composed-of-wrapper').toggleClass('d-none', !isComposite);
-    $('#composed-of-select-wrapper input[type="checkbox"]').prop('disabled', !isComposite);
-  }
+        // Code -> Picker + Preview
+        $codeInput.on('input', function () {
+            const val = $(this).val().trim();
+            if (/^#([0-9A-F]{3}){1,2}$/i.test(val)) {
+                $picker.val(val);
+                $preview.css('background', val);
+            }
+        });
 
-  $('#is_composite_value').on('change', toggleComposedWrapper);
-
-
-  toggleComposedWrapper();
-
-  if (['select_image', 'select_icon'].includes(inputType)) {
-    $('#title-wrapper').show();
-  } else {
-    $('#title-wrapper').hide();
-  }
-
-  $('input[name="value"]').on('change', function () {
-    $(this).siblings('.existing-preview').hide();
-  });
-  });
-</script><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/admin/attribute-values/edit.blade.php ENDPATH**/ ?>
+        // Picker -> Code + Preview
+        $picker.on('input', function () {
+            const val = $(this).val();
+            $codeInput.val(val);
+            $preview.css('background', val);
+        });
+    }
+});
+</script>
+<?php /**PATH D:\web-mingo-project\pip_frames\resources\views/admin/attribute-values/edit.blade.php ENDPATH**/ ?>

@@ -27,6 +27,7 @@
                     <!-- <option value="radio">Radio</option> -->
                     <option value="select_image">Select Image</option>
                     <option value="select_area">Select Area</option>
+                    <option value="select_colour">Select colours</option>
                     <!-- <option value="checkbox">Checkbox</option> -->
                     <!-- <option value="text">Text</option> -->
                     <!-- <option value="number">Number</option> -->
@@ -110,7 +111,7 @@
                   </select>
                 </div>
               </div> -->
-<!-- 
+              <!-- 
               <div class="col-md-3">
                 <div class="form-group">
                   <label for="composite-0">Is Composite</label>
@@ -229,7 +230,7 @@
       const $pricingSelect = $item.find('select[name$="[pricing_basis]"]');
       const $placeholder = $pricingSelect.find('option[value=""]');
       console.log($placeholder);
-      
+
 
       if ($pricingSelect.find('option[value="per_page"]').length === 0) {
         $placeholder.after('<option value="per_page">Depends Upon No. of Pages</option>');
@@ -315,6 +316,8 @@
         <label>Input Type <span class="text-danger">*</span></label>
         <select name="attributes[${attributeIndex}][input_type]" class="form-control">
           <option value="select_image">Select Image</option>
+           <option value="select_area">Select Area</option>
+                    <option value="select_colour">Select colours</option>
         </select>
         <small class="text-danger" id="attributes.${attributeIndex}.input_type-err"></small>
       </div>

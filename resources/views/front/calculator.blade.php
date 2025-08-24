@@ -483,6 +483,49 @@
                 });
 
             }
+            // Add in renderStep() where you handle attribute input types:
+            else if (attr.input_type === "select_colour") {
+                const optionsDiv = document.createElement("div");
+                optionsDiv.className = "options cards";
+                attr.values.forEach((val, idx) => {
+                    const optionCard = document.createElement("div");
+                    optionCard.className = "option-card";
+                    optionCard.dataset.valueId = val.id;
+
+                    // For active highlight
+                    if (currentSelections[attr.id] === val.id) {
+                        optionCard.classList.add("active");
+                    } else if (currentSelections[attr.id] === undefined && idx === 0) {
+                        optionCard.classList.add("active");
+                        currentSelections[attr.id] = val.id;
+                    }
+
+                    // Card HTML
+                    optionCard.innerHTML = `
+            <div class="colour-swatch" style="width:32px; height:32px; border-radius:50%; background:${val.colour_code || '#eee'}; border:2px solid #ccc; margin-bottom:8px;"></div>
+            <p>${val.value}</p>
+        `;
+
+                    // On click
+                    optionCard.onclick = () => {
+                        optionsDiv.querySelectorAll(".option-card").forEach(card => card.classList.remove("active"));
+                        optionCard.classList.add("active");
+                        currentSelections[attr.id] = val.id;
+                        applyPriceAndAttributes();
+                        updateMainImage();
+                    };
+
+                    optionsDiv.appendChild(optionCard);
+                });
+
+                attrWrapper.appendChild(optionsDiv);
+
+                // Initial selection if undefined
+                if (currentSelections[attr.id] === undefined && attr.values.length > 0) {
+                    currentSelections[attr.id] = attr.values[0].id;
+                }
+            }
+
             else {
                 const unsupported = document.createElement("p");
                 unsupported.textContent = "Unsupported input type.";

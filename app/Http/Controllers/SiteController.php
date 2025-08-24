@@ -70,6 +70,7 @@ class SiteController extends Controller
                         return [
                             'id' => $sav->value->id,
                             'value' => $sav->value->value,
+                            'colour_code' => $sav->value->colour_code,
                             'image_path' => $sav->value->image_path ?? null,
                         ];
                     })->values(),

@@ -50,47 +50,56 @@
             </thead>
             <tbody>
             <?php $__currentLoopData = $values; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-          <tr>
+            <tr>
             <td><?php echo e($loop->iteration); ?></td>
             <td><?php echo e($value->attribute->name ?? '-'); ?></td>
             <!-- <td>
-            <span class="badge badge-<?php echo e($value->is_composite_value ? 'success' : 'secondary'); ?>">
-            <?php echo e($value->is_composite_value ? 'Yes' : 'No'); ?>
+        <span class="badge badge-<?php echo e($value->is_composite_value ? 'success' : 'secondary'); ?>">
+        <?php echo e($value->is_composite_value ? 'Yes' : 'No'); ?>
 
-            </span>
-            </td> -->
+        </span>
+        </td> -->
             <td>
-            <?php echo e($value->value); ?>
+            <?php if($value->colour_code): ?>
+          <div style="display: flex; align-items: center; gap: 8px;">
+          <span><?php echo e($value->value); ?></span>
+          <span
+          style="width: 20px; height: 20px; border-radius: 4px; display: inline-block; background-color: <?php echo e($value->colour_code); ?>; border: 1px solid #ccc;"></span>
+          <span><?php echo e($value->colour_code); ?></span>
+          </div>
+          <?php else: ?>
+          <?php echo e($value->value); ?>
 
-          
+          <?php endif; ?>
             </td>
+
             <td>
             <?php if($value->image_path): ?>
           <img src="<?php echo e(asset('storage/' . $value->image_path)); ?>" width="40">
-        <?php else: ?>
+          <?php else: ?>
           -
-        <?php endif; ?>
+          <?php endif; ?>
             </td>
             <!-- <td><?php echo $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-'; ?></td> -->
             <!-- <td><?php echo e($value->custom_input_label ?? '-'); ?></td> -->
-           
+
             <td><?php echo e($value->created_at->format('d M Y')); ?></td>
             <td>
             <ul class="list-inline mb-0">
-            <li class="list-inline-item">
-            <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-attribute-value"
+              <li class="list-inline-item">
+              <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-attribute-value"
               data-id="<?php echo e($value->id); ?>">
               <i class="fas fa-pencil-alt"></i>
-            </a>
-            </li>
-            <li class="list-inline-item">
-            <a href="javascript:void(0)" onclick="deleteValue(<?php echo e($value->id); ?>)">
+              </a>
+              </li>
+              <li class="list-inline-item">
+              <a href="javascript:void(0)" onclick="deleteValue(<?php echo e($value->id); ?>)">
               <i class="fa fa-trash text-danger"></i>
-            </a>
-            </li>
+              </a>
+              </li>
             </ul>
             </td>
-          </tr>
+            </tr>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
           </table>
