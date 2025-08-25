@@ -71,13 +71,38 @@
           @endif
             </td>
 
-            <td>
-            @if ($value->image_path)
-          <img src="{{ asset('storage/' . $value->image_path) }}" width="40">
-          @else
-          -
-          @endif
-            </td>
+           <td>
+    @php
+        $requireBoth = $value->attribute->require_both_images ?? false;
+    @endphp
+
+    @if ($requireBoth)
+        @if ($value->image_portrait_path)
+            <div>
+                <strong>Portrait:</strong><br>
+                <img src="{{ asset('storage/' . $value->image_portrait_path) }}" width="40" style="margin-bottom:4px;">
+            </div>
+        @endif
+
+        @if ($value->image_landscape_path)
+            <div>
+                <strong>Landscape:</strong><br>
+                <img src="{{ asset('storage/' . $value->image_landscape_path) }}" width="40">
+            </div>
+        @endif
+
+        @if (!$value->image_portrait_path && !$value->image_landscape_path)
+            -
+        @endif
+    @else
+        @if ($value->image_path)
+            <img src="{{ asset('storage/' . $value->image_path) }}" width="40">
+        @else
+            -
+        @endif
+    @endif
+</td>
+
             <!-- <td>{!! $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-' !!}</td> -->
             <!-- <td>{{ $value->custom_input_label ?? '-' }}</td> -->
 

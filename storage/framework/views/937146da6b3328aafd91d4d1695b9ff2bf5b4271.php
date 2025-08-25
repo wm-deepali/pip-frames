@@ -23,11 +23,11 @@
         padding: 8px;
         margin-top: 4px;
     }
-    .colour-swatch {
-    display: inline-block;
-    vertical-align: middle;
-}
 
+    .colour-swatch {
+        display: inline-block;
+        vertical-align: middle;
+    }
 </style>
 <?php $__env->startSection('content'); ?>
 

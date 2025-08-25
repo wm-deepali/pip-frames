@@ -47,6 +47,8 @@ class AttributeController extends Controller
             'attributes.*.dependency_parent' => 'nullable|array',
             'attributes.*.dependency_parent.*' => 'exists:attributes,id',
             'attributes.*.area_unit' => 'nullable|in:sq_inch,sq_feet,sq_meter',
+            'attributes.*.require_both_images' => 'nullable|boolean',
+
         ]);
 
         // If validation fails, return errors
@@ -75,6 +77,8 @@ class AttributeController extends Controller
                 // 'allow_quantity' => filter_var($attr['allow_quantity'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'is_composite' => filter_var($attr['is_composite'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'has_setup_charge' => filter_var($attr['has_setup_charge'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'require_both_images' => filter_var($attr['require_both_images'] ?? false, FILTER_VALIDATE_BOOLEAN),
+
                 // 'dependency_parent' => $attr['dependency_parent'] ?? null,
             ]);
 
@@ -124,6 +128,7 @@ class AttributeController extends Controller
             'has_setup_charge' => 'sometimes|boolean',
             'dependency_parent' => 'nullable|array',
             'dependency_parent.*' => 'exists:attributes,id',
+            'require_both_images' => 'nullable|boolean',
 
         ]);
 
@@ -150,6 +155,8 @@ class AttributeController extends Controller
             'composite_input_type' => $request->custom_input_type,
             // 'allow_quantity' => (bool) $allowQuantity,
             'has_setup_charge' => $request->boolean('has_setup_charge'),
+            'require_both_images' => $request->boolean('require_both_images'),
+
         ]);
 
         if ($request->has('dependency_parent')) {

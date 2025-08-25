@@ -43,6 +43,7 @@ Route::get('/attributes', [SiteController::class, 'attributes'])->name('attribut
 Route::get('/get-attribute-images', [SiteController::class, 'AttributeImages'])->name('get-attribute-images');
 Route::post('/get-price', [SiteController::class, 'calculatePrice'])->name('get-price');
 
+Route::get('/get-all-image-conditions', [SiteController::class, 'getAllImageConditions'])->name('get-all-image-conditions');
 
 Route::get('/thank-you', function () {
     return view('front.thank-you');

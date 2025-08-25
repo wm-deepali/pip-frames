@@ -10,6 +10,7 @@ class ImageConditionAffectedValue extends Model
         'image_condition_id',
         'value_id',
         'image',
+        'orientation'
     ];
 
     // 🔗 Belongs to Condition

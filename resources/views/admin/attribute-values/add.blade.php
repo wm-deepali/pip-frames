@@ -12,8 +12,8 @@
           <label>Attribute <span class="text-danger">*</span></label>
           <select name="attribute_id" class="form-control" id="attribute-select">
             @foreach ($attributes as $attribute)
-        <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
-      @endforeach
+              <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+            @endforeach
           </select>
           <span class="text-danger validation-err" id="attribute_id-err"></span>
         </div>
@@ -26,6 +26,7 @@
               <input type="text" name="attribute_values[0][value]" class="form-control">
               <span class="text-danger validation-err" id="values_0_value-err"></span>
             </div>
+
 
 
             <div class="form-group d-none" id="title-wrapper-0">
@@ -108,17 +109,37 @@
     const attributeConfigs = @json($attributeConfigs);
     let valueIndex = $('#attribute-values-wrapper .value-block').length;
 
-    function renderValueField(index, isFileType) {
+    function renderValueField(index, isFileType, inputType, requireBothImages) {
       const wrapper = $(`#value-input-wrapper-${index}`);
-      const input = isFileType
-        ? `<input type="file" name="attribute_values[${index}][value]" class="form-control-file">`
-        : `<input type="text" name="attribute_values[${index}][value]" class="form-control">`;
-      wrapper.html(`
-        <label>Value ${isFileType ? '(File)' : ''} <span class="text-danger">*</span></label>
-        ${input}
-        <span class="text-danger validation-err" id="values_${index}_value-err"></span>
-      `);
+
+      if (isFileType && inputType === 'select_image' && requireBothImages) {
+        // Render two file inputs for portrait and landscape images
+        wrapper.html(`
+      <label>Portrait Image (optional)</label>
+      <input type="file" name="attribute_values[${index}][image_portrait]" class="form-control-file mb-2">
+      <span class="text-danger validation-err" id="values_${index}_image_portrait-err"></span>
+
+      <label>Landscape Image (optional)</label>
+      <input type="file" name="attribute_values[${index}][image_landscape]" class="form-control-file">
+      <span class="text-danger validation-err" id="values_${index}_image_landscape-err"></span>
+    `);
+      } else if (isFileType) {
+        // Existing single file input logic for other cases or when not requiring both images
+        wrapper.html(`
+      <label>Value (File) <span class="text-danger">*</span></label>
+      <input type="file" name="attribute_values[${index}][value]" class="form-control-file">
+      <span class="text-danger validation-err" id="values_${index}_value-err"></span>
+    `);
+      } else {
+        // Text input for non-file types
+        wrapper.html(`
+      <label>Value <span class="text-danger">*</span></label>
+      <input type="text" name="attribute_values[${index}][value]" class="form-control">
+      <span class="text-danger validation-err" id="values_${index}_value-err"></span>
+    `);
+      }
     }
+
 
     function toggleFieldsForBlock(index) {
       const attributeId = $('#attribute-select').val();
@@ -126,6 +147,8 @@
       const inputType = config.input_type || '';
       const customInputType = config.custom_input_type || 'none';
       const isFileType = ['select_image', 'select_icon'].includes(inputType);
+      const requireBothImages = config.require_both_images === true || config.require_both_images === 1;
+
       const blockWrapper = $(`#value-input-wrapper-${index}`).closest('.value-block');
 
       if (inputType === 'select_colour') {
@@ -138,7 +161,7 @@
         blockWrapper.addClass('d-none');
       } else {
         blockWrapper.removeClass('d-none');
-        renderValueField(index, isFileType);
+        renderValueField(index, isFileType, inputType, requireBothImages);
       }
 
       if (['text', 'number', 'file'].includes(customInputType)) {
@@ -166,6 +189,7 @@
         renderComposedOfSelect(index);
       }
     }
+
 
 
     // Initial toggle

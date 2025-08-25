@@ -24,7 +24,7 @@
                   <label>Input Type <span class="text-danger">*</span></label>
                   <select name="attributes[0][input_type]" class="form-control">
                     <!-- <option value="dropdown">Dropdown</option> -->
-                    <!-- <option value="radio">Radio</option> -->
+                    <option value="radio">Radio</option>
                     <option value="select_image">Select Image</option>
                     <option value="select_area">Select Area</option>
                     <option value="select_colour">Select colours</option>
@@ -89,6 +89,17 @@
                   <small class="text-danger validation-err" id="attributes_0_detail-err"></small>
                 </div>
               </div>
+
+              <div class="col-md-6 portrait-landscape-wrapper d-none">
+                <div class="form-group">
+                  <label for="require_both_images_0">Require Both Portrait and Landscape Images</label>
+                  <select name="attributes[0][require_both_images]" id="require_both_images_0" class="form-control">
+                    <option value="0" selected>No</option>
+                    <option value="1">Yes</option>
+                  </select>
+                </div>
+              </div>
+
 
               <div class="col-md-3">
                 <div class="form-group">
@@ -162,16 +173,16 @@
                   <label>Dependency Parent <span class="text-danger">*</span></label>
                   <div class="border p-1 rounded" style="max-height: 200px; overflow-y: auto;">
                     <?php $__currentLoopData = $attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attribute): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input dependency-checkbox"
-              name="attributes[0][dependency_parent][]" value="<?php echo e($attribute->id); ?>"
-              id="dep-0-<?php echo e($attribute->id); ?>">
-              <label class="form-check-label" for="dep-0-<?php echo e($attribute->id); ?>">
-              <?php echo e($attribute->name); ?>
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input dependency-checkbox"
+                          name="attributes[0][dependency_parent][]" value="<?php echo e($attribute->id); ?>"
+                          id="dep-0-<?php echo e($attribute->id); ?>">
+                        <label class="form-check-label" for="dep-0-<?php echo e($attribute->id); ?>">
+                          <?php echo e($attribute->name); ?>
 
-              </label>
-            </div>
-          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </label>
+                      </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </div>
                 </div>
               </div>
@@ -214,6 +225,14 @@
       $item.find('.form-check-input[name$="[has_image]"]').closest('.form-group').show();
       $item.find('.form-check-input[name$="[has_icon]"]').closest('.form-group').show();
     }
+
+    if (selectedType === 'select_image') {
+      $item.find('.portrait-landscape-wrapper').removeClass('d-none');
+    } else {
+      $item.find('.portrait-landscape-wrapper').addClass('d-none');
+      $item.find('select[name$="[require_both_images]"]').val('0');
+    }
+
 
     // Handle Area Unit visibility
     if (selectedType === 'select_area') {
@@ -318,6 +337,7 @@
         <select name="attributes[${attributeIndex}][input_type]" class="form-control">
           <option value="select_image">Select Image</option>
            <option value="select_area">Select Area</option>
+             <option value="radio">Radio</option>
                     <option value="select_colour">Select colours</option>
         </select>
         <small class="text-danger" id="attributes.${attributeIndex}.input_type-err"></small>
@@ -333,6 +353,16 @@
         <small class="text-danger" id="attributes.${attributeIndex}.detail-err"></small>
       </div>
     </div>
+
+       <div class="col-md-6 portrait-landscape-wrapper d-none">
+                <div class="form-group">
+                  <label for="require_both_images_0">Require Both Portrait and Landscape Images</label>
+                  <select name="attributes[0][require_both_images]" id="require_both_images_0" class="form-control">
+                    <option value="0" selected>No</option>
+                    <option value="1">Yes</option>
+                  </select>
+                </div>
+              </div>
 
      <div class="col-md-3">
         <div class="form-group">
@@ -364,16 +394,16 @@
                   <label for="parent-${attributeIndex}">Dependency Parent <span class="text-danger">*</span></label>
                   <div class="border p-1 rounded" style="max-height: 200px; overflow-y: auto;">
                     <?php $__currentLoopData = $attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attribute): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input dependency-checkbox"
-              name="attributes[${attributeIndex}][dependency_parent][]" value="<?php echo e($attribute->id); ?>"
-              id="dep-${attributeIndex}-<?php echo e($attribute->id); ?>">
-              <label class="form-check-label" for="dep-${attributeIndex}-<?php echo e($attribute->id); ?>">
-              <?php echo e($attribute->name); ?>
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input dependency-checkbox"
+                        name="attributes[${attributeIndex}][dependency_parent][]" value="<?php echo e($attribute->id); ?>"
+                        id="dep-${attributeIndex}-<?php echo e($attribute->id); ?>">
+                        <label class="form-check-label" for="dep-${attributeIndex}-<?php echo e($attribute->id); ?>">
+                        <?php echo e($attribute->name); ?>
 
-              </label>
-            </div>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </label>
+                      </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </div>
                 </div>
               </div>

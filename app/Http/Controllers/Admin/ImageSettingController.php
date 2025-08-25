@@ -73,10 +73,12 @@ class ImageSettingController extends Controller
 
                         $imagePath = $file->storeAs('image_conditions', $filename, 'public');
                     }
+                    $orientation = $conditionData['orientation'][$valueId] ?? null;
 
                     $condition->affectedValues()->create([
                         'value_id' => $valueId,
                         'image' => $imagePath,
+                        'orientation' => $orientation,
                     ]);
                 }
             }
@@ -192,11 +194,15 @@ class ImageSettingController extends Controller
                         $imagePath = $old ? $old->image : null;
                     }
 
-                    // Update existing affected value or create new
+                    $orientation = $conditionData['orientation'][$valueId] ?? null;
                     $condition->affectedValues()->updateOrCreate(
                         ['value_id' => $valueId],
-                        ['image' => $imagePath]
+                        [
+                            'image' => $imagePath,
+                            'orientation' => $orientation,
+                        ]
                     );
+
                 }
             }
 

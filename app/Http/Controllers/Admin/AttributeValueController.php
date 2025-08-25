@@ -50,6 +50,7 @@ class AttributeValueController extends Controller
                     'input_type' => $attribute->input_type,
                     'custom_input_type' => $attribute->custom_input_type,
                     'is_composite' => $attribute->is_composite,
+                    'require_both_images' => $attribute->require_both_images,
                 ],
             ];
         });
@@ -83,25 +84,34 @@ class AttributeValueController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $attribute = Attribute::findOrFail($request->attribute_id);
+        $inputType = $attribute->input_type;
+        $requireBothImages = $attribute->require_both_images;
+
+        // Add validation rules for portrait and landscape if needed
+        $rules = [
             'attribute_id' => 'required|exists:attributes,id',
             'attribute_values' => 'required|array|min:1',
-            'attribute_values.*.value' => 'required',
+            'attribute_values.*.value' => 'required_without_all:attribute_values.*.image_portrait,attribute_values.*.image_landscape',
             'attribute_values.*.title' => 'nullable|string|max:255',
             'attribute_values.*.icon_class' => 'nullable|string|max:255',
             'attribute_values.*.image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'attribute_values.*.custom_input_label' => 'nullable|string',
             'attribute_values.*.is_composite' => 'nullable|boolean',
             'attribute_values.*.composed_of' => 'nullable|array',
-            'attribute_values.*.fixed_extra_charges' => 'nullable|boolean'
-        ]);
+            'attribute_values.*.fixed_extra_charges' => 'nullable|boolean',
+        ];
+
+        if ($requireBothImages) {
+            $rules['attribute_values.*.image_portrait'] = 'required|image|mimes:jpeg,png,jpg,webp|max:2048';
+            $rules['attribute_values.*.image_landscape'] = 'required|image|mimes:jpeg,png,jpg,webp|max:2048';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return $this->validationError($validator);
         }
-
-        $attribute = Attribute::findOrFail($request->attribute_id);
-        $inputType = $attribute->input_type;
 
         foreach ($request->attribute_values as $index => $valueData) {
             $data = [
@@ -113,17 +123,30 @@ class AttributeValueController extends Controller
                 'fixed_extra_charges' => !empty($valueData['fixed_extra_charges']) ? true : false,
             ];
 
-            // Handle file-based input types
-            $uploadedValueFile = $request->file("attribute_values.{$index}.value");
-            if (in_array($inputType, ['select_image', 'select_icon']) && $uploadedValueFile) {
-                $storedPath = $uploadedValueFile->store('attribute_values', 'public');
-                $data['image_path'] = $storedPath;
+            if ($requireBothImages) {
+                // Handle portrait image
+                if ($request->hasFile("attribute_values.{$index}.image_portrait")) {
+                    $data['image_portrait_path'] = $request->file("attribute_values.{$index}.image_portrait")->store('attribute_values', 'public');
+                }
+                // Handle landscape image
+                if ($request->hasFile("attribute_values.{$index}.image_landscape")) {
+                    $data['image_landscape_path'] = $request->file("attribute_values.{$index}.image_landscape")->store('attribute_values', 'public');
+                }
+
+                // Set value if needed (title or other)
+                $data['value'] = $valueData['title'] ?? null;
+
+            } elseif (in_array($inputType, ['select_image', 'select_icon'])) {
+                $uploadedValueFile = $request->file("attribute_values.{$index}.value");
+                if ($uploadedValueFile) {
+                    $data['image_path'] = $uploadedValueFile->store('attribute_values', 'public');
+                }
                 $data['value'] = $valueData['title'] ?? null;
             } else {
                 $data['value'] = $valueData['value'];
             }
 
-            // Optional image field
+            // Optional additional image field
             $uploadedImage = $request->file("attribute_values.{$index}.image");
             if ($uploadedImage) {
                 $data['image_path'] = $uploadedImage->store('attribute_values', 'public');
@@ -134,10 +157,8 @@ class AttributeValueController extends Controller
                 $data['colour_code'] = $valueData['colour_code'] ?? null;
             }
 
-            // Save record
             $attributeValue = AttributeValue::create($data);
 
-            // Attach components if it's a composite
             if (!empty($valueData['is_composite']) && !empty($valueData['composed_of'])) {
                 $componentIds = array_map('intval', $valueData['composed_of']);
                 $attributeValue->components()->sync($componentIds);
@@ -146,7 +167,6 @@ class AttributeValueController extends Controller
 
         return $this->respondSuccess($request, 'Attribute value(s) created successfully.');
     }
-
 
 
     public function edit($id)
@@ -161,6 +181,7 @@ class AttributeValueController extends Controller
                 'input_type' => $attribute->input_type,
                 'custom_input_type' => $attribute->custom_input_type,
                 'is_composite' => $attribute->is_composite,
+                'require_both_images' => $attribute->require_both_images,
             ]
         ];
 
@@ -195,9 +216,9 @@ class AttributeValueController extends Controller
 
     public function update(Request $request, AttributeValue $attributeValue)
     {
-
         $attribute = Attribute::findOrFail($request->attribute_id);
         $inputType = $attribute->input_type;
+        $requireBothImages = $attribute->require_both_images;
 
         $rules = [
             'attribute_id' => 'required|exists:attributes,id',
@@ -239,12 +260,19 @@ class AttributeValueController extends Controller
         $data['is_composite_value'] = $request->boolean('is_composite_value');
         $data['custom_input_label'] = $request->filled('custom_input_label') ? $request->input('custom_input_label') : null;
 
-        // File upload handling
-        if (in_array($inputType, ['select_image', 'select_icon'])) {
+        if ($requireBothImages) {
+            if ($request->hasFile('image_portrait')) {
+                $data['image_portrait_path'] = $request->file('image_portrait')->store('attribute_values', 'public');
+            }
+            if ($request->hasFile('image_landscape')) {
+                $data['image_landscape_path'] = $request->file('image_landscape')->store('attribute_values', 'public');
+            }
+            $data['value'] = $request->input('title'); // label for images
+        } elseif (in_array($inputType, ['select_image', 'select_icon'])) {
             if ($request->hasFile('value')) {
                 $data['image_path'] = $request->file('value')->store('attribute_values', 'public');
             }
-            $data['value'] = $request->input('title'); // Label for image/icon
+            $data['value'] = $request->input('title');
         } else {
             $data['value'] = $request->input('value');
         }
@@ -254,25 +282,21 @@ class AttributeValueController extends Controller
         }
 
         if ($inputType === 'select_colour') {
-            $data['value'] = $request->input('value');        // colour name
+            $data['value'] = $request->input('value');
             $data['colour_code'] = $request->input('colour_code') ?? null;
         }
 
-
         $attributeValue->update($data);
 
-        // Sync composite components
         if ($data['is_composite_value']) {
             $components = $request->input('composed_of', []);
             $attributeValue->components()->sync($components);
         } else {
-            // If it's not a composite, detach any existing components
             $attributeValue->components()->detach();
         }
 
         return $this->respondSuccess($request, 'Attribute value updated successfully.');
     }
-
 
 
     public function destroy(AttributeValue $attributeValue)

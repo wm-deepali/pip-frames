@@ -73,13 +73,38 @@
           <?php endif; ?>
             </td>
 
-            <td>
-            <?php if($value->image_path): ?>
-          <img src="<?php echo e(asset('storage/' . $value->image_path)); ?>" width="40">
-          <?php else: ?>
-          -
-          <?php endif; ?>
-            </td>
+           <td>
+    <?php
+        $requireBoth = $value->attribute->require_both_images ?? false;
+    ?>
+
+    <?php if($requireBoth): ?>
+        <?php if($value->image_portrait_path): ?>
+            <div>
+                <strong>Portrait:</strong><br>
+                <img src="<?php echo e(asset('storage/' . $value->image_portrait_path)); ?>" width="40" style="margin-bottom:4px;">
+            </div>
+        <?php endif; ?>
+
+        <?php if($value->image_landscape_path): ?>
+            <div>
+                <strong>Landscape:</strong><br>
+                <img src="<?php echo e(asset('storage/' . $value->image_landscape_path)); ?>" width="40">
+            </div>
+        <?php endif; ?>
+
+        <?php if(!$value->image_portrait_path && !$value->image_landscape_path): ?>
+            -
+        <?php endif; ?>
+    <?php else: ?>
+        <?php if($value->image_path): ?>
+            <img src="<?php echo e(asset('storage/' . $value->image_path)); ?>" width="40">
+        <?php else: ?>
+            -
+        <?php endif; ?>
+    <?php endif; ?>
+</td>
+
             <!-- <td><?php echo $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-'; ?></td> -->
             <!-- <td><?php echo e($value->custom_input_label ?? '-'); ?></td> -->
 

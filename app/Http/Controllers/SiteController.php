@@ -5,6 +5,7 @@ use App\Models\Attribute;
 use App\Models\Blog;
 use App\Models\CentralizedAttributePricing;
 use App\Models\DeliveryCharge;
+use App\Models\ExtraOption;
 use App\Models\ImageCondition;
 use App\Models\PricingRule;
 use App\Models\ProofReading;
@@ -20,12 +21,16 @@ class SiteController extends Controller
     public function index()
     {
         $subcategories = Subcategory::where('status', 'active')->get();
-        $blogs = Blog::where('status', 'published')  // if you have status
+        $blogs = Blog::where('status', 'published')
             ->latest()
             ->take(6)
             ->get();
+        // Fetch active extra options ordered by sort_order
+        $extraOptions = ExtraOption::where('is_active', 1)
+            ->orderBy('sort_order')
+            ->get();
 
-        return view('front.top-form', compact('subcategories', 'blogs'));
+        return view('front.top-form', compact('subcategories', 'blogs', 'extraOptions'));
     }
 
     public function attributes(Request $request)
@@ -66,14 +71,18 @@ class SiteController extends Controller
                     'input_type' => $attr->input_type,
                     'is_required' => $sa->is_required,
                     'area_unit' => $attr->area_unit ?? 'inch',
+                    'require_both_images' => $attr->require_both_images,
                     'values' => $values->map(function ($sav) {
                         return [
                             'id' => $sav->value->id,
                             'value' => $sav->value->value,
                             'colour_code' => $sav->value->colour_code,
                             'image_path' => $sav->value->image_path ?? null,
+                            'image_portrait_path' => $sav->value->image_portrait_path ?? null,
+                            'image_landscape_path' => $sav->value->image_landscape_path ?? null,
                         ];
                     })->values(),
+
                 ];
             })->values();
         }
@@ -99,7 +108,7 @@ class SiteController extends Controller
             'attribute_conditions' => $attributeConditions,
         ]);
     }
-    
+
     public function AttributeImages(Request $request)
     {
         $request->validate([
@@ -125,18 +134,63 @@ class SiteController extends Controller
                 $combination[$condition->affected_attribute_id] = $affectedValue->value_id;
 
                 $response[] = [
-                    'id' => $condition->id,
+                    'condition_id' => $condition->id, // renamed for clarity
                     'combination' => $combination,
-                    'image' => $affectedValue->image
-                        ? asset('storage/' . $affectedValue->image)
-                        : null,
+                    'image' => $affectedValue->image ? asset('storage/' . $affectedValue->image) : null,
+                    'orientation' => $affectedValue->orientation,
+                    'affected_attribute_id' => $condition->affected_attribute_id,
+                    'affected_value_id' => $affectedValue->value_id,
                 ];
             }
         }
 
         return response()->json([
             'success' => true,
-            'conditions' => $response
+            'conditions' => $response,
+        ]);
+    }
+
+    public function getAllImageConditions(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|integer|exists:categories,id', // or 'subcategories' if applicable
+        ]);
+
+        $categoryId = $request->category_id;
+
+        $conditions = ImageCondition::with(['dependencies', 'affectedValues'])
+            ->where('subcategory_id', $categoryId) // filter by category ID
+            ->get();
+
+        $response = [];
+
+        foreach ($conditions as $condition) {
+            $deps = $condition->dependencies->map(function ($dep) {
+                return [
+                    'attribute_id' => $dep->attribute_id,
+                    'value_id' => $dep->value_id,
+                ];
+            });
+
+            $affectedVals = $condition->affectedValues->map(function ($val) use ($condition) {
+                return [
+                    'affected_attribute_id' => $condition->affected_attribute_id,
+                    'affected_value_id' => $val->value_id,
+                    'image' => $val->image ? asset('storage/' . $val->image) : null,
+                    'orientation' => $val->orientation,
+                ];
+            });
+
+            $response[] = [
+                'id' => $condition->id,
+                'dependencies' => $deps,
+                'affected_values' => $affectedVals,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'conditions' => $response,
         ]);
     }
 
@@ -148,7 +202,6 @@ class SiteController extends Controller
         if (!$selections || !$categoryId) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid data.'
             ]);
         }
 
@@ -250,7 +303,6 @@ class SiteController extends Controller
 
     }
 
-    // {
     //     $componentPages = [];
 
     //     // Step 1: Extract page count for component values inside composite values

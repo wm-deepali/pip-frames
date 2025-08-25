@@ -170,9 +170,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('attribute-conditions', AttributeConditionController::class);
         Route::resource('pricing-rules', PricingRuleController::class);
         Route::resource('quotes', QuoteController::class);
+        Route::resource('extra_options', \App\Http\Controllers\Admin\ExtraOptionController::class);
 
         Route::resource('images', ImageSettingController::class);
-
 
 
         Route::prefix('centralized-paper-pricing')->name('centralized-paper-pricing.')->group(function () {

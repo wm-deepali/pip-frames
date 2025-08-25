@@ -73,7 +73,7 @@
                         </form>
                     </div>
                     <div class="col-2 text-right font-weight-bold" style="font-size:1.15rem;">
-                        &pound;<?php echo e(number_format($cart['total'] ?? 0, 2)); ?>
+                        &pound;<?php echo e(number_format($cart['total_price'] ?? 0, 2)); ?>
 
                     </div>
                     <div class="col-1 text-right">

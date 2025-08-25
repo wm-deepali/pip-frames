@@ -1,21 +1,25 @@
 <!-- Start Main Slider -->
 <section class="maintop-banner style1">
     <div class="container">
-        <h2>Select Category</h2>
-        <div class="options cards mb-5">
-            @foreach($subcategories as $subcategory)
-                <div class="option-card1 {{ $loop->first ? 'active' : '' }}" data-id="{{ $subcategory->id }}"
-                    onclick="selectSubcategory(this)">
-                    <img src="{{ asset('storage/' . ($subcategory->thumbnail ?? '')) }}"
-                        alt="{{ $subcategory->name ?? ''}}">
-                    <p>{{ $subcategory->name ?? ''}}</p>
-                </div>
-            @endforeach
-        </div>
+
 
         <div class="row align-items-start">
             <!-- Left Part -->
             <div class="col-lg-6 left-part">
+                <h2>Select Category</h2>
+                <div class="options cards mb-5">
+                    @foreach($subcategories as $subcategory)
+                        <div>
+                            <div class="option-card1 {{ $loop->first ? 'active' : '' }}" data-id="{{ $subcategory->id }}"
+                                onclick="selectSubcategory(this)">
+                                <img src="{{ asset('storage/' . ($subcategory->thumbnail ?? '')) }}"
+                                    alt="{{ $subcategory->name ?? ''}}">
+
+                            </div>
+                            <p class="text-center">{{ $subcategory->name ?? ''}}</p>
+                        </div>
+                    @endforeach
+                </div>
                 <h2>Cartoon Portrait</h2>
                 <p class="offer">
                     <span class="old-price">£71.94</span>
@@ -96,30 +100,23 @@
                         </h3>
 
                         <div style="margin-bottom:36px;">
-                            <label style="display:flex; align-items:flex-start; cursor:pointer; margin-bottom:18px;">
-                                <input type="radio" name="extra_option" value="digital" checked
-                                    style="accent-color:#ff3b7c; width:20px; height:20px; margin-right:8px; margin-top:2px;">
-                                <div>
-                                    <span style="font-weight:bold;">Digital download + <span
-                                            style="font-weight:700;">£0.00</span></span>
-                                    <div style="color:#888; font-size:1rem; margin-top:3px;">
-                                        You will receive a file with your artwork that you can keep as a background,
-                                        profile picture or forever!
+                            @foreach ($extraOptions as $option)
+                                <label style="display:flex; align-items:flex-start; cursor:pointer; margin-bottom:12px;">
+                                    <input type="checkbox" name="extra_options[]" value="{{ $option->id }}"
+                                        data-price="{{ $option->price }}"
+                                        style="accent-color:#ff3b7c; width:20px; height:20px; margin-right:8px; margin-top:2px;">
+                                    <div>
+                                        <span style="font-weight:bold;">
+                                            {{ $option->title }} &nbsp; + &nbsp; £{{ number_format($option->price, 2) }}
+                                        </span>
+                                        <div style="color: #888; font-size: 0.9rem;">
+                                            {{ $option->description }}
+                                        </div>
                                     </div>
-                                </div>
-                            </label>
-                            <label style="display:flex; align-items:flex-start; cursor:pointer;">
-                                <input type="radio" name="extra_option" value="skip"
-                                    style="accent-color:#ff3b7c; width:20px; height:20px; margin-right:8px; margin-top:2px;">
-                                <div>
-                                    <span style="font-weight:bold;">Skip the line + <span
-                                            style="font-weight:700;">£9.95</span></span>
-                                    <div style="color:#888; font-size:1rem; margin-top:3px;">
-                                        Skip the line so we can prioritize your drawing over others!
-                                    </div>
-                                </div>
-                            </label>
+                                </label>
+                            @endforeach
                         </div>
+
 
                         <div style="font-size:1.3rem; text-align:right; margin-bottom:36px;">
                             <b>Subtotal:</b> <span id="subtotal-amount"
@@ -159,8 +156,9 @@
             <!-- Right Part -->
             <div class="col-lg-6 right-part text-center">
                 <div class="preview">
-                    <img src="https://mypetframe.co.uk/cdn/shop/products/Ice.jpg?v=1658839616" alt="Pet Portrait"
+                    <img src="{{ asset('storage/' . ($subcategories->first()->thumbnail ?? '')) }}" alt="Pet Portrait"
                         class="preview-img" id="main-img">
+
                 </div>
 
                 <!-- Thumbnails -->
@@ -245,7 +243,15 @@
     </div>
 </div>
 
+<script>
+    const subcategoryGalleries = @json($subcategories->mapWithKeys(function ($subcategory) {
+        return [$subcategory->id => $subcategory->gallery ?? []];
+    }));
 
+    const subcategoryThumbnails = @json($subcategories->mapWithKeys(function ($subcategory) {
+        return [$subcategory->id => $subcategory->thumbnail ?? ''];
+    }));
+</script>
 
 <script>
     // Global state
@@ -253,8 +259,9 @@
     let attributeConditions = [];
     const totalSteps = 5;
     let currentCategoryId = null;
-    let currentStep = 1; // To track the current step
-    let imageConditions = []; // [{ combination: {attrId1: valueId1, attrId2: valueId2}, image: 'path.jpg' }, ...]
+    let currentStep = 1;
+    let imageConditions = [];
+    let groupedImageConditions = [];
 
     // Show specified step and update UI and URL hash
     function showStep(step) {
@@ -270,16 +277,16 @@
         history.replaceState(null, null, `#step=${step}`);
     }
 
-    // Check if step is empty (no visible attribute-block)
+    // Check if step is empty
     function isStepEmpty(step) {
-        if (step === 4 || step === 5) return false; // always show these steps
+        if (step === 4 || step === 5) return false;
         const container = document.getElementById(`step-${step}`);
         if (!container) return true;
         return !Array.from(container.querySelectorAll('.attribute-block'))
             .some(el => el.style.display !== 'none');
     }
 
-    // Go to a step, skipping empty steps forward if necessary
+    // Go to a step, skipping empty steps
     function goToStep(step) {
         if (step < 1) step = 1;
         if (step > totalSteps) step = totalSteps;
@@ -289,14 +296,13 @@
         }
 
         if (step > totalSteps) {
-            // fallback: stay on last step or show message
             step = totalSteps;
         }
 
         showStep(step);
     }
 
-    // Advance to next step skipping empty ones
+    // Advance to next step
     function nextStep() {
         let next = currentStep + 1;
         while (next <= totalSteps && isStepEmpty(next)) {
@@ -327,7 +333,6 @@
             attrWrapper.className = "attribute-block";
             attrWrapper.dataset.attributeId = attr.id;
 
-            // Title
             const title = document.createElement("h4");
             title.className = "mb-3";
             title.textContent = attr.name + (attr.is_required ? " *" : "");
@@ -341,43 +346,98 @@
                     optionCard.className = "option-card";
                     optionCard.dataset.valueId = val.id;
 
-                    // If currentSelections for this attribute exists and matches this value, mark active
-                    // Otherwise, if no selection yet, mark first option as active and set currentSelection
+                    // Only auto-select for steps other than 3
                     if (currentSelections[attr.id] === val.id) {
                         optionCard.classList.add("active");
                     } else if (currentSelections[attr.id] === undefined && idx === 0) {
                         optionCard.classList.add("active");
-                        currentSelections[attr.id] = val.id; // Set selection here
+                        currentSelections[attr.id] = val.id;
                     }
+                    // Determine image source preferentially: portrait first, then landscape, then fallback image_path
+                    const imgSrc = (attr.require_both_images)
+                        ? (val.image_portrait_path
+                            ? `/storage/${val.image_portrait_path}`
+                            : (val.image_landscape_path
+                                ? `/storage/${val.image_landscape_path}`
+                                : ''))  // No fallback to image_path when require_both_images is true
+                        : (val.image_path ? `/storage/${val.image_path}` : '');
 
                     optionCard.innerHTML = `
-        <img src="/storage/${val.image_path}" alt="${val.value}">
-        <p>${val.value}</p>
-    `;
+    <img src="${imgSrc}" alt="${val.value}">
+    <p>${val.value}</p>
+`;
+
 
                     optionCard.onclick = () => {
-                        // Remove 'active' from siblings, add to clicked
                         optionsDiv.querySelectorAll(".option-card").forEach(card => card.classList.remove("active"));
                         optionCard.classList.add("active");
-
-                        // Update selection and UI
                         currentSelections[attr.id] = val.id;
+
+                        if (stepNumber === 3) {
+                            // Check if the selected option is "no frame"
+                            // Assuming val.value or another property identifies the no-frame option (adjust if your data differs)
+                            if (val.value.toLowerCase() === 'no frame' || val.value.toLowerCase() === 'none') {
+                                localStorage.removeItem('selectedFramePortrait');
+                                localStorage.removeItem('selectedFrameLandscape');
+
+                                // Remove frame overlay immediately
+                                const previewContainer = document.querySelector('.preview');
+                                const existingFrame = previewContainer.querySelector('.frame-overlay');
+                                if (existingFrame) existingFrame.remove();
+                            } else {
+                                if (val.image_portrait_path) {
+                                    localStorage.setItem('selectedFramePortrait', `/storage/${val.image_portrait_path}`);
+                                } else {
+                                    localStorage.removeItem('selectedFramePortrait');
+                                }
+                                if (val.image_landscape_path) {
+                                    localStorage.setItem('selectedFrameLandscape', `/storage/${val.image_landscape_path}`);
+                                } else {
+                                    localStorage.removeItem('selectedFrameLandscape');
+                                }
+                            }
+                        }
+
+
                         applyPriceAndAttributes();
+                        updateOptionImages(); // or your image update method
                         updateMainImage();
                     };
+
+
 
                     optionsDiv.appendChild(optionCard);
                 });
 
-
-
                 attrWrapper.appendChild(optionsDiv);
 
-                if (currentSelections[attr.id] === undefined && attr.values.length > 0) {
-                    currentSelections[attr.id] = attr.values[0].id;
+                // Only auto-select for steps other than 3
+                if (stepNumber === 3 && currentSelections[attr.id] === undefined && attr.values.length > 0) {
+                    const firstVal = attr.values[0];
+
+                    currentSelections[attr.id] = firstVal.id;
+
+                    // Handle no-frame option for initial selection
+                    if (firstVal.value.toLowerCase() === 'no frame' || firstVal.value.toLowerCase() === 'none') {
+                        localStorage.removeItem('selectedFramePortrait');
+                        localStorage.removeItem('selectedFrameLandscape');
+                    } else {
+                        if (firstVal.image_portrait_path) {
+                            localStorage.setItem('selectedFramePortrait', `/storage/${firstVal.image_portrait_path}`);
+                        } else {
+                            localStorage.removeItem('selectedFramePortrait');
+                        }
+                        if (firstVal.image_landscape_path) {
+                            localStorage.setItem('selectedFrameLandscape', `/storage/${firstVal.image_landscape_path}`);
+                        } else {
+                            localStorage.removeItem('selectedFrameLandscape');
+                        }
+                    }
+
+                    updateMainImage();
                 }
+
             } else if (attr.input_type === "select_area") {
-                // Layout height and width side-by-side
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'row select-area-inputs mb-3';
 
@@ -408,9 +468,22 @@
                 rowDiv.appendChild(colHeight);
                 rowDiv.appendChild(colWidth);
 
+                const colArea = document.createElement('div');
+                colArea.className = 'col-4 col-area';
+                const areaLabel = document.createElement('label');
+                areaLabel.textContent = 'Area: ';
+                const areaInput = document.createElement('input');
+                areaInput.type = 'text';
+                areaInput.readOnly = true;
+                areaInput.tabIndex = -1;
+                areaInput.className = 'font-weight-bold';
+                areaInput.value = '0 ' + attr.area_unit;
+                areaLabel.appendChild(areaInput);
+                colArea.appendChild(areaLabel);
+                rowDiv.appendChild(colArea);
+
                 attrWrapper.appendChild(rowDiv);
 
-                // Height input
                 const heightErrorDiv = document.createElement('div');
                 heightErrorDiv.className = 'validation-error text-danger';
                 heightErrorDiv.dataset.attributeId = attr.id;
@@ -418,7 +491,6 @@
                 heightErrorDiv.style.display = 'none';
                 colHeight.appendChild(heightErrorDiv);
 
-                // Width input
                 const widthErrorDiv = document.createElement('div');
                 widthErrorDiv.className = 'validation-error text-danger';
                 widthErrorDiv.dataset.attributeId = attr.id;
@@ -426,29 +498,6 @@
                 widthErrorDiv.style.display = 'none';
                 colWidth.appendChild(widthErrorDiv);
 
-                // After colHeight and colWidth
-
-                const colArea = document.createElement('div');
-                colArea.className = 'col-4 col-area'; // Use smaller width (or col-12 if stacking)
-                const areaLabel = document.createElement('label');
-                areaLabel.textContent = 'Area: ';
-
-                // Create the read-only area input
-                const areaInput = document.createElement('input');
-                areaInput.type = 'text';
-                areaInput.readOnly = true;
-                areaInput.tabIndex = -1; // Skip from tab
-                areaInput.className = 'font-weight-bold';  // style as needed
-                areaInput.value = '0 ' + attr.area_unit;
-
-                areaLabel.appendChild(areaInput);
-                colArea.appendChild(areaLabel);
-
-                // Append to rowDiv after height/width
-                rowDiv.appendChild(colArea);
-
-
-                // Initialize selection placeholders as object for area inputs
                 if (!(attr.id in currentSelections)) {
                     currentSelections[attr.id] = { height: null, width: null };
                 }
@@ -460,14 +509,10 @@
                     areaInput.value = `${area.toFixed(2)} ${attr.area_unit}`;
                 }
 
-
-
-                // Call this ONCE here to initialize the area display
                 updateAreaDisplay();
 
                 heightInput.addEventListener('input', () => {
                     const value = parseFloat(heightInput.value);
-                    // no validation on odd numbers here as per your logic
                     hideFieldValidationError(attr.id, 'height');
                     currentSelections[attr.id].height = value;
                     updateAreaDisplay();
@@ -481,10 +526,7 @@
                     updateAreaDisplay();
                     applyPriceAndAttributes();
                 });
-
-            }
-            // Add in renderStep() where you handle attribute input types:
-            else if (attr.input_type === "select_colour") {
+            } else if (attr.input_type === "select_colour") {
                 const optionsDiv = document.createElement("div");
                 optionsDiv.className = "options cards";
                 attr.values.forEach((val, idx) => {
@@ -492,26 +534,27 @@
                     optionCard.className = "option-card";
                     optionCard.dataset.valueId = val.id;
 
-                    // For active highlight
                     if (currentSelections[attr.id] === val.id) {
                         optionCard.classList.add("active");
                     } else if (currentSelections[attr.id] === undefined && idx === 0) {
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
+                        currentSelections[`${attr.id}_colour_code`] = val.colour_code;
                     }
 
-                    // Card HTML
                     optionCard.innerHTML = `
-            <div class="colour-swatch" style="width:32px; height:32px; border-radius:50%; background:${val.colour_code || '#eee'}; border:2px solid #ccc; margin-bottom:8px;"></div>
-            <p>${val.value}</p>
-        `;
+                    <div class="colour-swatch" style="width:32px; height:32px; border-radius:50%; background:${val.colour_code || '#eee'}; border:2px solid #ccc; margin-bottom:8px;"></div>
+                    <p>${val.value}</p>
+                `;
 
-                    // On click
                     optionCard.onclick = () => {
                         optionsDiv.querySelectorAll(".option-card").forEach(card => card.classList.remove("active"));
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
+                        currentSelections[`${attr.id}_colour_code`] = val.colour_code;
                         applyPriceAndAttributes();
+                        // Update related option images dynamically
+                        updateOptionImages();
                         updateMainImage();
                     };
 
@@ -520,13 +563,11 @@
 
                 attrWrapper.appendChild(optionsDiv);
 
-                // Initial selection if undefined
                 if (currentSelections[attr.id] === undefined && attr.values.length > 0) {
                     currentSelections[attr.id] = attr.values[0].id;
+                    currentSelections[`${attr.id}_colour_code`] = attr.values[0].colour_code;
                 }
-            }
-
-            else {
+            } else {
                 const unsupported = document.createElement("p");
                 unsupported.textContent = "Unsupported input type.";
                 attrWrapper.appendChild(unsupported);
@@ -535,7 +576,6 @@
             container.appendChild(attrWrapper);
         });
 
-        // Navigation buttons
         const navDiv = document.createElement("div");
         navDiv.className = "step-nav";
 
@@ -562,12 +602,10 @@
 
         container.appendChild(navDiv);
 
-        applyPriceAndAttributes();  // Apply conditions & fetch price on render
+        applyPriceAndAttributes();
     }
 
-
-
-    // Apply attribute conditions and update UI
+    // Apply attribute conditions
     function applyAttributeConditions(currentSelections) {
         const attributeVisibility = {};
 
@@ -631,13 +669,14 @@
                         opt.style.display = "none";
                         if (currentSelections[attrId] === valId) {
                             currentSelections[attrId] = null;
+                            delete currentSelections[`${attrId}_frame_image`];
                         }
                     }
                 });
 
                 if (!currentSelections[attrId] || !visInfo.allowedValues.has(currentSelections[attrId])) {
                     const firstVisible = attrEl.querySelector(".option-card:not([style*='display: none'])");
-                    if (firstVisible) {
+                    if (firstVisible && currentStep !== 3) {
                         const newValId = parseInt(firstVisible.dataset.valueId, 10);
                         currentSelections[attrId] = newValId;
                         attrEl.querySelectorAll(".option-card").forEach(opt => {
@@ -649,8 +688,18 @@
                 attrEl.querySelectorAll(".option-card").forEach(opt => opt.style.display = "block");
             }
         }
+
+        // Clear frame image if Step 3 is not active or no frame is selected
+        if (currentStep !== 3) {
+            for (const key of Object.keys(currentSelections)) {
+                if (key.includes('_frame_image')) {
+                    delete currentSelections[key];
+                }
+            }
+        }
     }
 
+    // Validation functions
     function isValidEvenNumber(value) {
         return Number.isInteger(value) && value % 2 === 0;
     }
@@ -671,15 +720,14 @@
         }
     }
 
-
-    // Fetch price from backend using current selections
+    // Fetch price
     function fetchPrice() {
         if (!currentCategoryId) return;
 
         const filteredSelections = {};
 
         for (const [attrId, val] of Object.entries(currentSelections)) {
-            // Find attribute element and check visibility
+            if (attrId.includes('_colour_code') || attrId.includes('_frame_image')) continue;
             const attrEl = document.querySelector(`[data-attribute-id='${attrId}']`);
             if (!attrEl || attrEl.style.display === "none") continue;
 
@@ -699,21 +747,20 @@
             success: function (response) {
                 if (response.success) {
                     if (response.price) {
-                        updateSubtotal(response.price);
+                        updateSubtotal(parseFloat(response.price));
                         updatePriceUI(response.price);
                     }
-                    showValidationErrors(null); // clear errors on success
+                    showValidationErrors(null);
                 } else {
                     if (response.errors) {
                         showValidationErrors(response.errors);
-                    } else if (response.message) {
-                        alert(response.message); // fallback alert
                     }
                     updateSubtotal(0);
                     updatePriceUI("N/A");
                 }
             },
             error: function () {
+                updateSubtotal(0);
                 updatePriceUI("N/A");
             }
         });
@@ -743,44 +790,52 @@
         }
     }
 
-    // Update price display UI
+
+    // Update price UI
     function updatePriceUI(price) {
         const newPriceElem = document.querySelector('.offer .new-price');
         if (newPriceElem) newPriceElem.textContent = `£${price}`;
-        // Optionally update other price parts
     }
 
+    // Update subtotal
+    let attributeBasePrice = 0; // Store the latest attribute price from backend
 
-    function updateSubtotal(amount) {
+    // Update the subtotal showing attribute price plus selected extra options
+    function updateSubtotal(basePrice) {
+        attributeBasePrice = basePrice;
+
+        // Sum of prices of all checked extra options
+        const selectedOptions = document.querySelectorAll('input[name="extra_options[]"]:checked');
+        let extrasTotal = 0;
+        selectedOptions.forEach(cb => {
+            extrasTotal += parseFloat(cb.dataset.price) || 0;
+        });
+
+        // Total price is attribute price plus extras total
+        const totalPrice = attributeBasePrice + extrasTotal;
+
+        // Display updated price with 2 decimals and £ symbol
         const subtotalElem = document.getElementById('subtotal-amount');
         if (subtotalElem) {
-            // Format amount as currency string with £ sign, two decimals
-            subtotalElem.textContent = `£${amount}`;
+            subtotalElem.textContent = `£${totalPrice.toFixed(2)}`;
         }
     }
 
-
-    // Combined function to apply attribute conditions and fetch updated price
+    // Combined function to apply attribute conditions and fetch price
     function applyPriceAndAttributes() {
         applyAttributeConditions(currentSelections);
         fetchPrice();
     }
 
+
     function updateMainImage() {
         let matched = null;
-        console.log('updateMainImage', currentSelections, imageConditions);
 
-        for (let cond of imageConditions) {
+        for (const cond of imageConditions) {
             let match = true;
-            for (let attrId in cond.combination) {
-                const attrKey = Number(attrId);
-                console.log('Checking Attr:', attrKey, 'Selected:', currentSelections[attrKey], 'Expected:', cond.combination[attrKey]);
-                if (
-                    !(attrKey in currentSelections) ||
-                    currentSelections[attrKey] === null ||
-                    currentSelections[attrKey] === undefined ||
-                    currentSelections[attrKey] !== cond.combination[attrKey]
-                ) {
+            for (const attrId in cond.combination) {
+                const key = Number(attrId);
+                if (!(key in currentSelections) || currentSelections[key] === null || currentSelections[key] !== cond.combination[key]) {
                     match = false;
                     break;
                 }
@@ -791,19 +846,96 @@
             }
         }
 
+        const previewContainer = document.querySelector(".preview");
         const mainImg = document.getElementById("main-img");
-        if (mainImg) {
-            if (matched) {
-                mainImg.src = matched.image;
-            } else {
-                mainImg.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg?v=1658839616'; // fallback image
+        if (!mainImg || !previewContainer) return;
+
+        if (matched) {
+            mainImg.src = matched.image;
+        } else if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
+            mainImg.src = `/storage/${subcategoryThumbnails[currentCategoryId]}`;
+        } else {
+            mainImg.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
+        }
+
+        // Apply background color and border from selected colour option
+        let selectedColour = null;
+        for (const key in currentSelections) {
+            if (key.includes('_colour_code')) {
+                selectedColour = currentSelections[key];
+                break;
             }
+        }
+        previewContainer.style.backgroundColor = selectedColour || '';
+        mainImg.style.border = selectedColour ? `2px solid ${selectedColour}` : '';
+
+        // Retrieve saved frame images from localStorage
+        const framePortrait = localStorage.getItem('selectedFramePortrait');
+        const frameLandscape = localStorage.getItem('selectedFrameLandscape');
+
+        // Remove any existing frame overlay
+        const existingFrame = previewContainer.querySelector('.frame-overlay');
+        if (existingFrame) existingFrame.remove();
+
+        // Determine orientation from matched or fallback
+        const orientation = matched ? matched.orientation : null;
+
+        let frameImagePath = null;
+        if (orientation === 'portrait' && framePortrait) {
+            frameImagePath = framePortrait;
+        } else if (orientation === 'landscape' && frameLandscape) {
+            frameImagePath = frameLandscape;
+        } else if (framePortrait) {
+            // Fallback to portrait if orientation unknown
+            frameImagePath = framePortrait;
+        }
+
+        if (frameImagePath) {
+            const frameImg = document.createElement('img');
+            frameImg.src = frameImagePath;
+            frameImg.className = 'frame-overlay';
+            frameImg.setAttribute('aria-label', 'Selected frame overlay');
+            previewContainer.appendChild(frameImg);
         }
     }
 
 
 
-    // Load attributes based on selected category
+    function updateOptionImages() {
+        if (!groupedImageConditions) return;
+
+        // Reset all option images to default before updates
+        document.querySelectorAll('[data-attribute-id] .option-card img').forEach(img => {
+            if (img.dataset.defaultSrc) {
+                img.src = img.dataset.defaultSrc;
+            }
+        });
+
+        groupedImageConditions.forEach(condition => {
+            // Check if all dependencies satisfied by current selections
+            const allDepsMatch = condition.dependencies.every(dep => currentSelections[dep.attribute_id] == dep.value_id);
+            console.log(currentSelections, 'hy');
+
+            if (allDepsMatch) {
+                // For all affected values, update corresponding option image
+                condition.affected_values.forEach(av => {
+                    const container = document.querySelector(`[data-attribute-id="${av.affected_attribute_id}"]`);
+                    if (container) {
+                        const option = container.querySelector(`.option-card[data-value="${av.affected_value_id}"], .option-card[data-value-id="${av.affected_value_id}"]`);
+                        if (option) {
+                            const img = option.querySelector('img');
+                            if (img && av.image) {
+                                img.src = av.image;
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+
+    // Load attributes
     function loadAttributes(categoryId) {
         currentCategoryId = categoryId;
         $.ajax({
@@ -818,13 +950,16 @@
                     for (let stepNum in response.steps) {
                         const attrs = response.steps[stepNum];
                         attrs.forEach(attr => {
-                            if (attr.values && attr.values.length > 0) {
+                            if (attr.values && attr.values.length > 0 && stepNum != 3) {
                                 currentSelections[attr.id] = attr.values[0].id;
+                                if (attr.input_type === "select_colour") {
+                                    currentSelections[`${attr.id}_colour_code`] = attr.values[0].colour_code;
+                                }
                             }
                         });
                     }
 
-                    for (let step = 1; step <= 3; step++) { // render only dynamic steps 1-3
+                    for (let step = 1; step <= 3; step++) {
                         if (response.steps[step]) {
                             renderStep(step, response.steps[step]);
                         } else {
@@ -847,38 +982,67 @@
         });
     }
 
-    function loadImages(categoryId) {
+
+    function loadCategoryData(categoryId) {
         currentCategoryId = categoryId;
+
+
+        // Load flattened combinations for main image
         $.ajax({
-            url: '/get-attribute-images', // create a route to return ImageCondition for category
+            url: '/get-attribute-images',
             method: 'GET',
             data: { category_id: currentCategoryId },
             success: function (response) {
                 if (response.success) {
                     imageConditions = response.conditions;
-                    updateMainImage(); // initial image
+                    updateMainImage();
                 }
             }
         });
 
+        // Load grouped image conditions for option images
+        $.ajax({
+            url: '/get-all-image-conditions',  // Your getAllImageConditions API
+            method: 'GET',
+            data: { category_id: currentCategoryId },
+            success: function (response) {
+                if (response.success) {
+                    groupedImageConditions = response.conditions || [];
+                }
+            }
+        });
     }
 
-    // Select category triggers attribute load
-    function selectCategory(el) {
-        const parent = el.parentElement;
-        parent.querySelectorAll(".option-card1").forEach(card => card.classList.remove("active"));
-        el.classList.add("active");
-        loadAttributes(el.dataset.id);
-    }
 
     function selectSubcategory(el) {
-        selectCategory(el);
+        document.querySelectorAll(".option-card1").forEach(card => card.classList.remove("active"));
+        el.classList.add("active");
+
+        const subcategoryId = el.dataset.id;
+
+        loadAttributes(subcategoryId);
+        loadCategoryData(subcategoryId);
+
+        // Update thumbnails dynamically
+        const container = document.getElementById('thumbnails-container');
+        container.innerHTML = ''; // Clear old thumbnails
+
+        const gallery = subcategoryGalleries[subcategoryId] || [];
+        gallery.forEach(image => {
+            const img = document.createElement('img');
+            img.src = `/storage/${image}`; // Adjust path if needed
+            img.alt = 'Thumbnail';
+            img.onclick = () => changeImage(img);
+            container.appendChild(img);
+        });
+
     }
 
+
+    // Collect form data
     function collectFormData() {
         const formData = new FormData();
 
-        // Collect photos
         const photoInputs = document.querySelectorAll('input[type=file][name="photos[]"]');
         photoInputs.forEach((input, index) => {
             if (input.files.length > 0) {
@@ -890,14 +1054,12 @@
             formData.append('subcategory_id', currentCategoryId);
         }
 
-
         // Collect extra option
-        const extraOption = document.querySelector('input[name="extra_option"]:checked');
-        if (extraOption) {
-            formData.append('extra_option', extraOption.value);
-        }
+        const selectedOptions = document.querySelectorAll('input[name="extra_options[]"]:checked');
+        selectedOptions.forEach((checkbox, index) => {
+            formData.append(`extra_options[${index}]`, checkbox.value);
+        });
 
-        // Collect text inputs by IDs
         const petName = document.getElementById('petNameInput');
         if (petName) formData.append('pet_name', petName.value);
 
@@ -914,10 +1076,8 @@
             return el && window.getComputedStyle(el).display !== "none";
         }
 
-
-        // Collect visible attributes only
         document.querySelectorAll('[data-attribute-id]').forEach(attrEl => {
-            if (!isElementVisible(attrEl)) return; // skip hidden
+            if (!isElementVisible(attrEl)) return;
 
             const attrId = attrEl.dataset.attributeId;
 
@@ -933,10 +1093,14 @@
                 }
             }
         });
-
+        // *** Add total price here to formData ***
+        const totalExtrasPrice = Array.from(selectedOptions).reduce((sum, cb) => sum + (parseFloat(cb.dataset.price) || 0), 0);
+        const totalPrice = (attributeBasePrice || 0) + totalExtrasPrice;
+        formData.append('total_price', totalPrice.toFixed(2));
         return formData;
     }
 
+    // Add to cart
     function addToCart() {
         const formData = collectFormData();
 
@@ -960,6 +1124,7 @@
             });
     }
 
+    // Design second portrait
     document.getElementById('designSecondPortrait').addEventListener('click', function (e) {
         e.preventDefault();
 
@@ -975,7 +1140,7 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href = '/';  // Redirect to home for second portrait design
+                    window.location.href = '/';
                 } else {
                     alert('Failed to add item. Please try again.');
                 }
@@ -985,7 +1150,7 @@
             });
     });
 
-    // Initialization on page ready
+    // Initialization
     document.addEventListener("DOMContentLoaded", () => {
         let initialStep = 1;
         const match = window.location.hash.match(/step=(\d+)/);
@@ -997,11 +1162,10 @@
         const defaultCategory = document.querySelector(".option-card1.active, .option-card1:first-child");
         if (defaultCategory) {
             loadAttributes(defaultCategory.dataset.id);
-            loadImages(defaultCategory.dataset.id);
+            loadCategoryData(defaultCategory.dataset.id);
         }
-    });
 
-    document.addEventListener('DOMContentLoaded', () => {
+        // Photo upload initialization
         const uploadBlock = document.getElementById('upload-block');
         const addPhotoBtn = document.getElementById('add-photo-btn');
         const previewContainer = document.getElementById('preview-container');
@@ -1040,7 +1204,6 @@
                 if (input.files && input.files[0]) {
                     fileNameSpan.textContent = input.files[0].name;
 
-                    // Remove previous preview if exists
                     const existingPreview = previewContainer.querySelector(`img[data-file-id="${fileId}"]`);
                     if (existingPreview) {
                         previewContainer.removeChild(existingPreview);
@@ -1083,7 +1246,6 @@
             uploadBlock.parentNode.insertBefore(newUpload, addPhotoBtn);
         });
 
-        // Initialize first input
         const firstInput = uploadBlock.querySelector('input[type=file]');
         const firstFileNameSpan = uploadBlock.querySelector('.file-name');
         firstInput.dataset.fileId = 'file-input-0';
@@ -1106,9 +1268,8 @@
                 }
             }
         });
-    });
 
-    document.addEventListener('DOMContentLoaded', () => {
+        // Modal handling for info modal
         const modal = document.getElementById('infoModal');
         const closeBtn = document.getElementById('closeModalBtn');
         const moreInfoLink = document.querySelector('.upload-help a');
@@ -1122,19 +1283,16 @@
             modal.style.display = 'none';
         });
 
-        // Also allow clicking outside modal box to close modal
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.style.display = 'none';
             }
         });
-    });
 
-    // Modal handling for “Click here for photo tips”
-    document.addEventListener('DOMContentLoaded', () => {
+        // Modal handling for photo tips
         const tipModal = document.getElementById('tipModal');
         const tipModalClose = document.getElementById('tipModalClose');
-        const tipLink = document.querySelector('.maintop-banner a');  // Select the “Click here for photo tips” link
+        const tipLink = document.querySelector('.maintop-banner a');
 
         tipLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1151,4 +1309,20 @@
             }
         });
     });
+
+
+    // Attach event listeners to extra options checkboxes
+    document.addEventListener("DOMContentLoaded", () => {
+        // Initial fetch of attribute price
+        fetchPrice();
+
+        // Attach listener for extra option changes to recalc subtotal dynamically
+        document.querySelectorAll('input[name="extra_options[]"]').forEach(cb => {
+            cb.addEventListener('change', () => {
+                // On extras selected/unselected, recalc subtotal (attribute price + extras)
+                updateSubtotal(attributeBasePrice);
+            });
+        });
+    });
+
 </script>

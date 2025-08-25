@@ -118,6 +118,8 @@
             <li><a class="dropdown-item d-flex align-items-center"
                 href="{{ route('admin.images.index') }}"><span>Images Settings
                 </span></a></li>
+                  <li><a class="dropdown-item d-flex align-items-center"
+                href="{{ route('admin.extra_options.index') }}"><span>Extra options</span></a></li>
             <!-- <li><a class="dropdown-item d-flex align-items-center"
                 href="{{ route('admin.centralized-paper-pricing.index') }}"><span>Centralized Paper
                   Pricing</span></a></li> -->

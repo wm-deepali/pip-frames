@@ -13,6 +13,7 @@ class Attribute extends Model
         'pricing_basis',
         'area_unit',
         'has_setup_charge',
+        'require_both_images',
         // 'allow_quantity',
         'is_composite',
         'has_dependency',
@@ -29,7 +30,8 @@ class Attribute extends Model
         'is_composite' => 'boolean',
         'has_dependency' => 'boolean',
         'pricing_basis' => 'string',
-        'has_setup_charge' => 'boolean'
+        'has_setup_charge' => 'boolean',
+        'require_both_images' => 'boolean'
     ];
 
 

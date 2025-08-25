@@ -41,9 +41,20 @@ class CartController extends Controller
         // Retrieve cart from session or initialize empty array
         $cart = session()->get('cart', []);
 
+        $extraOptionIds = $request->input('extra_options', []);
+        $extraOptions = \App\Models\ExtraOption::whereIn('id', $extraOptionIds)->get();
+        $extraOptionsData = $extraOptions->map(fn($opt) => [
+            'id' => $opt->id,
+            'title' => $opt->title,
+            'type' => $opt->type,
+            'price' => $opt->price,
+        ])->toArray();
+
+
         // Prepare item data
         $item = [
             'photos' => [],
+            'extra_options' => $extraOptionsData,
             'extra_option' => $request->input('extra_option', 'digital'),
             'pet_name' => $request->input('pet_name', ''),
             'pet_birthdate' => $request->input('pet_birthdate', ''),
@@ -52,7 +63,7 @@ class CartController extends Controller
             'attributes' => $request->input('attributes', []), // attributes array with selections
             'added_at' => now(),
             'subcategory_id' => $request->input('subcategory_id'),
-
+            'total_price' => $request->input('total_price', 0),
         ];
 
         // Handle uploaded photos - store on disk or keep temporary path as needed
