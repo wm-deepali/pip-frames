@@ -32,7 +32,6 @@
                 <div class="col-2 text-right">Total</div>
                 <div class="col-1"></div>
             </div>
-
             @forelse ($enrichedCart as $entry)
                 @php
                     $cart = $entry['item'];
@@ -52,14 +51,26 @@
                         @endif
                     </div>
                     <div class="col-5">
-                       
                         @foreach ($attributes as $attr)
                             <div style="font-size:1rem; margin-top:3px;">
                                 <span style="color:#555;">{{ $attr['name'] }}:</span>
-                                <span style="font-weight:600; color:#222;"> {{ $attr['value'] }} </span>
+                                <span style="font-weight:600;">{{ $attr['value'] }}</span>
                             </div>
                         @endforeach
+
+                        {{-- Display Extra Options --}}
+                        @if(!empty($cart['extra_options']))
+                            <div style="margin-top:8px;">
+                                <strong>Extra Options:</strong>
+                                <ul style="padding-left: 20px; margin-bottom: 0;">
+                                    @foreach ($cart['extra_options'] as $extra)
+                                        <li>{{ $extra['title'] }} (+&pound;{{ number_format($extra['price'], 2) }})</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                     </div>
+
                     <div class="col-2 text-center">
                         <form method="POST" action="{{ route('cart.update', ['index' => $loop->index]) }}"
                             class="d-inline-flex align-items-center justify-content-center">
@@ -72,12 +83,13 @@
                                 class="btn btn-outline-secondary btn-sm px-2">+</button>
                         </form>
                     </div>
+
                     <div class="col-2 text-right font-weight-bold" style="font-size:1.15rem;">
                         &pound;{{ number_format($cart['total_price'] ?? 0, 2) }}
                     </div>
+
                     <div class="col-1 text-right">
-                        <a href="{{ route('cart.remove', ['index' => $loop->index]) }}" class="text-danger"
-                            title="Remove item">×</a>
+                        <a href="{{ route('cart.remove', ['index' => $loop->index]) }}" class="text-danger" title="Remove">×</a>
                     </div>
                 </div>
             @empty
@@ -87,15 +99,15 @@
             @endforelse
         </div>
         <div class="text-center mt-5">
-    <a href="{{ route('home') }}" 
-       style="display:inline-block; border-radius:6px; padding:8px 26px; font-size:1.4rem; font-weight:600; box-shadow:0 2px 8px #dcf1fb; color:#11B7D7; text-decoration:underline; position:relative;">
-        <span style="color:#ff3b7c; font-size:1.3em; position:relative; top:2px; margin-right:8px;">&#9998;</span>
-        Customize a 2nd portrait
-    </a>
-    <div style="color:#999; font-size:1.07rem; margin-top:4px; font-style:italic;">
-        and receive a free digital download
-    </div>
-</div>
+            <a href="{{ route('home') }}"
+                style="display:inline-block; border-radius:6px; padding:8px 26px; font-size:1.4rem; font-weight:600; box-shadow:0 2px 8px #dcf1fb; color:#11B7D7; text-decoration:underline; position:relative;">
+                <span style="color:#ff3b7c; font-size:1.3em; position:relative; top:2px; margin-right:8px;">&#9998;</span>
+                Customize a 2nd portrait
+            </a>
+            <div style="color:#999; font-size:1.07rem; margin-top:4px; font-style:italic;">
+                and receive a free digital download
+            </div>
+        </div>
 
     </section>
 @endsection

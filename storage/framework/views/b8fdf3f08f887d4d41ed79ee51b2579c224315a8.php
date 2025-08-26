@@ -1,0 +1,527 @@
+
+
+<?php $__env->startSection('content'); ?>
+  <div class="app-content content">
+    <div class="content-overlay"></div>
+    <div class="header-navbar-shadow"></div>
+    <div class="content-wrapper">
+    <div class="content-header row">
+      <div class="col-md-12">
+      <ul class="nav nav-tabs" id="orderTabs" role="tablist">
+
+        <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" data-tab="new-orders" href="#new-orders" role="tab">New
+          Orders</a>
+        </li>
+
+        <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" data-tab="approved-orders" href="#approved-orders" role="tab">Approved
+          Orders</a>
+        </li>
+
+        <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" data-tab="canceled-orders" href="#canceled-orders" role="tab">Canceled
+          Orders</a>
+        </li>
+
+        <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $department): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+      <?php $slug = Str::slug($department->name); ?>
+      <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" data-tab="<?php echo e($slug); ?>" href="#<?php echo e($slug); ?>" role="tab">
+        <?php echo e($department->name); ?>
+
+      </a>
+      </li>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+      </ul>
+
+
+
+      <div class="tab-content" id="orderTabsContent">
+
+        <!-- New Orders Tab -->
+        <div class="tab-pane fade show active" id="new-orders" role="tabpanel">
+        <?php echo $__env->make('admin.quotes.tabs.new-order', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+        </div>
+
+        <!-- approved orders Tabs -->
+        <div class="tab-pane fade" id="approved-orders">
+        <?php echo $__env->make('admin.quotes.tabs.approved', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+        </div>
+
+        <!-- canceled orders Tabs -->
+        <div class="tab-pane fade" id="canceled-orders">
+        <?php echo $__env->make('admin.quotes.tabs.canceled', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+        </div>
+
+        <!-- department Tabs -->
+        <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $department): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+      <?php $slug = Str::slug($department->name); ?>
+      <div class="tab-pane fade" id="<?php echo e($slug); ?>" role="tabpanel">
+      <?php echo $__env->make('admin.quotes.tabs.department', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+      </div>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+
+      </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- Change Status Modal -->
+  <div class="modal fade" id="changeStatusModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    <form>
+      <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Change Order Status</h5><button type="button" class="close"
+        data-dismiss="modal">&times;</button>
+      </div>
+      <!-- Inside #changeStatusModal -->
+      <input type="hidden" id="statusQuoteId">
+
+      <div class="modal-body">
+        <label>Status</label>
+        <select class="form-control" id="statusSelect">
+        <option value="">Select</option>
+        <option value="approved">Approved</option>
+        <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div>
+      </div>
+    </form>
+    </div>
+  </div>
+
+  <!-- View All Notes Modal -->
+  <div class="modal fade" id="viewNotesModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+      <h5 class="modal-title">All Notes (Department-wise)</h5><button type="button" class="close"
+        data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+      <div class="row">
+        <!-- Add notes dynamic -->
+      </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+
+  <!-- Process to Department Modal (AJAX) -->
+  <div class="modal fade" id="processToDepartmentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+      <h5 class="modal-title">Process Quote to Department</h5>
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+      <input type="hidden" id="processQuoteId">
+
+      <div class="form-group">
+        <label>Department</label>
+        <select id="departmentSelect" class="form-control" required>
+        <option value="">Select Department</option>
+        <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dept): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+      <option value="<?php echo e($dept->id); ?>"><?php echo e($dept->name); ?></option>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="departmentNotes" class="form-control" rows="3" placeholder="Enter notes..."></textarea>
+      </div>
+      </div>
+      <div class="modal-footer">
+      <button type="button" id="submitDepartment" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+    </div>
+  </div>
+
+
+  <!-- Pay Now Modal -->
+  <div class="modal fade" id="payNowModal" tabindex="-1" role="dialog" aria-labelledby="payNowModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <form id="payNowForm" enctype="multipart/form-data">
+      <?php echo csrf_field(); ?>
+      <input type="hidden" name="quote_id" id="payNowQuoteId">
+
+      <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="payNowModalLabel">Pay Now</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Order Value (Read-only) -->
+        <div class="form-group">
+        <label>Order Value</label>
+        <input type="text" name="amount_received" class="form-control" id="orderValue" readonly>
+        </div>
+
+        <!-- Payment Type (Online / Offline) -->
+        <div class="form-group">
+        <label>Payment Type</label>
+        <select name="payment_type" class="form-control" required>
+          <option value="">-- Select Payment Type --</option>
+          <option value="Online">Online</option>
+          <option value="Offline">Offline</option>
+        </select>
+        </div>
+
+
+        <!-- Enter Amount Received -->
+        <!-- <div class="form-group">
+      <label>Amount Received</label>
+      <input type="number" name="amount_received" class="form-control" required step="0.01">
+      </div> -->
+
+        <!-- Payment Method Dropdown -->
+        <div class="form-group">
+        <label>Payment Method</label>
+        <select name="payment_method" class="form-control" required>
+          <option value="">-- Select --</option>
+          <option value="Cash">Cash</option>
+          <option value="Wire Transfer">Wire Transfer</option>
+          <option value="Online Payment">Online Payment</option>
+          <option value="POS">POS</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Others">Others</option>
+        </select>
+        </div>
+
+        <!-- Payment Date -->
+        <div class="form-group">
+        <label>Payment Date</label>
+        <input type="date" name="payment_date" class="form-control" required>
+        </div>
+
+        <!-- Reference Number -->
+        <div class="form-group">
+        <label>Reference Number</label>
+        <input type="text" name="reference_number" class="form-control">
+        </div>
+
+        <!-- Payment Remarks -->
+        <div class="form-group">
+        <label>Payment Remarks</label>
+        <textarea name="remarks" class="form-control" rows="3"></textarea>
+        </div>
+
+        <!-- Upload Payment Proof -->
+        <div class="form-group">
+        <label>Upload Payment Proof (optional)</label>
+        <input type="file" name="payment_proof" class="form-control-file" accept="image/*,application/pdf">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Submit Payment</button>
+      </div>
+      </div>
+    </form>
+    </div>
+  </div>
+
+
+  <!-- Edit Note Modal -->
+  <div class="modal fade" id="editNoteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    <form id="editNoteForm">
+      <?php echo csrf_field(); ?>
+      <input type="hidden" id="editNoteQuoteId">
+      <input type="hidden" id="editNoteDepartmentId">
+      <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Note - <span id="editDepartmentName"></span></h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+        <label>Notes</label>
+        <textarea class="form-control" id="editDepartmentNotes" rows="4" required></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Update</button>
+      </div>
+      </div>
+    </form>
+    </div>
+  </div>
+
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+  <script>
+
+    $(document).on('click', '.edit-note-btn', function () {
+    const quoteId = $(this).data('quote-id');
+    const deptId = $(this).data('department-id');
+    const deptName = $(this).data('department-name');
+    const notes = $(this).data('notes');
+
+    // Set data in edit modal
+    $('#editNoteQuoteId').val(quoteId);
+    $('#editNoteDepartmentId').val(deptId);
+    $('#editDepartmentNotes').val(notes);
+    $('#editDepartmentName').text(deptName);
+
+    // Hide View Notes modal first
+    $('#viewNotesModal').modal('hide');
+
+    // Then show Edit modal
+    setTimeout(() => {
+      $('#editNoteModal').modal('show');
+    }, 300); // slight delay to allow Bootstrap modal transition
+    });
+
+
+    // Submit updated note
+    $('#editNoteForm').on('submit', function (e) {
+    e.preventDefault();
+
+    const quoteId = $('#editNoteQuoteId').val();
+    const deptId = $('#editNoteDepartmentId').val();
+    const notes = $('#editDepartmentNotes').val();
+
+    $.ajax({
+      url: '<?php echo e(route("admin.quote.update-note")); ?>', // define route
+      type: 'POST',
+      data: {
+      _token: '<?php echo e(csrf_token()); ?>',
+      quote_id: quoteId,
+      department_id: deptId,
+      notes: notes
+      },
+      success: function (response) {
+      $('#editNoteModal').modal('hide');
+      Swal.fire('Success', response.message, 'success');
+      setTimeout(() => location.reload(), 1000); // or dynamically update DOM
+      },
+      error: function (xhr) {
+      let msg = xhr.responseJSON?.message || 'Update failed.';
+      Swal.fire('Error', msg, 'error');
+      }
+    });
+    });
+
+
+    $(document).on('click', '.pay-now-btn', function () {
+    const quoteId = $(this).data('quote-id');
+    const orderValue = $(this).data('order-value');
+
+    $('#payNowQuoteId').val(quoteId);
+    $('#orderValue').val(orderValue);
+
+    $('#payNowModal').modal('show');
+    });
+
+
+    $('#statusSelect').on('change', function () {
+    $('#departmentFields').toggle($(this).val() === 'department');
+    });
+
+    $(document).on('click', '.change-status-btn', function () {
+    const quoteId = $(this).data('quote-id');
+    $('#statusQuoteId').val(quoteId);
+    });
+
+
+    $('#changeStatusModal form').on('submit', function (e) {
+    e.preventDefault();
+
+    const quoteId = $('#statusQuoteId').val();
+    const selectedStatus = $('#statusSelect').val();
+
+    if (!selectedStatus) {
+      alert('Please select a status.');
+      return;
+    }
+
+    updateQuoteStatus(quoteId, selectedStatus);
+    $('#changeStatusModal').modal('hide');
+    });
+
+
+    // Set quote ID in modal
+    $('.process-to-dept-btn').on('click', function () {
+    const quoteId = $(this).data('quote-id');
+    const usedDepartments = ($(this).data('used-departments') || '').toString().split(',').map(id => id.trim());
+
+    $('#processQuoteId').val(quoteId);
+
+    // Reset dropdown
+    $('#departmentSelect option').show(); // show all first
+
+    // Hide used departments
+    usedDepartments.forEach(id => {
+      $('#departmentSelect option[value="' + id + '"]').hide();
+    });
+
+    // Reset selection
+    $('#departmentSelect').val('');
+    $('#departmentNotes').val('');
+    });
+
+
+    $(document).on('click', '.view-notes-btn', function () {
+    const quoteId = $(this).data('quote-id');
+    const notesHtml = $(`#quote-notes-${quoteId}`).html();
+    if (notesHtml && notesHtml.trim() !== '') {
+      $('#viewNotesModal .modal-body .row').html(notesHtml);
+    } else {
+      $('#viewNotesModal .modal-body .row').html('<div class="col-md-12 text-muted text-center">No notes available for this quote.</div>');
+    }
+    });
+
+
+    // AJAX request
+    $('#submitDepartment').on('click', function () {
+    const quoteId = $('#processQuoteId').val();
+    const departmentId = $('#departmentSelect').val();
+    const notes = $('#departmentNotes').val();
+
+    if (!departmentId) {
+      alert('Please select a department.');
+      return;
+    }
+
+    $.ajax({
+      url: '<?php echo e(route("admin.quote.update-department")); ?>',
+      type: 'POST',
+      data: {
+      _token: '<?php echo e(csrf_token()); ?>',
+      quote_id: quoteId,
+      department_id: departmentId,
+      notes: notes
+      },
+      success: function (response) {
+      $('#processToDepartmentModal').modal('hide');
+      Swal.fire('Success', response.message, 'success');
+      location.reload(); // or refresh just the affected tab/table
+      },
+      error: function (xhr) {
+      const errMsg = xhr.responseJSON?.message || 'An error occurred.';
+      alert(errMsg);
+      }
+    });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+
+    // Show the correct tab on load
+    if (tabParam) {
+      const targetTab = document.querySelector(`a[data-tab="${tabParam}"]`);
+      if (targetTab) {
+      new bootstrap.Tab(targetTab).show();
+      }
+    }
+
+    // Update URL when tab is clicked
+    document.querySelectorAll('a[data-toggle="tab"]').forEach(tab => {
+      console.log('here');
+
+      tab.addEventListener('click', function (e) {
+      const tabName = this.getAttribute('data-tab');
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.set('tab', tabName);
+      window.history.replaceState({}, '', newUrl);
+      });
+    });
+    });
+
+
+    function updateQuoteStatus(quoteId, status) {
+    $.ajax({
+      url: '<?php echo e(route('admin.quotes.update.status')); ?>',
+      type: 'POST',
+      data: {
+      quote_id: quoteId,
+      status: status,
+      _token: '<?php echo e(csrf_token()); ?>'
+      },
+      success: function (response) {
+      if (response.success) {
+        Swal.fire('Success', response.message, 'success');
+        setTimeout(() => location.reload(), 500);
+      } else {
+        Swal.fire('Error', 'Something went wrong.', 'error');
+      }
+      },
+      error: function (xhr) {
+      Swal.fire('Error', 'Unable to update status.', 'error');
+      }
+    });
+    }
+
+
+    $('#payNowForm').on('submit', function (e) {
+    e.preventDefault();
+
+    let form = $(this)[0];
+    let formData = new FormData(form);
+
+    $.ajax({
+      url: "<?php echo e(route('admin.quotes.payment.submit')); ?>",  // Define this route in web.php
+      method: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      beforeSend: function () {
+      // Optional: Show loader
+      },
+      success: function (response) {
+      if (response.success) {
+        $('#payNowModal').modal('hide');
+        Swal.fire('Success', response.message, 'success');
+        // Optional: reload or update part of the page
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        Swal.fire('Error', response.message || 'Something went wrong', 'error');
+      }
+      },
+      error: function (xhr) {
+      let errorMsg = xhr.responseJSON?.message || 'Something went wrong';
+      Swal.fire('Error', errorMsg, 'error');
+      }
+    });
+    });
+
+
+    $(document).on('click', '.cancel-order-btn', function () {
+    const quoteId = $(this).data('quote-id');
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will cancel the order.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel it!',
+      cancelButtonText: 'No, keep it'
+    }).then((result) => {
+      if (result.isConfirmed) {
+      updateQuoteStatus(quoteId, 'cancelled')
+      }
+    });
+    });
+
+
+  </script>
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/admin/quotes/orders.blade.php ENDPATH**/ ?>

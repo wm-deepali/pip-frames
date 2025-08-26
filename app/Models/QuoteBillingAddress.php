@@ -17,6 +17,8 @@ class QuoteBillingAddress extends Model
         'mobile',
         'address',
         'country',
+        'city',             // Added city
+        'postcode',
     ];
 
     public function quote()

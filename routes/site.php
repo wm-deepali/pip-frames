@@ -58,22 +58,19 @@ Route::get('/top-form', function () {
 })->name('top-form');
 
 
+Route::get('/order/thankyou', function () {
+    return view('front.thankyou');
+})->name('order.thankyou');
 
 
 Route::get('/cart', [CartController::class, 'cart'])->name('cart');
-
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
-
 Route::post('/cart/update/{index}', [CartController::class, 'update'])->name('cart.update');
 Route::get('/cart/remove/{index}', [CartController::class, 'remove'])->name('cart.remove');
-
-
-
-Route::post('/check-postcode', [CartController::class, 'check'])->name('check.postcode');
-Route::post('/get-vat', [CartController::class, 'getByTitle'])->name('get.vat.by.title');
-
-
 Route::get('checkout', [CartController::class, 'checkout'])->name('checkout');
+Route::post('checkout/submit', [CartController::class, 'checkoutSubmit'])->name('checkout.submit');
+Route::post('/check-postcode', [CartController::class, 'check'])->name('check.postcode');
+
 
 Route::get('order-tracking', function () {
     return view('front.order-tracking');

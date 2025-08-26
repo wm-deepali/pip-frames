@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Attribute;
+use App\Models\Country;
 use App\Models\Customer;
 use App\Models\DeliveryCharge;
 use App\Models\PostalCode;
@@ -20,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CartController extends Controller
 {
@@ -143,8 +145,6 @@ class CartController extends Controller
         return view('front.cart', compact('enrichedCart'));
     }
 
-
-
     public function update(Request $request, $index)
     {
         $cart = session()->get('cart', []);
@@ -186,6 +186,63 @@ class CartController extends Controller
 
         return redirect()->route('cart');
     }
+
+    public function checkout()
+    {
+        $cart = session()->get('cart', []);
+
+        $attributes = Attribute::with('values')->get()->keyBy('id');
+        $subtotal = 0;
+
+        $enrichedCart = collect($cart)->map(function ($item) use ($attributes, &$subtotal) {
+            $quantity = $item['quantity'] ?? 1;
+            $basePrice = $item['total_price'] ?? 0;
+
+            // Calculate extra options total
+            $extraOptions = $item['extra_options'] ?? [];
+            $extraTotal = collect($extraOptions)->sum('price');
+
+            // Calculate total price for this item
+            $itemTotal = ($basePrice + $extraTotal) * $quantity;
+            $subtotal += $itemTotal;
+
+            // Prepare attributes
+            $attrArr = [];
+            if (!empty($item['attributes'])) {
+                foreach ($item['attributes'] as $attrId => $attrValue) {
+                    if (!isset($attributes[$attrId]))
+                        continue;
+                    $attribute = $attributes[$attrId];
+                    $name = $attribute->name;
+                    if (is_array($attrValue) && isset($attrValue['height'], $attrValue['width'])) {
+                        $value = "Height: {$attrValue['height']}, Width: {$attrValue['width']}";
+                    } else {
+                        $valObj = $attribute->values->firstWhere('id', $attrValue);
+                        $value = $valObj ? $valObj->value : $attrValue;
+                    }
+                    $attrArr[] = ['name' => $name, 'value' => $value];
+                }
+            }
+
+            return [
+                'item' => $item,
+                'attributes' => $attrArr,
+                'extra_options' => $extraOptions,
+                'item_total' => $itemTotal,
+            ];
+        });
+
+        $deliveryCharges = DeliveryCharge::orderBy('is_default', 'desc')->get();
+        $vats = Vat::all();
+
+        return view('front.checkout', [
+            'cart' => $enrichedCart,
+            'subtotal' => $subtotal,
+            'deliveryCharges' => $deliveryCharges,
+            'vats' => $vats,
+        ]);
+    }
+
 
 
     public function check(Request $request)
@@ -231,350 +288,158 @@ class CartController extends Controller
         ]);
     }
 
-
-    public function saveBeforeCheckout(Request $request)
-    {
-        $cart = session('cart.items');
-
-        if (!$cart) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cart is empty.',
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Cart data saved before checkout.',
-        ]);
-    }
-
-    public function checkout()
-    {
-        $cart = session('cart', null);
-        if (!isset($cart['items'])) {
-            return redirect()->route('cart.show')->with('error', 'Your cart is empty.');
-        }
-
-        $item = $cart['items'];
-        $subcategory = Subcategory::find($item['subcategory_id']);
-        $attributes = [];
-
-        foreach ($item['attributes'] as $attrId => $val) {
-            $attribute = Attribute::find($attrId);
-
-            if (!$attribute)
-                continue;
-
-            if (is_array($val) && isset($val['type']) && $val['type'] === 'select_area') {
-                $length = $val['length'] ?? null;
-                $width = $val['width'] ?? null;
-                $area = $val['area'] ?? null;
-                $unit = $val['unit'] ?? '';
-
-                $attributes[] = [
-                    'attribute_name' => $attribute->name,
-                    'value_name' => "{$area} {$unit} (L: {$length} × W: {$width})",
-                ];
-            } else {
-                $value = AttributeValue::find($val);
-                if ($value) {
-                    $attributes[] = [
-                        'attribute_name' => $attribute->name,
-                        'value_name' => $value->value,
-                    ];
-                }
-            }
-        }
-
-        $cart['attributes_resolved'] = $attributes;
-        $cart['subcategory_name'] = $subcategory->name ?? 'Unknown';
-        $cart['category_name'] = $subcategory->categories->first()->name ?? '';
-        // dd($cart);
-        return view('front.checkout', $cart);
-    }
-
-
-    public function clear(Request $request)
-    {
-        session()->forget('cart.items');
-        session()->forget('cart.grand_total');
-
-        return response()->json(['success' => true]);
-    }
-
-    public function storeAddress(Request $request)
+    public function checkoutSubmit(Request $request)
     {
         $validated = $request->validate([
-            // Billing fields
-            'billing_email' => 'required|email',
-            'billing_first_name' => 'required|string|max:255',
-            'billing_last_name' => 'required|string|max:255',
-            'billing_mobile' => 'required|string|max:20',
-            'billing_country' => 'required|integer',
-            'billing_address' => 'nullable|string|max:500',
-
-            // Delivery fields
-            'delivery_first_name' => 'required|string|max:255',
-            'delivery_last_name' => 'required|string|max:255',
-            'delivery_mobile' => 'required|string|max:20',
-            'delivery_country' => 'required|integer',
-            'delivery_address' => 'nullable|string|max:500',
-
-            // Optional
-            'delivery_instructions' => 'nullable|string|max:500',
-            'plain_packaging' => 'nullable|in:1',
-            'same_as_billing' => 'nullable|in:1',
+            'email' => ['required', 'email'],
+            'subscribe' => ['nullable', 'boolean'],
+            'country' => ['required', 'in:United Kingdom,Ireland,Europe'],
+            'first_name' => ['nullable', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'street' => ['required', 'string', 'max:255'],
+            'apartment' => ['nullable', 'string', 'max:255'],
+            'city' => ['required', 'string', 'max:255'],
+            'postcode' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20'],
+            'delivery_charge_id' => ['required', 'exists:delivery_charges,id'],
+            'payment_type' => ['required', 'in:now,later'],
+            'delivery_instructions' => ['nullable', 'string'],
+            'plain_packaging' => ['nullable', 'boolean'],
         ]);
 
-        // Get existing cart from session
-        $cart = session('cart', []);
-
-        // Merge/overwrite billing info
-        $cart['billing'] = array_merge($cart['billing'] ?? [], [
-            'email' => $validated['billing_email'],
-            'first_name' => $validated['billing_first_name'],
-            'last_name' => $validated['billing_last_name'],
-            'mobile' => $validated['billing_mobile'],
-            'country' => $validated['billing_country'],
-            'address' => $validated['billing_address'] ?? null,
-        ]);
-
-        // Handle delivery
-        if (isset($validated['same_as_billing']) && $validated['same_as_billing'] == '1') {
-            // Use billing as delivery if checkbox is ticked
-            $cart['delivery_address'] = array_merge($cart['billing'], [
-                'delivery_instructions' => $validated['delivery_instructions'] ?? null,
-                'plain_packaging' => $validated['plain_packaging'] ?? null,
-                'same_as_billing' => '1',
-            ]);
-        } else {
-            // Normal delivery
-            $cart['delivery_address'] = [
-                'first_name' => $validated['delivery_first_name'],
-                'last_name' => $validated['delivery_last_name'],
-                'mobile' => $validated['delivery_mobile'],
-                'country' => $validated['delivery_country'],
-                'address' => $validated['delivery_address'] ?? null,
-                'delivery_instructions' => $validated['delivery_instructions'] ?? null,
-                'plain_packaging' => $validated['plain_packaging'] ?? null,
-                'same_as_billing' => $validated['same_as_billing'] ?? null,
-            ];
-        }
-
-        // Save back to session
-        session()->put('cart', $cart);
-        // dd($cart);
-        return response()->json(['message' => 'Address updated successfully']);
-    }
-
-    public function getCartSession()
-    {
-        return response()->json(session('cart', []));
-    }
-
-
-    public function saveUploadedFile(Request $request)
-    {
         $cart = session()->get('cart', []);
+        if (empty($cart)) {
+            return redirect()->route('checkout')->withErrors('Your cart is empty.');
+        }
+// dd($cart);
+        // Fetch or create customer
+        $customer = Customer::firstOrCreate(
+            ['email' => $validated['email']],
+            [
+                'first_name' => $validated['first_name'] ?? '',
+                'last_name' => $validated['last_name'],
+                'mobile' => $validated['phone'],
+                'country' => $this->getCountryIdByName($validated['country']),
+                'password' => bcrypt(Str::random(12)),
+                'status' => 'active',
+            ]
+        );
 
-        if (!isset($cart['quote_id'])) {
-            return response()->json(['error' => 'Quote ID not found'], 422);
+        // Calculate subtotal as before
+        $subtotal = 0;
+        foreach ($cart as $item) {
+            $basePrice = $item['total_price'] ?? 0;
+            $quantity = $item['quantity'] ?? 1;
+            $extraTotal = collect($item['extra_options'] ?? [])->sum('price');
+            $subtotal += ($basePrice + $extraTotal) * $quantity;
         }
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $type = $request->input('type'); // e.g. 'main', 'reference', etc.
-
-            $filename = uniqid() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('uploads/session', $filename, 'public');
-
-            $fileInfo = [
-                'path' => $path,
-                'name' => $file->getClientOriginalName(),
-                'type' => $type,
-                'mime' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-            ];
-
-            if (!isset($cart['images'])) {
-                $cart['images'] = [];
-            }
-
-            // ✅ If it's the main file, replace the old one
-            if ($type === 'main') {
-                // Remove any existing 'main' file
-                $cart['images'] = array_filter($cart['images'], function ($img) {
-                    return $img['type'] !== 'main';
-                });
-            }
-
-            // Add new file
-            $cart['images'][] = $fileInfo;
-
-            // Save back to session
-            session()->put('cart', $cart);
-            return response()->json([
-                'success' => true,
-                'path' => $path,
-                'name' => $file->getClientOriginalName(),
-                'mime' => $file->getClientMimeType(),
-                'type' => $type,
-                'size' => $file->getSize()
-            ]);
-        }
-
-
-        return response()->json(['success' => false, 'message' => 'No file uploaded.'], 400);
-    }
-
-
-    public function removeUploadedFile(Request $request)
-    {
-        $path = $request->input('path');
-        $type = $request->input('type'); // 'main' or 'extra'
-
-        $cart = session()->get('cart', []);
-
-        if (!isset($cart['images'])) {
-            return response()->json(['success' => false, 'message' => 'No images in session.']);
-        }
-
-        // Remove file from disk
-        if (Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
-        }
-
-        // Filter out the removed image from session
-        $cart['images'] = array_filter($cart['images'], function ($file) use ($path, $type) {
-            return $file['path'] !== $path || $file['type'] !== $type;
-        });
-
-        session()->put('cart', $cart);
-
-        return response()->json(['success' => true]);
-    }
-
-
-    public function PayLater(Request $request)
-    {
-        $data = session()->get('cart', []);
-        // dd($data);
-        $customer = Customer::where('email', $data['billing']['email'])->first();
-        // dd($customer);
+        // Retrieve VAT and delivery price as before
+        $vatRecord = Vat::where('country', $validated['country'])->first();
+        $vatPercent = $vatRecord ? $vatRecord->vat_percentage : 0;
+        $vatAmount = $subtotal * ($vatPercent / 100);
+        $deliveryCharge = DeliveryCharge::findOrFail($validated['delivery_charge_id']);
+        $deliveryPrice = $deliveryCharge->price;
+        $totalPrice = $subtotal + $vatAmount + $deliveryPrice;
 
         DB::beginTransaction();
         try {
-
-
-            $dateString = $data['delivery']['date'];
-            if ($dateString) {
-                // Step 1: Remove weekday and ordinal suffix
-                $cleaned = preg_replace('/\w{3},\s*(\d+)(st|nd|rd|th)\s+(\w+)/', '$1 $3', $dateString); // "1 Aug"
-
-                // Step 2: Append current year
-                $cleaned .= ' ' . now()->year; // "1 Aug 2025"
-
-                // Step 3: Convert to Carbon date
-                $date = Carbon::createFromFormat('j M Y', $cleaned);
-
-                // Store in DB format
-                $formattedDate = $date->format('Y-m-d'); // e.g. "2025-08-01"
-            }
-
-            // Create Quote
+            // Create the quote record
             $quote = Quote::create([
-                'quote_number' => $data['quote_id'],
-                'customer_id' => $customer->id, // Or use given customer
-                'vat_amount' => $data['vat_amount'],
-                'vat_percentage' => $data['vat_percentage'],
-                'grand_total' => $data['grand_total'],
-                'proof_type' => $data['proof']['proof_type'] ?? null,
-                'proof_price' => $data['proof']['price'] ?? 0,
-                'delivery_price' => $data['delivery']['price'] ?? 0,
-                'delivery_date' => $formattedDate ?? null,
-                'notes' => $data['details'] ?? null,
+                'quote_number' => 'Q-' . strtoupper(Str::random(8)),
+                'status' => 'pending',
+                'customer_id' => $customer->id,
+                'vat_amount' => $vatAmount,
+                'vat_percentage' => $vatPercent,
+                'delivery_price' => $deliveryPrice,
+                'grand_total' => $totalPrice,
+                'delivery_date' => now()->addDays($deliveryCharge->no_of_days),
             ]);
 
-            // Create QuoteItem
-            $itemData = $data['items'];
-            $quoteItem = QuoteItem::create([
-                'quote_id' => $quote->id,
-                'subcategory_id' => $itemData['subcategory_id'], // or get name from DB
-                'quantity' => $itemData['quantity'],
-                'pages' => $itemData['pages'],
-                'sub_total' => $itemData['sub_total'],
+            // Billing address with city and postcode added
+            $billingAddress = new QuoteBillingAddress([
+                'first_name' => $validated['first_name'] ?? '',
+                'last_name' => $validated['last_name'],
+                'email' => $validated['email'],
+                'mobile' => $validated['phone'],
+                'address' => trim($validated['street'] . ' ' . ($validated['apartment'] ?? '')),
+                'city' => $validated['city'],
+                'postcode' => $validated['postcode'],
+                'country' => $this->getCountryIdByName($validated['country']),
             ]);
+            $quote->billingAddress()->save($billingAddress);
 
-            // Save Attributes
-            foreach ($itemData['attributes'] as $attrId => $valData) {
-                if (is_array($valData) && isset($valData['type']) && $valData['type'] === 'select_area') {
-                    QuoteItemAttribute::create([
-                        'quote_item_id' => $quoteItem->id,
-                        'attribute_id' => $attrId,
-                        'value_id' => null,
-                        'unit' => $valData['unit'] ?? null,
-                        'length' => $valData['length'] ?? null,
-                        'width' => $valData['width'] ?? null,
-                    ]);
-                } else {
-                    QuoteItemAttribute::create([
-                        'quote_item_id' => $quoteItem->id,
-                        'attribute_id' => $attrId,
-                        'value_id' => $valData,
-                    ]);
-                }
-            }
-
-
-            // Save Billing Address
-            $billing = $data['billing'];
-            QuoteBillingAddress::create([
-                'quote_id' => $quote->id,
-                'first_name' => $billing['first_name'],
-                'last_name' => $billing['last_name'],
-                'email' => $billing['email'],
-                'mobile' => $billing['mobile'],
-                'country' => $billing['country'],
-                'address' => $billing['address'],
+            // Delivery address with city and postcode added
+            $deliveryAddress = new QuoteDeliveryAddress([
+                'first_name' => $validated['first_name'] ?? '',
+                'last_name' => $validated['last_name'],
+                'mobile' => $validated['phone'],
+                'address' => trim($validated['street'] . ' ' . ($validated['apartment'] ?? '')),
+                'city' => $validated['city'],
+                'postcode' => $validated['postcode'],
+                'country' => $this->getCountryIdByName($validated['country']),
+                'delivery_instructions' => $validated['delivery_instructions'] ?? null,
+                'plain_packaging' => $validated['plain_packaging'] ?? false,
+                'same_as_billing' => true,
             ]);
+            $quote->deliveryAddress()->save($deliveryAddress);
 
-            // Save Delivery Address
-            $delivery = $data['delivery_address'];
-            QuoteDeliveryAddress::create([
-                'quote_id' => $quote->id,
-                'first_name' => $delivery['first_name'],
-                'last_name' => $delivery['last_name'],
-                'mobile' => $delivery['mobile'],
-                'country' => $delivery['country'],
-                'address' => $delivery['address'],
-                'delivery_instructions' => $delivery['delivery_instructions'],
-                'plain_packaging' => $delivery['plain_packaging'],
-                'same_as_billing' => $delivery['same_as_billing'],
-            ]);
+            // Save quote items with photos, extra options, pet info etc.
+            foreach ($cart as $item) {
+                $quoteItem = $quote->items()->create([
+                    'subcategory_id' => $item['subcategory_id'] ?? null,
+                    'quantity' => $item['quantity'] ?? 1,
+                    'sub_total' => $item['total_price'] ?? 0,
+                    'pet_name' => $item['pet_name'] ?? null,
+                    'pet_birthdate' => $item['pet_birthdate'] ?? null,
+                    'personal_text' => $item['personal_text'] ?? '',
+                    'note' => $item['note'] ?? null,
+                    'photos' => json_encode($item['photos'] ?? []),
+                    'extra_options' => json_encode($item['extra_options'] ?? []),
+                ]);
 
-            if (isset($data['image'])) {
-                // Save Images
-                foreach ($data['images'] as $img) {
-                    QuoteDocument::create([
-                        'quote_id' => $quote->id,
-                        'path' => $img['path'],
-                        'name' => $img['name'],
-                        'type' => $img['type'],
-                    ]);
+                if (!empty($item['attributes']) && is_array($item['attributes'])) {
+                    foreach ($item['attributes'] as $attrId => $attrValue) {
+                        $attributeData = [
+                            'attribute_id' => $attrId,
+                        ];
+
+                        if (is_array($attrValue)) {
+                            // dd($attrValue);
+                            $attributeData['length'] = $attrValue['height'] ?? null;
+                            $attributeData['width'] = $attrValue['width'] ?? null;
+                            $attributeData['unit'] = $attrValue['unit'] ?? null;
+                            $attributeData['value_id'] = null;
+                        } else {
+                            $attributeData['value_id'] = $attrValue;
+                            $attributeData['length'] = null;
+                            $attributeData['width'] = null;
+                            $attributeData['unit'] = null;
+                        }
+
+                        $quoteItem->attributes()->create($attributeData);
+                    }
                 }
             }
 
             DB::commit();
-            session()->forget('cart');
-            return response()->json(['message' => 'Quote saved successfully', 'quote_id' => $quote->quote_number]);
 
+            session()->forget('cart');
+
+            return redirect()->route('order.thankyou')->with('success', 'Order placed successfully!');
 
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['error' => 'Failed to save quote', 'message' => $e->getMessage()], 500);
+            // dd( $e->getMessage());
+            return back()->withErrors('Failed to place order: ' . $e->getMessage())->withInput();
         }
-
     }
+
+    protected function getCountryIdByName($name)
+    {
+        $country = \DB::table('countries')->where('name', $name)->first();
+        return $country ? $country->id : null;
+    }
+
 
 }

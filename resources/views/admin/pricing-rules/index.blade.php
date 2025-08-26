@@ -41,8 +41,8 @@
             <tr>
               <th>ID</th>
               <th>Subcategory</th>
-              <th>Pages Dragger</th>
-              <th>Qty</th>
+              <!-- <th>Pages Dragger</th> -->
+              <!-- <th>Qty</th> -->
               <th>Attributes</th>
               <th>Actions</th>
             </tr>
@@ -58,7 +58,7 @@
             <small>Cat: {{ $rule->category->name ?? '-' }}</small>
             </td>
 
-            <td>
+            <!-- <td>
             @if ($rule->pages_dragger_required)
           <div class="mb-1">
             <div class="small text-muted ml-1">
@@ -83,13 +83,13 @@
         @else
           <span class="text-muted">No</span>
         @endif
-            </td>
+            </td> -->
 
-            <td>
+            <!-- <td>
             Default: <strong>{{ $rule->default_quantity ?? '-' }}</strong><br>
             Min: <strong>{{ $rule->min_quantity ?? '-' }}</strong><br>
             Max: <strong>{{ $rule->max_quantity ?? '-' }}</strong>
-            </td>
+            </td> -->
 
 
             <td>

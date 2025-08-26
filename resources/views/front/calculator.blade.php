@@ -166,7 +166,7 @@
                         src="{{ asset('storage/' . ($subcategories->first()->thumbnail ?? '')) }}"
                         alt="Pet Portrait Portrait" />
                     <!-- Frame overlay for portrait -->
-                    <img id="frameOverlayPortrait" class="frame-overlay"/>
+                    <img id="frameOverlayPortrait" class="frame-overlay" />
                 </div>
 
                 <!-- Landscape preview -->
@@ -303,18 +303,39 @@
     }
 
     // Go to a step, skipping empty steps
+    // function goToStep(step) {
+    //     if (step < 1) step = 1;
+    //     if (step > totalSteps) step = totalSteps;
+
+    //     while (step <= totalSteps && isStepEmpty(step)) {
+    //         step++;
+    //     }
+
+    //     if (step > totalSteps) {
+    //         step = totalSteps;
+    //     }
+
+    //     showStep(step);
+    // }
+
+
     function goToStep(step) {
         if (step < 1) step = 1;
         if (step > totalSteps) step = totalSteps;
 
-        while (step <= totalSteps && isStepEmpty(step)) {
-            step++;
+        if (step > currentStep) {
+            // Moving forward: skip empty steps going forward
+            while (step <= totalSteps && isStepEmpty(step)) {
+                step++;
+            }
+            if (step > totalSteps) step = totalSteps;
+        } else if (step < currentStep) {
+            // Moving backward: skip empty steps going backward
+            while (step >= 1 && isStepEmpty(step)) {
+                step--;
+            }
+            if (step < 1) step = 1;
         }
-
-        if (step > totalSteps) {
-            step = totalSteps;
-        }
-
         showStep(step);
     }
 
@@ -907,6 +928,9 @@
             }
         }
 
+
+
+
         const portraitPreview = document.getElementById("portraitPreview");
         const landscapePreview = document.getElementById("landscapePreview");
 
@@ -926,6 +950,17 @@
 
                 mainImgPortrait.src = matched.image;
 
+                var selectedColour = null;
+                for (const key in currentSelections) {
+                    if (key.includes('_colour_code') || key.includes('_color')) {
+                        selectedColour = currentSelections[key];
+                        break;
+                    }
+                }
+                portraitPreview.style.backgroundColor = selectedColour || '';
+                mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+
+
                 // Set frame overlay for portrait
                 const framePortrait = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
                 if (framePortrait) {
@@ -940,6 +975,18 @@
                 portraitPreview.style.display = 'none';
 
                 mainImgLandscape.src = matched.image;
+
+
+                var selectedColour = null;
+                for (const key in currentSelections) {
+                    if (key.includes('_colour_code') || key.includes('_color')) {
+                        selectedColour = currentSelections[key];
+                        break;
+                    }
+                }
+                landscapePreview.style.backgroundColor = selectedColour || '';
+                mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+
 
                 // Set frame overlay for landscape
                 const frameLandscape = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
@@ -961,6 +1008,17 @@
             } else {
                 mainImgPortrait.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
             }
+
+            var selectedColour = null;
+            for (const key in currentSelections) {
+                if (key.includes('_colour_code') || key.includes('_color')) {
+                    selectedColour = currentSelections[key];
+                    break;
+                }
+            }
+            portraitPreview.style.backgroundColor = selectedColour || '';
+            mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+
             frameOverlayPortrait.style.display = "none";
             frameOverlayLandscape.style.display = "none";
         }
@@ -1161,7 +1219,6 @@
 
         loadAttributes(subcategoryId);
         loadCategoryData(subcategoryId);
-
         // Update thumbnails dynamically
         const container = document.getElementById('thumbnails-container');
         container.innerHTML = ''; // Clear old thumbnails

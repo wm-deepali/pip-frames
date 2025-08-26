@@ -1,0 +1,23 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class AddFieldsToQuoteDeliveryAddressesTable extends Migration
+{
+    public function up()
+    {
+        Schema::table('quote_delivery_addresses', function (Blueprint $table) {
+            $table->string('city')->nullable()->after('address');
+            $table->string('postcode')->nullable()->after('city');
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('quote_delivery_addresses', function (Blueprint $table) {
+            $table->dropColumn(['city', 'postcode']);
+        });
+    }
+}

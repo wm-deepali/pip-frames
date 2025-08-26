@@ -19,6 +19,8 @@ class QuoteDeliveryAddress extends Model
         'delivery_instructions',
         'plain_packaging',
         'same_as_billing',
+         'city',             // Added city
+        'postcode',    
     ];
 
     public function quote()

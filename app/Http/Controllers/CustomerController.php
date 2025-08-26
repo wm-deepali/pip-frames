@@ -63,10 +63,10 @@ class CustomerController extends Controller
                     $mailData = ['token' => $token];
                     $mailContent = Mail::to($request->email)->send(new EmailVerificationEmail($mailData));
                     return redirect()->route('authentication-signin')
-                        ->withErrors('Your email has not been verified yet, Verification Email sent, Please check your email in inbox, spam and junk folder.');
-                } else if ($customer->status != 'Active') {
+                    ->withErrors('Your email has not been verified yet, Verification Email sent, Please check your email in inbox, spam and junk folder.');
+                } else if ($customer->status != 'active') {
                     return redirect()->route('authentication-signin')
-                        ->withErrors('Your account has been blocked please contact to Admin.');
+                    ->withErrors('Your account has been blocked please contact to Admin.');
                 } else {
                     if (Auth::guard('customer')->attempt($credentials)) {
                         // dd(Auth::guard('customer')->user());

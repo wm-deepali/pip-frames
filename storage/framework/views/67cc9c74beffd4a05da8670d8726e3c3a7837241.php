@@ -1,10 +1,10 @@
-@extends('layouts.new-master')
 
-@section('title')
+
+<?php $__env->startSection('title'); ?>
 SignIn
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
     .btn-login-page {
     display: inline-block;
@@ -100,7 +100,7 @@ SignIn
 					<div class="ms-auto">
 						<nav aria-label="breadcrumb">
 							<ol class="breadcrumb mb-0 p-0">
-								<li class="breadcrumb-item"><a href="{{route('home')}}"><i class="bx bx-home-alt"></i> Home </a>
+								<li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>"><i class="bx bx-home-alt"></i> Home </a>
 								</li>
 							<li class="breadcrumb-item active" aria-current="page">Sign In</li>
 							</ol>
@@ -112,14 +112,14 @@ SignIn
 		
 		<!--end breadcrumb-->
 		<!--start shop cart-->
-			@if (session('success'))
-                  <h5 class="alert alert-success text-center">{{ Session::get('success') }}</h5><br>
+			<?php if(session('success')): ?>
+                  <h5 class="alert alert-success text-center"><?php echo e(Session::get('success')); ?></h5><br>
                   <?php Session::forget('success');?>
-                @endif
-                @if (session('error'))
-                  <h5 class="alert alert-danger text-center">{{ Session::get('error') }}</h5><br>
+                <?php endif; ?>
+                <?php if(session('error')): ?>
+                  <h5 class="alert alert-danger text-center"><?php echo e(Session::get('error')); ?></h5><br>
                   <?php Session::forget('error');?>
-                @endif
+                <?php endif; ?>
 		<section class="">
 			<div class="container">
 				<div class="section-authentication-signin d-flex align-items-center justify-content-center py-5" style="min-height: 80vh;margin-top:20px;">
@@ -132,11 +132,11 @@ SignIn
 									<div class="border p-4 rounded">
 										<div class="text-center">
 											<h3 class="">Sign in</h3>
-											<p>Don't have an account yet? <a href="{{ route('authentication-signup')}}" style="color:blue;">Sign up here</a>
+											<p>Don't have an account yet? <a href="<?php echo e(route('authentication-signup')); ?>" style="color:blue;">Sign up here</a>
 											</p>
 										</div>
 										<div class="d-grid">
-											<a class="btn-login-page my-4 shadow-sm " href="{{ route('google.redirect')}}"> <span class="d-flex justify-content-center align-items-center" style="background:#d9d9d9;">
+											<a class="btn-login-page my-4 shadow-sm " href="<?php echo e(route('google.redirect')); ?>"> <span class="d-flex justify-content-center align-items-center" style="background:#d9d9d9;">
 												<img class="me-2" src="assets/images/icons/search.svg" width="16" alt="Image Description">
 												<span class="text-black">Sign in with Google</span>
 												</span></a>
@@ -148,8 +148,8 @@ SignIn
 										<hr>
 										<!--<hr/>-->
 										<div class="form-body" >
-											<form id="loginForm" method="post" action="{{ route('customer.authenticate') }}" enctype="multipart/form-data" class="row g-3">
-                    @csrf
+											<form id="loginForm" method="post" action="<?php echo e(route('customer.authenticate')); ?>" enctype="multipart/form-data" class="row g-3">
+                    <?php echo csrf_field(); ?>
 												<div class="col-12">
 													<label for="inputEmailAddress" class="form-label">Email Address</label>
 													<input type="email" name="email" class="form-control" id="inputEmailAddress" placeholder="Email Address" required>
@@ -166,7 +166,7 @@ SignIn
 														<label class="form-check-label" for="flexSwitchCheckChecked">Remember Me</label>
 													</div>
 												</div>
-												<div class="col-md-6 text-end">	<a href="{{ route('authentication-forgot-password.get')}}">Forgot Password ?</a>
+												<div class="col-md-6 text-end">	<a href="<?php echo e(route('authentication-forgot-password.get')); ?>">Forgot Password ?</a>
 												</div>
 												<div class="col-12">
 													<div class="d-grid">
@@ -187,4 +187,5 @@ SignIn
 		<!--end shop cart-->
 	</div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.new-master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/front/authentication-signin.blade.php ENDPATH**/ ?>

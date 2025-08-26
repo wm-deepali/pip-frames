@@ -1,10 +1,10 @@
-@extends('layouts.new-master')
 
-@section('title')
+
+<?php $__env->startSection('title'); ?>
 Sign Up
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
     .btn-login-page {
         display: inline-block;
@@ -98,7 +98,7 @@ Sign Up
                     <div class="ms-auto">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb mb-0 p-0">
-                                <li class="breadcrumb-item"><a href="{{route('home')}}"><i class="bx bx-home-alt"></i> Home</a></li>
+                                <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>"><i class="bx bx-home-alt"></i> Home</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Sign Up</li>
                             </ol>
                         </nav>
@@ -108,14 +108,14 @@ Sign Up
         </section>
 
         <!-- Flash Messages -->
-        @if (session('success'))
-            <h5 class="alert alert-success text-center">{{ Session::get('success') }}</h5><br>
+        <?php if(session('success')): ?>
+            <h5 class="alert alert-success text-center"><?php echo e(Session::get('success')); ?></h5><br>
             <?php Session::forget('success');?>
-        @endif
-        @if (session('error'))
-            <h5 class="alert alert-danger text-center">{{ Session::get('error') }}</h5><br>
+        <?php endif; ?>
+        <?php if(session('error')): ?>
+            <h5 class="alert alert-danger text-center"><?php echo e(Session::get('error')); ?></h5><br>
             <?php Session::forget('error');?>
-        @endif
+        <?php endif; ?>
 
         <!-- Sign-Up Section -->
         <section class="py-0 py-lg-5 " style="margin-top:80px;">
@@ -128,10 +128,10 @@ Sign Up
                                     <div class="border p-4 rounded">
                                         <div class="text-center">
                                             <h3 class="">Sign Up</h3>
-                                            <p>Already have an account? <a href="{{ route('authentication-signin') }}" style="color:blue;">Sign in here</a></p>
+                                            <p>Already have an account? <a href="<?php echo e(route('authentication-signin')); ?>" style="color:blue;">Sign in here</a></p>
                                         </div>
                                         <div class="d-grid">
-                                            <a class="btn-login-page my-4 shadow-sm " href="{{ route('google.redirect') }}">
+                                            <a class="btn-login-page my-4 shadow-sm " href="<?php echo e(route('google.redirect')); ?>">
                                                 <span class="d-flex justify-content-center align-items-center">
                                                     <img class="me-2" src="assets/images/icons/search.svg" width="16" alt="Image Description">
                                                     <span>Sign Up with Google</span>
@@ -143,8 +143,8 @@ Sign Up
 										</div>
 										<hr>
                                         <div class="form-body">
-                                            <form class="row g-3" id="registerForm" method="post" action="{{ route('customer-register') }}" enctype="multipart/form-data">
-                                                @csrf
+                                            <form class="row g-3" id="registerForm" method="post" action="<?php echo e(route('customer-register')); ?>" enctype="multipart/form-data">
+                                                <?php echo csrf_field(); ?>
                                                 <div class="col-sm-6">
                                                     <label for="inputFirstName" class="form-label">First Name</label>
                                                     <input type="text" name="first_name" class="form-control" id="inputFirstName" placeholder="John" required>
@@ -173,10 +173,10 @@ Sign Up
                                                     <label for="inputSelectCountry" class="form-label">Country</label>
                                                     <select class="form-select" name="country" id="inputSelectCountry" required>
                                                         <option>Select Country</option>
-                                                        @php $countries = countrylist(); @endphp
-                                                        @foreach($countries as $country)
-                                                            <option value="{{$country->id}}">{{$country->name}}</option>
-                                                        @endforeach
+                                                        <?php $countries = countrylist(); ?>
+                                                        <?php $__currentLoopData = $countries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $country): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <option value="<?php echo e($country->id); ?>"><?php echo e($country->name); ?></option>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                     </select>
                                                 </div>
                                                 <div class="col-12">
@@ -203,9 +203,9 @@ Sign Up
         <!--end section-->
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('after-scripts')
+<?php $__env->startPush('after-scripts'); ?>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.all.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.min.css" rel="stylesheet">
@@ -224,11 +224,11 @@ Sign Up
 
         if (emailPattern.test(email)) {
             $.ajax({
-                url: '{{ route("check-email") }}',
+                url: '<?php echo e(route("check-email")); ?>',
                 method: 'POST',
                 data: {
                     email: email,
-                    _token: '{{ csrf_token() }}'
+                    _token: '<?php echo e(csrf_token()); ?>'
                 },
                 success: function (data) {
                     if (data.exists) {
@@ -252,4 +252,6 @@ Sign Up
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
     }
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.new-master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/front/authentication-signup.blade.php ENDPATH**/ ?>

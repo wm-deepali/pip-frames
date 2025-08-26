@@ -32,7 +32,6 @@
                 <div class="col-2 text-right">Total</div>
                 <div class="col-1"></div>
             </div>
-
             <?php $__empty_1 = true; $__currentLoopData = $enrichedCart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $entry): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <?php
                     $cart = $entry['item'];
@@ -52,14 +51,26 @@
                         <?php endif; ?>
                     </div>
                     <div class="col-5">
-                       
                         <?php $__currentLoopData = $attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attr): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div style="font-size:1rem; margin-top:3px;">
                                 <span style="color:#555;"><?php echo e($attr['name']); ?>:</span>
-                                <span style="font-weight:600; color:#222;"> <?php echo e($attr['value']); ?> </span>
+                                <span style="font-weight:600;"><?php echo e($attr['value']); ?></span>
                             </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                        
+                        <?php if(!empty($cart['extra_options'])): ?>
+                            <div style="margin-top:8px;">
+                                <strong>Extra Options:</strong>
+                                <ul style="padding-left: 20px; margin-bottom: 0;">
+                                    <?php $__currentLoopData = $cart['extra_options']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $extra): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <li><?php echo e($extra['title']); ?> (+&pound;<?php echo e(number_format($extra['price'], 2)); ?>)</li>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
                     </div>
+
                     <div class="col-2 text-center">
                         <form method="POST" action="<?php echo e(route('cart.update', ['index' => $loop->index])); ?>"
                             class="d-inline-flex align-items-center justify-content-center">
@@ -72,13 +83,14 @@
                                 class="btn btn-outline-secondary btn-sm px-2">+</button>
                         </form>
                     </div>
+
                     <div class="col-2 text-right font-weight-bold" style="font-size:1.15rem;">
                         &pound;<?php echo e(number_format($cart['total_price'] ?? 0, 2)); ?>
 
                     </div>
+
                     <div class="col-1 text-right">
-                        <a href="<?php echo e(route('cart.remove', ['index' => $loop->index])); ?>" class="text-danger"
-                            title="Remove item">×</a>
+                        <a href="<?php echo e(route('cart.remove', ['index' => $loop->index])); ?>" class="text-danger" title="Remove">×</a>
                     </div>
                 </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -88,15 +100,15 @@
             <?php endif; ?>
         </div>
         <div class="text-center mt-5">
-    <a href="<?php echo e(route('home')); ?>" 
-       style="display:inline-block; border-radius:6px; padding:8px 26px; font-size:1.4rem; font-weight:600; box-shadow:0 2px 8px #dcf1fb; color:#11B7D7; text-decoration:underline; position:relative;">
-        <span style="color:#ff3b7c; font-size:1.3em; position:relative; top:2px; margin-right:8px;">&#9998;</span>
-        Customize a 2nd portrait
-    </a>
-    <div style="color:#999; font-size:1.07rem; margin-top:4px; font-style:italic;">
-        and receive a free digital download
-    </div>
-</div>
+            <a href="<?php echo e(route('home')); ?>"
+                style="display:inline-block; border-radius:6px; padding:8px 26px; font-size:1.4rem; font-weight:600; box-shadow:0 2px 8px #dcf1fb; color:#11B7D7; text-decoration:underline; position:relative;">
+                <span style="color:#ff3b7c; font-size:1.3em; position:relative; top:2px; margin-right:8px;">&#9998;</span>
+                Customize a 2nd portrait
+            </a>
+            <div style="color:#999; font-size:1.07rem; margin-top:4px; font-style:italic;">
+                and receive a free digital download
+            </div>
+        </div>
 
     </section>
 <?php $__env->stopSection(); ?>

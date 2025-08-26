@@ -3,16 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class QuoteItem extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'quote_id',
         'subcategory_id',
         'quantity',
-        'pages',
         'sub_total',
-        'composite_pages',
+        'pet_name',
+        'pet_birthdate',
+        'personal_text',
+        'note',
+        'photos',
+        'extra_options',
+    ];
+
+    protected $casts = [
+        'photos' => 'array',          // Automatically cast JSON to array
+        'extra_options' => 'array',   // Automatically cast JSON to array
+        'pet_birthdate' => 'date',    // Cast date string to Carbon instance
     ];
 
     public function quote()
@@ -27,7 +40,6 @@ class QuoteItem extends Model
 
     public function attributes()
     {
-        return $this->hasMany(QuoteItemAttribute::class); // adjust model/class name if needed
+        return $this->hasMany(QuoteItemAttribute::class); // adjust if needed
     }
-
 }

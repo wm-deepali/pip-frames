@@ -41,8 +41,8 @@
             <tr>
               <th>ID</th>
               <th>Subcategory</th>
-              <th>Pages Dragger</th>
-              <th>Qty</th>
+              <!-- <th>Pages Dragger</th> -->
+              <!-- <th>Qty</th> -->
               <th>Attributes</th>
               <th>Actions</th>
             </tr>
@@ -58,7 +58,7 @@
             <small>Cat: <?php echo e($rule->category->name ?? '-'); ?></small>
             </td>
 
-            <td>
+            <!-- <td>
             <?php if($rule->pages_dragger_required): ?>
           <div class="mb-1">
             <div class="small text-muted ml-1">
@@ -83,13 +83,13 @@
         <?php else: ?>
           <span class="text-muted">No</span>
         <?php endif; ?>
-            </td>
+            </td> -->
 
-            <td>
+            <!-- <td>
             Default: <strong><?php echo e($rule->default_quantity ?? '-'); ?></strong><br>
             Min: <strong><?php echo e($rule->min_quantity ?? '-'); ?></strong><br>
             Max: <strong><?php echo e($rule->max_quantity ?? '-'); ?></strong>
-            </td>
+            </td> -->
 
 
             <td>
