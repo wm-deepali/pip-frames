@@ -28,6 +28,48 @@
         display: inline-block;
         vertical-align: middle;
     }
+
+    /* Hide the native radio button */
+.custom-radio input[type="radio"] {
+  display: none;
+}
+
+/* Create a custom radio look */
+.custom-radio label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* The circle for radio */
+.custom-radio label::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+/* Checked state */
+.custom-radio input[type="radio"]:checked + label {
+  background-color: #ff3b7c;
+  border-color: #ff3b7c;
+  color: white;
+}
+
+.custom-radio input[type="radio"]:checked + label::before {
+  border-color: white;
+  background-color: white;
+}
+
 </style>
 @section('content')
 

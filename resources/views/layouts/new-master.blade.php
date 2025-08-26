@@ -187,6 +187,23 @@
                           </li>
                         </ul>
                       </li>
+                      <li class="dropdown">
+                        <a href="#">Categories</a>
+                        <ul>
+                          @php
+                            use App\Models\Category;
+                            $categories = Category::latest()->get();
+                           @endphp
+
+                          @foreach($categories as $category)
+                            <li>
+                              <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+                            </li>
+                          @endforeach
+                        </ul>
+                      </li>
+
+
                       <li><a href="{{ Route('about-us') }}">About</a></li>
                       <li class="dropdown"><a href="#">Services</a>
                         <ul>

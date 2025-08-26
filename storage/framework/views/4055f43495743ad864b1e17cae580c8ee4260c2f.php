@@ -1039,4 +1039,4 @@
 
 
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.new-master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/front/top-form.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.new-master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/front/category-detail.blade.php ENDPATH**/ ?>

@@ -20,18 +20,37 @@ class SiteController extends Controller
 {
     public function index()
     {
-        $subcategories = Subcategory::where('status', 'active')->get();
         $blogs = Blog::where('status', 'published')
             ->latest()
             ->take(6)
             ->get();
-        // Fetch active extra options ordered by sort_order
+
+        return view('front.index', compact('blogs'));
+    }
+
+
+    public function show($slug)
+    {
+        // Find the category by slug
+        $category = Category::where('slug', $slug)->firstOrFail();
+
+        // Get subcategories related to the found category's id and with status active
+        $subcategories = Subcategory::whereHas('categories', function ($query) use ($category) {
+            $query->where('categories.id', $category->id);
+        })
+            ->where('status', 'active')
+            ->get();
+
         $extraOptions = ExtraOption::where('is_active', 1)
             ->orderBy('sort_order')
             ->get();
 
-        return view('front.top-form', compact('subcategories', 'blogs', 'extraOptions'));
+        // For debugging
+        // dd($subcategories->toArray(), $category->id, $slug);
+
+        return view('front.category-detail', compact('subcategories', 'extraOptions', 'category'));
     }
+
 
     public function attributes(Request $request)
     {
@@ -153,7 +172,7 @@ class SiteController extends Controller
     public function getAllImageConditions(Request $request)
     {
         $request->validate([
-            'category_id' => 'required|integer|exists:categories,id', // or 'subcategories' if applicable
+            'category_id' => 'required|integer|exists:subcategories,id', // or 'subcategories' if applicable
         ]);
 
         $categoryId = $request->category_id;

@@ -157,11 +157,27 @@
 
             <!-- Right Part -->
             <div class="col-lg-6 right-part text-center">
-                <div class="preview">
+                <!-- <div class="preview">
                     <img src="<?php echo e(asset('storage/' . ($subcategories->first()->thumbnail ?? ''))); ?>" alt="Pet Portrait"
                         class="preview-img" id="main-img">
 
+                </div> -->
+                <!-- Portrait preview -->
+                <div id="portraitPreview" class="preview active">
+                    <img id="mainImagePortrait" class="preview-img"
+                        src="<?php echo e(asset('storage/' . ($subcategories->first()->thumbnail ?? ''))); ?>"
+                        alt="Pet Portrait Portrait" />
+                    <!-- Frame overlay for portrait -->
+                    <img id="frameOverlayPortrait" class="frame-overlay"/>
                 </div>
+
+                <!-- Landscape preview -->
+                <div id="landscapePreview" class="preview-container" style="position: relative; display: none;">
+                    <img id="mainImageLandscape" class="preview-img" src="" alt="Pet Portrait Landscape" />
+                    <!-- Frame overlay for landscape -->
+                    <img id="frameOverlayLandscape" class="frame-overlay" />
+                </div>
+
 
                 <!-- Thumbnails -->
                 <div class="thumbnails" id="thumbnails-container">
@@ -355,6 +371,28 @@
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
                     }
+
+                    if (stepNumber === 3) {
+                        const firstVal = attr.values[0]; // the first option
+
+                        // Set localStorage keys for the frame
+                        if (firstVal.value.toLowerCase() === 'no frame' || firstVal.value === undefined) {
+                            localStorage.removeItem(`selectedFramePortrait_${currentSelections.categoryId || currentCategoryId}`);
+                            localStorage.removeItem(`selectedFrameLandscape_${currentSelections.categoryId || currentCategoryId}`);
+                        } else {
+                            if (firstVal.image_portrait_path) {
+                                localStorage.setItem(`selectedFramePortrait_${currentSelections.categoryId || currentCategoryId}`, `/storage/${firstVal.image_portrait_path}`);
+                            }
+                            if (firstVal.image_landscape_path) {
+                                localStorage.setItem(`selectedFrameLandscape_${currentSelections.categoryId || currentCategoryId}`, `/storage/${firstVal.image_landscape_path}`);
+                            }
+                        }
+
+                        // Update preview image to reflect frame change
+                        updateMainImage();
+                    }
+
+
                     // Determine image source preferentially: portrait first, then landscape, then fallback image_path
                     const imgSrc = (attr.require_both_images)
                         ? (val.image_portrait_path
@@ -365,8 +403,12 @@
                         : (val.image_path ? `/storage/${val.image_path}` : '');
 
                     optionCard.innerHTML = `
+                    <div class="option-card-attribue">
+                    <div class="attribute-background-image">
     <img src="${imgSrc}" alt="${val.value}">
+    </div>
     <p>${val.value}</p>
+    </div>
 `;
 
 
@@ -379,8 +421,8 @@
                             // Check if the selected option is "no frame"
                             // Assuming val.value or another property identifies the no-frame option (adjust if your data differs)
                             if (val.value.toLowerCase() === 'no frame' || val.value.toLowerCase() === 'none') {
-                                localStorage.removeItem('selectedFramePortrait');
-                                localStorage.removeItem('selectedFrameLandscape');
+                                localStorage.removeItem(`selectedFramePortrait_${currentCategoryId}`);
+                                localStorage.removeItem(`selectedFrameLandscape_${currentCategoryId}`);
 
                                 // Remove frame overlay immediately
                                 const previewContainer = document.querySelector('.preview');
@@ -388,14 +430,15 @@
                                 if (existingFrame) existingFrame.remove();
                             } else {
                                 if (val.image_portrait_path) {
-                                    localStorage.setItem('selectedFramePortrait', `/storage/${val.image_portrait_path}`);
+                                    localStorage.setItem(`selectedFramePortrait_${currentCategoryId}`, `/storage/${val.image_portrait_path}`);
                                 } else {
-                                    localStorage.removeItem('selectedFramePortrait');
+                                    localStorage.removeItem(`selectedFramePortrait_${currentCategoryId}`);
+
                                 }
                                 if (val.image_landscape_path) {
-                                    localStorage.setItem('selectedFrameLandscape', `/storage/${val.image_landscape_path}`);
+                                    localStorage.setItem(`selectedFrameLandscape_${currentCategoryId}`, `/storage/${val.image_landscape_path}`);
                                 } else {
-                                    localStorage.removeItem('selectedFrameLandscape');
+                                    localStorage.removeItem(`selectedFrameLandscape_${currentCategoryId}`);
                                 }
                             }
                         }
@@ -412,32 +455,6 @@
                 });
 
                 attrWrapper.appendChild(optionsDiv);
-
-                // Only auto-select for steps other than 3
-                if (stepNumber === 3 && currentSelections[attr.id] === undefined && attr.values.length > 0) {
-                    const firstVal = attr.values[0];
-
-                    currentSelections[attr.id] = firstVal.id;
-
-                    // Handle no-frame option for initial selection
-                    if (firstVal.value.toLowerCase() === 'no frame' || firstVal.value.toLowerCase() === 'none') {
-                        localStorage.removeItem('selectedFramePortrait');
-                        localStorage.removeItem('selectedFrameLandscape');
-                    } else {
-                        if (firstVal.image_portrait_path) {
-                            localStorage.setItem('selectedFramePortrait', `/storage/${firstVal.image_portrait_path}`);
-                        } else {
-                            localStorage.removeItem('selectedFramePortrait');
-                        }
-                        if (firstVal.image_landscape_path) {
-                            localStorage.setItem('selectedFrameLandscape', `/storage/${firstVal.image_landscape_path}`);
-                        } else {
-                            localStorage.removeItem('selectedFrameLandscape');
-                        }
-                    }
-
-                    updateMainImage();
-                }
 
             } else if (attr.input_type === "select_area") {
                 const rowDiv = document.createElement('div');
@@ -545,7 +562,7 @@
                     }
 
                     optionCard.innerHTML = `
-                    <div class="colour-swatch" style="width:32px; height:32px; border-radius:50%; background:${val.colour_code || '#eee'}; border:2px solid #ccc; margin-bottom:8px;"></div>
+                    <div class="colour-swatch" style="width:130px; height:130px; border-radius:7px; background:${val.colour_code || '#eee'}; border:10px solid #ddd; margin-bottom:8px;"></div>
                     <p>${val.value}</p>
                 `;
 
@@ -569,7 +586,52 @@
                     currentSelections[attr.id] = attr.values[0].id;
                     currentSelections[`${attr.id}_colour_code`] = attr.values[0].colour_code;
                 }
-            } else {
+            } else if (attr.input_type === "radio") {
+                const optionsDiv = document.createElement("div");
+                optionsDiv.className = "radio-options";
+
+                attr.values.forEach((val, idx) => {
+                    const radioWrapper = document.createElement("label");
+                    radioWrapper.style.display = "flex";             // use flex layout for better alignment
+                    radioWrapper.style.alignItems = "center";
+                    radioWrapper.style.cursor = "pointer";           // pointer on hover
+                    radioWrapper.style.marginBottom = "10px";        // spacing between radios
+                    radioWrapper.style.padding = "8px 12px";          // add some padding
+                    radioWrapper.style.border = "1px solid #ccc";     // border for visibility
+                    radioWrapper.style.borderRadius = "20px";         // rounded corners
+                    radioWrapper.style.userSelect = "none";           // prevent accidental text select
+
+                    const radioInput = document.createElement("input");
+                    radioInput.type = "radio";
+                    radioInput.name = `attribute_${attr.id}`;
+                    radioInput.value = val.id;
+                    radioInput.checked = (currentSelections[attr.id] === val.id) || (currentSelections[attr.id] === undefined && idx === 0);
+
+                    radioInput.style.marginRight = "12px";            // space between radio and label text
+                    radioInput.style.width = "18px";                   // larger size
+                    radioInput.style.height = "18px";
+
+                    const labelText = document.createTextNode(val.value);
+
+                    radioInput.addEventListener("change", () => {
+                        currentSelections[attr.id] = val.id;
+                        applyPriceAndAttributes();
+                    });
+
+                    radioWrapper.appendChild(radioInput);
+                    radioWrapper.appendChild(labelText);
+                    optionsDiv.appendChild(radioWrapper);
+                });
+
+                attrWrapper.appendChild(optionsDiv);
+
+                if (currentSelections[attr.id] === undefined && attr.values.length > 0) {
+                    currentSelections[attr.id] = attr.values[0].id;
+                }
+            }
+
+
+            else {
                 const unsupported = document.createElement("p");
                 unsupported.textContent = "Unsupported input type.";
                 attrWrapper.appendChild(unsupported);
@@ -832,7 +894,6 @@
 
     function updateMainImage() {
         let matched = null;
-
         for (const cond of imageConditions) {
             let match = true;
             for (const attrId in cond.combination) {
@@ -848,58 +909,137 @@
             }
         }
 
-        const previewContainer = document.querySelector(".preview");
-        const mainImg = document.getElementById("main-img");
-        if (!mainImg || !previewContainer) return;
+        const portraitPreview = document.getElementById("portraitPreview");
+        const landscapePreview = document.getElementById("landscapePreview");
+
+        const mainImgPortrait = document.getElementById("mainImagePortrait");
+        const frameOverlayPortrait = document.getElementById("frameOverlayPortrait");
+
+        const mainImgLandscape = document.getElementById("mainImageLandscape");
+        const frameOverlayLandscape = document.getElementById("frameOverlayLandscape");
+
+        if (!mainImgPortrait || !mainImgLandscape || !portraitPreview || !landscapePreview) return;
 
         if (matched) {
-            mainImg.src = matched.image;
-        } else if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
-            mainImg.src = `/storage/${subcategoryThumbnails[currentCategoryId]}`;
-        } else {
-            mainImg.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
-        }
+            if (matched.orientation === 'portrait') {
+                // Show portrait, hide landscape
+                portraitPreview.style.display = 'block';
+                landscapePreview.style.display = 'none';
 
-        // Apply background color and border from selected colour option
-        let selectedColour = null;
-        for (const key in currentSelections) {
-            if (key.includes('_colour_code')) {
-                selectedColour = currentSelections[key];
-                break;
+                mainImgPortrait.src = matched.image;
+
+                // Set frame overlay for portrait
+                const framePortrait = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
+                if (framePortrait) {
+                    frameOverlayPortrait.src = framePortrait;
+                    frameOverlayPortrait.style.display = "block";
+                } else {
+                    frameOverlayPortrait.style.display = "none";
+                }
+            } else if (matched.orientation === 'landscape') {
+                // Show landscape, hide portrait
+                landscapePreview.style.display = 'block';
+                portraitPreview.style.display = 'none';
+
+                mainImgLandscape.src = matched.image;
+
+                // Set frame overlay for landscape
+                const frameLandscape = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
+                if (frameLandscape) {
+                    frameOverlayLandscape.src = frameLandscape;
+                    frameOverlayLandscape.style.display = "block";
+                } else {
+                    frameOverlayLandscape.style.display = "none";
+                }
             }
-        }
-        previewContainer.style.backgroundColor = selectedColour || '';
-        mainImg.style.border = selectedColour ? `2px solid ${selectedColour}` : '';
+        } else {
+            // Default fallback to portrait view
+            portraitPreview.style.display = 'block';
+            landscapePreview.style.display = 'none';
 
-        // Retrieve saved frame images from localStorage
-        const framePortrait = localStorage.getItem('selectedFramePortrait');
-        const frameLandscape = localStorage.getItem('selectedFrameLandscape');
-
-        // Remove any existing frame overlay
-        const existingFrame = previewContainer.querySelector('.frame-overlay');
-        if (existingFrame) existingFrame.remove();
-
-        // Determine orientation from matched or fallback
-        const orientation = matched ? matched.orientation : null;
-
-        let frameImagePath = null;
-        if (orientation === 'portrait' && framePortrait) {
-            frameImagePath = framePortrait;
-        } else if (orientation === 'landscape' && frameLandscape) {
-            frameImagePath = frameLandscape;
-        } else if (framePortrait) {
-            // Fallback to portrait if orientation unknown
-            frameImagePath = framePortrait;
-        }
-
-        if (frameImagePath) {
-            const frameImg = document.createElement('img');
-            frameImg.src = frameImagePath;
-            frameImg.className = 'frame-overlay';
-            frameImg.setAttribute('aria-label', 'Selected frame overlay');
-            previewContainer.appendChild(frameImg);
+            // Fallback image for portrait
+            if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
+                mainImgPortrait.src = `/storage/${subcategoryThumbnails[currentCategoryId]}`;
+            } else {
+                mainImgPortrait.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
+            }
+            frameOverlayPortrait.style.display = "none";
+            frameOverlayLandscape.style.display = "none";
         }
     }
+
+
+    // function updateMainImage() {
+    //     let matched = null;
+
+    //     for (const cond of imageConditions) {
+    //         let match = true;
+    //         for (const attrId in cond.combination) {
+    //             const key = Number(attrId);
+    //             if (!(key in currentSelections) || currentSelections[key] === null || currentSelections[key] !== cond.combination[key]) {
+    //                 match = false;
+    //                 break;
+    //             }
+    //         }
+    //         if (match) {
+    //             matched = cond;
+    //             break;
+    //         }
+    //     }
+
+    //     const previewContainer = document.querySelector(".preview");
+    //     const mainImg = document.getElementById("main-img");
+    //     if (!mainImg || !previewContainer) return;
+
+    //     if (matched) {
+    //         mainImg.src = matched.image;
+    //     } else if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
+    //         mainImg.src = `/storage/${subcategoryThumbnails[currentCategoryId]}`;
+    //     } else {
+    //         mainImg.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
+    //     }
+
+    //     // Apply background color and border from selected colour option
+    //     let selectedColour = null;
+    //     for (const key in currentSelections) {
+    //         if (key.includes('_colour_code')) {
+    //             selectedColour = currentSelections[key];
+    //             break;
+    //         }
+    //     }
+    //     previewContainer.style.backgroundColor = selectedColour || '';
+    //     mainImg.style.border = selectedColour ? `0px solid ${selectedColour}` : '';
+
+    //     // Retrieve saved frame images from localStorage
+    //     const framePortrait = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
+    //     const frameLandscape = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
+
+
+    //     // Remove any existing frame overlay
+    //     const existingFrame = previewContainer.querySelector('.frame-overlay');
+    //     if (existingFrame) existingFrame.remove();
+
+    //     // Determine orientation from matched or fallback
+    //     const orientation = matched ? matched.orientation : null;
+
+    //     let frameImagePath = null;
+    //     if (orientation === 'portrait' && framePortrait) {
+    //         frameImagePath = framePortrait;
+    //     } else if (orientation === 'landscape' && frameLandscape) {
+    //         frameImagePath = frameLandscape;
+    //     } else if (framePortrait) {
+    //         // Fallback to portrait if orientation unknown
+    //         frameImagePath = framePortrait;
+    //     }
+
+    //     if (frameImagePath) {
+    //         const frameImg = document.createElement('img');
+    //         frameImg.src = frameImagePath;
+    //         frameImg.className = 'frame-overlay';
+    //         frameImg.setAttribute('aria-label', 'Selected frame overlay');
+    //         previewContainer.appendChild(frameImg);
+    //     }
+    // }
 
 
 
@@ -916,7 +1056,6 @@
         groupedImageConditions.forEach(condition => {
             // Check if all dependencies satisfied by current selections
             const allDepsMatch = condition.dependencies.every(dep => currentSelections[dep.attribute_id] == dep.value_id);
-            console.log(currentSelections, 'hy');
 
             if (allDepsMatch) {
                 // For all affected values, update corresponding option image

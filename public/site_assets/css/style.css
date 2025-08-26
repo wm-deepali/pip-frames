@@ -208,7 +208,7 @@ img.lazy-image.loaded{
     overflow: hidden;
 }
 img {
-    max-width: 100%;
+    /*max-width: 100%;*/
     height: auto;
     transition-delay: .1s;
     transition-timing-function: ease-in-out;
@@ -9504,7 +9504,7 @@ select:focus {
     margin-top: 140px;
     width: 100%;
     height: auto;
-    background-color: #f4f2ef;
+    background-color: #fff;
     display: grid;
     grid-template-columns: 12fr;
     gap: 40px;
@@ -9535,7 +9535,7 @@ select:focus {
             border-radius: 25px; font-size: 16px; cursor: pointer; }
 
 .preview { margin-bottom: 15px; }
-.preview-img { width: 350px; padding: 60px; border-radius: 8px; }
+
 .pet-name { font-weight: bold; margin-top: 10px; }
 
 .thumbnails { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
@@ -9550,27 +9550,42 @@ select:focus {
 }
 
 .option-card {
-  flex: 1 1 120px;
-  max-width: 130px;
-  border: 2px solid #ddd;
+  flex: 1 1 200px;
+  max-width: 150px;
+  height:170px;
+  /*border: 2px solid #ddd;*/
   border-radius: 10px;
   text-align: center;
-  padding: 10px;
+  /*padding: 10px;*/
   cursor: pointer;
   transition: 0.3s;
-  background: #fff;
-}
+  /*background:#f9f9f9;*/
+  background-image:url()
 
+}
+.attribute-background-image{
+    padding:6px;
+    /*background:#efecec;*/
+    background-image: url('https://t4.ftcdn.net/jpg/02/96/17/83/360_F_296178398_I4IH4kE0fDT2lmhKJ4Ncq8iNuXXZAQFI.jpg');
+     border-radius: 10px;
+     overflow:hidden;
+     border:1px solid #ddd;
+     
+}
 .option-card img {
-  width: 100%;
-  height:100px;
+  width: 130px;
+  height:130px;
   border-radius: 8px;
-  margin-bottom: 8px;
+  /*margin-bottom: 8px;*/
+    background: #fff;
+     padding: 10px;
+      border: 2px solid #ddd;
 }
 
 .option-card p {
   margin: 0;
   font-weight: 500;
+  align-items:center;
 }
 
 .option-card:hover {
@@ -9578,10 +9593,15 @@ select:focus {
   transform: translateY(-3px);
 }
 
-.option-card.active {
+.option-card.active img {
   border-color: #ff4081;
-  background: #ffeaf3;
+  /*background: #ffeaf3;*/
 }
+.option-card.active .colour-swatch {
+  border: 2px solid #ff4081 !important;
+  /*background: #ffeaf3; */
+}
+
 
 .option-card1 {
   flex: 1 1 130px;
@@ -9623,8 +9643,7 @@ select:focus {
   margin: 20px 0;
 }
 .right-part {
-  position: sticky;
-  top: 20px;  /* jitna gap chahiye top se */
+
 }
 
 .color-box {
@@ -9647,6 +9666,7 @@ select:focus {
 }
 
 .prev-btn, .next-btn {
+    width: 200px;
   border: none;
   padding: 10px 20px;
   border-radius: 25px;
@@ -9655,8 +9675,9 @@ select:focus {
 }
 
 .prev-btn {
-  background: #eee;
-  color: #333;
+  background: #fff;
+  border:2px solid #ff4081;
+  color: #ff4081;
 }
 
 .next-btn {
@@ -9738,20 +9759,32 @@ textarea {
 }
 
 .preview {
-    position: relative;
-    display: inline-block;
-    padding: 10px;
+    width:212px !important;
+    overflow:hidden !important;
 }
 .preview-img {
+    width: 215px;
+    height: 340px;
     display: block;
 }
 .frame-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -31px;
+    left: 50%;
+    transform: translateX(-50%);
+         width: 310px;
+    height: 420px;
+    overflow: hidden;
     object-fit: contain;
     pointer-events: none;
     z-index: 10;
+}
+
+.right-part {
+    display: flex
+;
+    flex-direction: column;
+    align-items: center;
+    gap:30px;
+    margin-top:100px;
 }

@@ -39,6 +39,9 @@ Route::get('/', [SiteController::class, 'index'])->name('home');
 
 Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
 
+
+Route::get('/category/{slug}', [SiteController::class, 'show'])->name('category.show');
+
 Route::get('/attributes', [SiteController::class, 'attributes'])->name('attributes');
 Route::get('/get-attribute-images', [SiteController::class, 'AttributeImages'])->name('get-attribute-images');
 Route::post('/get-price', [SiteController::class, 'calculatePrice'])->name('get-price');

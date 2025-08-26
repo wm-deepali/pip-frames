@@ -187,6 +187,23 @@
                           </li>
                         </ul>
                       </li>
+                      <li class="dropdown">
+                        <a href="#">Categories</a>
+                        <ul>
+                          <?php
+                            use App\Models\Category;
+                            $categories = Category::latest()->get();
+                           ?>
+
+                          <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li>
+                              <a href="<?php echo e(route('category.show', $category->slug)); ?>"><?php echo e($category->name); ?></a>
+                            </li>
+                          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </ul>
+                      </li>
+
+
                       <li><a href="<?php echo e(Route('about-us')); ?>">About</a></li>
                       <li class="dropdown"><a href="#">Services</a>
                         <ul>
