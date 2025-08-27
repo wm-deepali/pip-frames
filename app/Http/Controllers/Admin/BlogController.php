@@ -136,7 +136,7 @@ class BlogController extends Controller
         $recentBlogs = Blog::latest()
             ->where('id', '!=', $blog->id)->take(4)->get(); // Optional: reuse sidebar
 
-        return view('front.blog-detail', compact('blog', 'recentBlogs'));
+        return view('front.blog-details', compact('blog', 'recentBlogs'));
     }
     public function search(Request $request)
     {

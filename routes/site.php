@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\GoogleController;
+use App\Models\ContactInfo;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,9 @@ Route::get('/get-all-image-conditions', [SiteController::class, 'getAllImageCond
 Route::get('/thank-you', function () {
     return view('front.thank-you');
 })->name('thank-you');
+Route::get('/how-it-works', function () {
+    return view('front.how-it-works');
+})->name('how-it-works');
 
 
 Route::get('/top-form', function () {
@@ -85,7 +89,8 @@ Route::get('services', function () {
 })->name('services');
 
 Route::get('contact-us', function () {
-    return view('front.contact-us');
+    $contact = ContactInfo::first();
+    return view('front.contact-us', compact('contact'));
 })->name('contact-us');
 
 Route::get('ser-pet-grooming', function () {

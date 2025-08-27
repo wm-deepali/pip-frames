@@ -17,6 +17,8 @@
           <span class="text-danger validation-err" id="attribute_id-err"></span>
         </div>
 
+
+
         
         <div class="form-group" id="title-wrapper" style="display: none;">
           <label>Title <span class="text-danger">*</span></label>
@@ -24,6 +26,7 @@
           <span class="text-danger validation-err" id="title-err"></span>
         </div>
 
+        
         <?php
           $inputType = $attributeConfigs[$attribute->id]['input_type'] ?? 'text';
           $requireBothImages = $attributeConfigs[$attribute->id]['require_both_images'] ?? false;
@@ -67,6 +70,17 @@
         </div>
 
         
+
+        <?php if($attribute->required_file_uploads): ?>
+          <div class="form-group" id="required-file-uploads-wrapper">
+            <label for="required_file_uploads">Required File Uploads</label>
+            <input type="number" name="required_file_uploads" id="required_file_uploads" class="form-control" min="0"
+              value="<?php echo e(old('required_file_uploads', $attributeValue->required_file_uploads ?? '')); ?>"
+              placeholder="Enter number">
+            <span class="text-danger validation-err" id="required_file_uploads-err"></span>
+          </div>
+        <?php endif; ?>
+
 
 
         
@@ -169,6 +183,15 @@
 <script>
   $(document).ready(function () {
     const inputType = <?php echo json_encode($attributeConfigs[$attribute->id]['input_type'] ?? 'text', 15, 512) ?>;
+    const requiredFileUploads = <?php echo json_encode($attribute->required_file_uploads, 15, 512) ?>;
+    const parentImagesData = <?php echo json_encode($parentImagesData, 15, 512) ?>;
+    const attributeConfig = <?php echo json_encode($attributeConfigs[$attribute->id], 15, 512) ?>;
+
+    if (requiredFileUploads) {
+      $('#required-file-uploads-wrapper').show();
+    } else {
+      $('#required-file-uploads-wrapper').hide();
+    }
 
     // --- Composite toggle ---
     function toggleComposedWrapper() {
@@ -204,7 +227,6 @@
       const $picker = $('.colour-picker-input');
       const $preview = $('.colour-preview');
 
-      // Code -> Picker + Preview
       $codeInput.on('input', function () {
         const val = $(this).val().trim();
         if (/^#([0-9A-F]{3}){1,2}$/i.test(val)) {
@@ -213,12 +235,47 @@
         }
       });
 
-      // Picker -> Code + Preview
       $picker.on('input', function () {
         const val = $(this).val();
         $codeInput.val(val);
         $preview.css('background', val);
       });
     }
+
+    // Render parent images dependencies
+    function renderDependencyImages(containerId, attributeConfig, imagesData) {
+       const wrapper = $(`#value-wrapper`);
+      let html = '';
+      attributeConfig.imageParents.forEach(parent => {
+        parent.values.forEach(value => {
+          const imgData = (imagesData[parent.id] && imagesData[parent.id][value.id]) || {};
+          const checked = imgData && imgData.id ? 'checked' : '';
+          const orientation = imgData.orientation || 'portrait';
+          const preview = imgData.preview ? `<img src="${imgData.preview}" style="height: 40px;">` : '';
+
+          html += `
+                 <div class="parent-image-block mb-3">
+          <label>
+            <input type="checkbox" name="parent_images[${parent.id}][${value.id}][enabled]" ${checked}>
+            ${value.title || value.value}
+          </label>
+          <select name="parent_images[${parent.id}][${value.id}][orientation]" class="form-control d-inline-block mx-2" style="width:120px;">
+            <option value="portrait" ${orientation === 'portrait' ? 'selected' : ''}>Portrait</option>
+            <option value="landscape" ${orientation === 'landscape' ? 'selected' : ''}>Landscape</option>
+          </select>
+          <input type="file" name="parent_images[${parent.id}][${value.id}][file]" class="form-control-file d-inline-block mx-1" style="width:100px;">
+          ${preview}
+        </div>
+                  
+                `;
+        });
+      });
+      wrapper.html(html);
+    }
+  // Dependency Image Rendering: Only if has_image_dependency is true
+    if (attributeConfig?.has_image_dependency) {
+        renderDependencyImages('dependency-image-container', attributeConfig, parentImagesData);
+    }
   });
+
 </script><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/admin/attribute-values/edit.blade.php ENDPATH**/ ?>

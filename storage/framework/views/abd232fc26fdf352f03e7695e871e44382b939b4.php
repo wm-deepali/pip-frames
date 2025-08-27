@@ -97,15 +97,24 @@
             -
         <?php endif; ?>
     <?php else: ?>
-        <?php if($value->image_path): ?>
+        <?php if($value->parentImages->isNotEmpty() && $value->attribute->has_image_dependency): ?>
+      <?php $__currentLoopData = $value->parentImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pi): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <div class="mb-2">
+          <strong><?php echo e($pi->parentAttribute->name ?? 'Parent Attr'); ?></strong> - 
+          <?php echo e($pi->parentAttributeValue->value ?? 'Value'); ?><br>
+          <img src="<?php echo e(asset('storage/' . $pi->image_path)); ?>" width="40" alt="Parent Image">
+          <small><?php echo e(ucfirst($pi->orientation)); ?></small>
+        </div>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php else: ?>
+       <?php if($value->image_path): ?>
             <img src="<?php echo e(asset('storage/' . $value->image_path)); ?>" width="40">
-        <?php else: ?>
-            -
         <?php endif; ?>
+    <?php endif; ?>
     <?php endif; ?>
 </td>
 
-            <!-- <td><?php echo $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-'; ?></td> -->
+    <!-- <td><?php echo $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-'; ?></td> -->
             <!-- <td><?php echo e($value->custom_input_label ?? '-'); ?></td> -->
 
             <td><?php echo e($value->created_at->format('d M Y')); ?></td>

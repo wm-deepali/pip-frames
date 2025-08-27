@@ -39,6 +39,7 @@ class SiteController extends Controller
             $query->where('categories.id', $category->id);
         })
             ->where('status', 'active')
+            ->latest()
             ->get();
 
         $extraOptions = ExtraOption::where('is_active', 1)
@@ -91,6 +92,7 @@ class SiteController extends Controller
                     'is_required' => $sa->is_required,
                     'area_unit' => $attr->area_unit ?? 'inch',
                     'require_both_images' => $attr->require_both_images,
+                    'required_file_uploads' => $attr->required_file_uploads,
                     'values' => $values->map(function ($sav) {
                         return [
                             'id' => $sav->value->id,
@@ -99,6 +101,7 @@ class SiteController extends Controller
                             'image_path' => $sav->value->image_path ?? null,
                             'image_portrait_path' => $sav->value->image_portrait_path ?? null,
                             'image_landscape_path' => $sav->value->image_landscape_path ?? null,
+                            'required_file_uploads' => $sav->value->required_file_uploads ?? 1,
                         ];
                     })->values(),
 

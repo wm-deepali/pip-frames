@@ -1,15 +1,15 @@
-@extends('layouts.new-master')
 
-@section('title')
+
+<?php $__env->startSection('title'); ?>
     FAQ || CarePress
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
     <!--Start breadcrumb area-->
     <section class="breadcrumb-area"
-        style="background-image: url({{ asset('site_assets') }}/images/breadcrumb/breadcrumb-1.png);">
+        style="background-image: url(<?php echo e(asset('site_assets')); ?>/images/breadcrumb/breadcrumb-1.png);">
         <div class="banner-curve"></div>
         <div class="container">
             <div class="row">
@@ -36,21 +36,21 @@
     <section class="faq-page-area">
         <div class="container">
             <div class="row">
-                @foreach($faqs as $faq)
+                <?php $__currentLoopData = $faqs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $faq): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="col-md-6">
                         <div class="accordion-box">
                             <div class="accordion accordion-block">
                                 <div class="accord-btn">
-                                    <h4>{{ $faq->question }}</h4>
+                                    <h4><?php echo e($faq->question); ?></h4>
                                 </div>
                                 <div class="accord-content">
-                                    <p>{{ $faq->answer }}</p>
+                                    <p><?php echo e($faq->answer); ?></p>
                                 </div>
                             </div>
 
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
             </div>
 
@@ -72,8 +72,8 @@
                             <h3>Email Address<span class="dotted"></span></h3>
                         </div>
                         <ul>
-                            <li><a href="mailto:{{ $contact->email ?? 'andy@pipframes.co.uk' }}">{{ $contact->email ??
-                                    'andy@pipframes.co.uk' }}</a></li>
+                            <li><a href="mailto:<?php echo e($contact->email ?? 'andy@pipframes.co.uk'); ?>"><?php echo e($contact->email ??
+                                    'andy@pipframes.co.uk'); ?></a></li>
                         </ul>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                         </div>
                         <ul>
                             <li><a
-                                    href="tel:{{ $contact->contact_number ?? '+01132 874724' }}">{{ $contact->contact_number ?? '+01132 874724' }}</a>
+                                    href="tel:<?php echo e($contact->contact_number ?? '+01132 874724'); ?>"><?php echo e($contact->contact_number ?? '+01132 874724'); ?></a>
                             </li>
                         </ul>
                     </div>
@@ -97,7 +97,7 @@
                         <div class="title">
                             <h3>Office Address<span class="dotted"></span></h3>
                         </div>
-                        <p>{{ $contact->full_address ?? "Unit 7 Lotherton Way Garforth Leeds LS252JY" }}</p>
+                        <p><?php echo e($contact->full_address ?? "Unit 7 Lotherton Way Garforth Leeds LS252JY"); ?></p>
                     </div>
                 </div>
                 <div class="col-xl-3 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="600ms">
@@ -107,12 +107,12 @@
                             <h3>Web Connection<span class="dotted"></span></h3>
                         </div>
                         <p>
-                            @if(!empty($contact->website_url))
-                                <a href="{{ $contact->website_url }}" target="_blank"
-                                    rel="noopener">{{ $contact->website_url }}</a>
-                            @else
+                            <?php if(!empty($contact->website_url)): ?>
+                                <a href="<?php echo e($contact->website_url); ?>" target="_blank"
+                                    rel="noopener"><?php echo e($contact->website_url); ?></a>
+                            <?php else: ?>
                                 Not Available
-                            @endif
+                            <?php endif; ?>
                         </p>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
     <!--Start Contact Form Style1 Area-->
     <section class="contact-form-style1-area">
         <div class="contact-form-style1-bg"
-            style="background-image: url({{ asset('site_assets') }}/images/shape/contact-form-style1-bg.png)">
+            style="background-image: url(<?php echo e(asset('site_assets')); ?>/images/shape/contact-form-style1-bg.png)">
         </div>
         <div class="container">
             <div class="sec-title text-center">
@@ -137,7 +137,7 @@
                 <div class="col-xl-12">
                     <div class="contact-form contact-page">
                         <form id="contact-form" name="contact_form" class="default-form2"
-                            action="https://mehedi.asiandevelopers.com/demo/carepress/{{ asset('site_assets') }}/inc/sendmail.php"
+                            action="https://mehedi.asiandevelopers.com/demo/carepress/<?php echo e(asset('site_assets')); ?>/inc/sendmail.php"
                             method="post">
                             <div class="row">
                                 <div class="col-xl-4 col-lg-4">
@@ -217,4 +217,5 @@
         </div>
     </section>
     <!--End Contact Form Style1 Area-->
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.new-master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/front/faq.blade.php ENDPATH**/ ?>

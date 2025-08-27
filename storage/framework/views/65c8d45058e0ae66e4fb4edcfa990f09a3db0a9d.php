@@ -3,11 +3,13 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Invoice #{{ $invoice->invoice_number}}</title>
-    {{-- Embedded Bootstrap + Custom CSS for PDF (DomPDF only supports inline/local CSS) --}}
+    <title>Invoice #<?php echo e($invoice->invoice_number); ?></title>
+    
     <style>
-        {!! file_get_contents(public_path('admin_assets/css/bootstrap.min.css')) !!}
-        {!! file_get_contents(public_path('admin_assets/css/style.css')) !!}
+        <?php echo file_get_contents(public_path('admin_assets/css/bootstrap.min.css')); ?>
+
+        <?php echo file_get_contents(public_path('admin_assets/css/style.css')); ?>
+
  </style>
 </head>
 
@@ -15,33 +17,34 @@
             <div class="content-body">
                 <div class="card p-4 shadow-sm" style="max-width: 900px; margin: auto; background: #fff;">
 
-                    {{-- Header Section --}}
+                    
                     <div class="d-flex justify-content-between align-items-start mb-4">
                         <div>
                             <h2 class="mb-0" style="font-weight:700;">INVOICE</h2>
                             <small class="text-muted"
-                                style="font-weight:600;">#{{ $invoice->invoice_number ?? 'N/A' }}</small>
+                                style="font-weight:600;">#<?php echo e($invoice->invoice_number ?? 'N/A'); ?></small>
                         </div>
                         <div>
-                            <img src="{{ public_path('admin_assets/images/logo.png') }}" alt="Logo" style="height: 30px;">
+                            <img src="<?php echo e(public_path('admin_assets/images/logo.png')); ?>" alt="Logo" style="height: 30px;">
                         </div>
                     </div>
 
-                    {{-- Issued/Billed/From Info --}}
+                    
                     <div class="row border-top border-bottom   mb-4" style="font-size: 14px;">
                         <div class="col-md-4 p-2">
                             <strong class="mb-1">Info</strong>
                             <hr>
                             <p class="" style="margin-bottom:6px;"><strong>Invoice Date:</strong>
-                                {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d M, Y') }}</p>
+                                <?php echo e(\Carbon\Carbon::parse($invoice->invoice_date)->format('d M, Y')); ?></p>
                             <p style="margin-bottom:6px;"> <strong>Order Id: </strong>
-                                #{{ $quote->order_number }}</p>
+                                #<?php echo e($quote->order_number); ?></p>
                             <p style="margin-bottom:6px;"> <strong>Payment Status: </strong>
-                                {{ $payments->sum('amount_received') >= $quote->grand_total ? 'Paid' : 'Unpaid' }}</p>
+                                <?php echo e($payments->sum('amount_received') >= $quote->grand_total ? 'Paid' : 'Unpaid'); ?></p>
                             <p style="margin-bottom:6px;"> <strong>Payment Method: </strong>
-                                {{ $payments->last()->payment_method ?? 'N/A' }}</p>
+                                <?php echo e($payments->last()->payment_method ?? 'N/A'); ?></p>
                             <p style="margin-bottom:6px;"> <strong>Payment Date:
-                                </strong>{{ \Carbon\Carbon::parse($payments->last()->payment_date)->format('d M, Y') ?? 'N/A' }}
+                                </strong><?php echo e(\Carbon\Carbon::parse($payments->last()->payment_date)->format('d M, Y') ?? 'N/A'); ?>
+
                             </p>
 
                         </div>
@@ -49,16 +52,18 @@
                             <strong class="mb-1">Billed to</strong>
                             <hr>
                             <p class="" style="margin-bottom:6px;font-weight:600;">
-                                {{ $customer->first_name ?? '-'}}
-                                {{ $customer->last_name ?? '' }}
-                            </p>
-                            <p class="" style="margin-bottom:6px;">{{ $quote->deliveryAddress->address ?? '' }},
-                                {{ $quote->deliveryAddress->city ?? '' }},
-                                {{ $quote->deliveryAddress->postcode ?? '' }},
-                                {{ $quote->deliveryAddress->country_name ?? '' }}</p>
+                                <?php echo e($customer->first_name ?? '-'); ?>
 
-                            <p style="margin-bottom:4px; ">{{ $customer->mobile ?? '' }}</p>
-                            <p class="text-blue" style="margin-bottom:6px; color:blue;">{{ $customer->email ?? '' }}</p>
+                                <?php echo e($customer->last_name ?? ''); ?>
+
+                            </p>
+                            <p class="" style="margin-bottom:6px;"><?php echo e($quote->deliveryAddress->address ?? ''); ?>,
+                                <?php echo e($quote->deliveryAddress->city ?? ''); ?>,
+                                <?php echo e($quote->deliveryAddress->postcode ?? ''); ?>,
+                                <?php echo e($quote->deliveryAddress->country_name ?? ''); ?></p>
+
+                            <p style="margin-bottom:4px; "><?php echo e($customer->mobile ?? ''); ?></p>
+                            <p class="text-blue" style="margin-bottom:6px; color:blue;"><?php echo e($customer->email ?? ''); ?></p>
                         </div>
                         <div class="col-md-4 p-2">
                             <strong class="mb-1">From</strong>
@@ -73,7 +78,7 @@
                         </div>
                     </div>
 
-                    {{-- Item Table --}}
+                    
                     <h5 class="mb-2">Item Summary</h5>
                     <div class="table-responsive">
                         <table class="table table-bordered" style="font-size: 14px;">
@@ -86,75 +91,79 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($quote->items as $item)
+                                <?php $__currentLoopData = $quote->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
 <td>
-    {{-- Subcategory + Category --}}
+    
     <div style="font-weight: 600;">
-        {{ $item->subcategory->name ?? 'N/A' }}
-        ({{ optional($item->subcategory->categories->first())->name ?? 'N/A' }})
+        <?php echo e($item->subcategory->name ?? 'N/A'); ?>
+
+        (<?php echo e(optional($item->subcategory->categories->first())->name ?? 'N/A'); ?>)
     </div>
 
-    {{-- Attributes --}}
-    @if ($item->attributes && $item->count())
+    
+    <?php if($item->attributes && $item->count()): ?>
         <div style="margin-top: 5px;">
-            @foreach ($item->attributes as $attr)
+            <?php $__currentLoopData = $item->attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attr): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div style="font-size: 13px; margin-left: 8px;">
-                    <strong>{{ $attr->attribute->name ?? '' }}:</strong>
-                    @if ($attr->attributeValue)
-                        {{ $attr->attributeValue->value }}
-                    @elseif ($attr->length && $attr->width)
-                        {{ $attr->length }} x {{ $attr->width }} {{ $attr->unit }}
-                    @elseif ($attr->length)
-                        {{ $attr->length }} {{ $attr->unit }}
-                    @else
-                        -
-                    @endif
-                </div>
-            @endforeach
-        </div>
-    @endif
+                    <strong><?php echo e($attr->attribute->name ?? ''); ?>:</strong>
+                    <?php if($attr->attributeValue): ?>
+                        <?php echo e($attr->attributeValue->value); ?>
 
-    {{-- Pet Details --}}
-    @if ($item->pet_name || $item->pet_birthdate || $item->personal_text || $item->note)
+                    <?php elseif($attr->length && $attr->width): ?>
+                        <?php echo e($attr->length); ?> x <?php echo e($attr->width); ?> <?php echo e($attr->unit); ?>
+
+                    <?php elseif($attr->length): ?>
+                        <?php echo e($attr->length); ?> <?php echo e($attr->unit); ?>
+
+                    <?php else: ?>
+                        -
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+    <?php endif; ?>
+
+    
+    <?php if($item->pet_name || $item->pet_birthdate || $item->personal_text || $item->note): ?>
         <div style="margin-top: 10px; padding: 8px; background-color: #f8f9fa; border-radius: 5px; font-size: 12px;">
             <strong>Pet Details:</strong><br>
-            @if ($item->pet_name)
-                <div style="margin-left: 10px;">Name: {{ $item->pet_name }}</div>
-            @endif
-            @if ($item->pet_birthdate)
-                <div style="margin-left: 10px;">Birthdate: {{ $item->pet_birthdate->format('d M Y') }}</div>
-            @endif
-            @if ($item->personal_text)
-                <div style="margin-left: 10px;">Personal Text: {{ $item->personal_text }}</div>
-            @endif
-            @if ($item->note)
-                <div style="margin-left: 10px;">Note: {{ $item->note }}</div>
-            @endif
+            <?php if($item->pet_name): ?>
+                <div style="margin-left: 10px;">Name: <?php echo e($item->pet_name); ?></div>
+            <?php endif; ?>
+            <?php if($item->pet_birthdate): ?>
+                <div style="margin-left: 10px;">Birthdate: <?php echo e($item->pet_birthdate->format('d M Y')); ?></div>
+            <?php endif; ?>
+            <?php if($item->personal_text): ?>
+                <div style="margin-left: 10px;">Personal Text: <?php echo e($item->personal_text); ?></div>
+            <?php endif; ?>
+            <?php if($item->note): ?>
+                <div style="margin-left: 10px;">Note: <?php echo e($item->note); ?></div>
+            <?php endif; ?>
         </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Extra Options --}}
-    @php
+    
+    <?php
         $extra_options = json_decode($item->extra_options, true);
-    @endphp
-    @if (!empty($extra_options))
+    ?>
+    <?php if(!empty($extra_options)): ?>
         <div style="margin-top: 10px;">
             <strong>Extra Options:</strong><br>
-            @foreach ($extra_options as $opt)
+            <?php $__currentLoopData = $extra_options; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $opt): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <span style="display: inline-block; background-color: #17a2b8; color: white; padding: 3px 8px; 
                              border-radius: 12px; font-size: 12px; margin-right: 5px;">
-                    {{ $opt['title'] }} @if(!empty($opt['price']) && (float)$opt['price'] > 0)
-                        (£{{ number_format((float)$opt['price'], 2) }})
-                    @endif
+                    <?php echo e($opt['title']); ?> <?php if(!empty($opt['price']) && (float)$opt['price'] > 0): ?>
+                        (£<?php echo e(number_format((float)$opt['price'], 2)); ?>)
+                    <?php endif; ?>
                 </span>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
-    @endif
+    <?php endif; ?>
 </td>
 
 
-    @php
+    <?php
   $extraOptions = json_decode($item->extra_options, true) ?: [];
   $extraOptionsTotal = 0;
   foreach($extraOptions as $opt) {
@@ -164,22 +173,22 @@
   }
   $itemTotalWithExtras = $item->sub_total + $extraOptionsTotal;
   $rate = $item->quantity > 0 ? $itemTotalWithExtras / $item->quantity : 0;
-@endphp
-                                     <td>{{ $item->quantity }}</td>
-<td>{{ number_format($rate, 2) }}</td>
-<td>{{ number_format($itemTotalWithExtras, 2) }}</td>
+?>
+                                     <td><?php echo e($item->quantity); ?></td>
+<td><?php echo e(number_format($rate, 2)); ?></td>
+<td><?php echo e(number_format($itemTotalWithExtras, 2)); ?></td>
 
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
                     </div>
 
-                    {{-- Totals --}}
+                    
                     <div class="row justify-content-end mt-4">
                         <div class="col-md-5">
                             <table class="table table-borderless">
-                                @php
+                                <?php
   $optionsGrandTotal = 0;
   foreach($quote->items as $item) {
     $options = json_decode($item->extra_options, true) ?: [];
@@ -190,40 +199,40 @@
     }
   }
   $subtotalWithExtras = $quote->items->sum('sub_total') + $optionsGrandTotal + ($quote->proof_price ?? 0);
-@endphp
+?>
 
                                 <tr>
   <th>Subtotal:</th>
-  <td class="text-right">£{{ number_format($subtotalWithExtras, 2) }}</td>
+  <td class="text-right">£<?php echo e(number_format($subtotalWithExtras, 2)); ?></td>
 </tr>
 
                                 <tr>
                                     <th>Delivery Charge:</th>
-                                    <td class="text-right">£{{ number_format($quote->delivery_price, 2) }}</td>
+                                    <td class="text-right">£<?php echo e(number_format($quote->delivery_price, 2)); ?></td>
                                 </tr>
                                  <tr>
                                     <th>Proof Reading:</th>
-                                    <td class="text-right">£{{ number_format($quote->proof_price, 2) }}</td>
+                                    <td class="text-right">£<?php echo e(number_format($quote->proof_price, 2)); ?></td>
                                 </tr>
                                 <tr>
-                                    <th>VAT ({{ (int)$quote->vat_percentage }}%):</th>
-                                    <td class="text-right">£{{ number_format($quote->vat_amount, 2) }}</td>
+                                    <th>VAT (<?php echo e((int)$quote->vat_percentage); ?>%):</th>
+                                    <td class="text-right">£<?php echo e(number_format($quote->vat_amount, 2)); ?></td>
                                 </tr>
                             
                                 <tr class="font-weight-bold "
                                     style="font-size: 18px; color: #6B3DF4; border-top:2px solid #6B3DF4; border-bottom:2px solid #6B3DF4;">
                                     <th><strong>Total</strong></th>
-                                    <td class="text-right"><strong>£{{ number_format($quote->grand_total, 2) }}</strong></td>
+                                    <td class="text-right"><strong>£<?php echo e(number_format($quote->grand_total, 2)); ?></strong></td>
                                 </tr>
                             </table>
 
                         </div>
                     </div>
 
-                    {{-- Actions --}}
+                    
                     <!-- <div class="row justify-content-center mt-4">
                         <div class="col-md-3">
-                            <a href="{{ route('admin.invoices.download', $quote->id) }}" class="btn btn-outline-primary btn-block">
+                            <a href="<?php echo e(route('admin.invoices.download', $quote->id)); ?>" class="btn btn-outline-primary btn-block">
                                 Download Invoice
                             </a>
                         </div>
@@ -238,4 +247,4 @@
 
 </body>
 
-</html>
+</html><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/admin/quotes/down-invoice.blade.php ENDPATH**/ ?>

@@ -11,7 +11,7 @@ class AttributeController extends Controller
 {
     public function index()
     {
-        $attributes = Attribute::with('parents')->latest()->get();
+        $attributes = Attribute::with('parents','imageParents')->latest()->get();
         return view('admin.attributes.index', compact('attributes'));
     }
     public function create()
@@ -29,8 +29,6 @@ class AttributeController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        // Validate the incoming request
         $validator = Validator::make($request->all(), [
             'attributes' => 'required|array',
             'attributes.*.name' => 'required|string|max:255|distinct|unique:attributes,name',
@@ -48,10 +46,13 @@ class AttributeController extends Controller
             'attributes.*.dependency_parent.*' => 'exists:attributes,id',
             'attributes.*.area_unit' => 'nullable|in:sq_inch,sq_feet,sq_meter',
             'attributes.*.require_both_images' => 'nullable|boolean',
-
+            'attributes.*.main_frame_changes' => 'nullable|boolean',
+            'attributes.*.required_file_uploads' => 'nullable|boolean',
+            'attributes.*.has_image_dependency' => 'nullable|boolean',
+            'attributes.*.image_dependency_parent' => 'nullable|array',
+            'attributes.*.image_dependency_parent.*' => 'exists:attributes,id',
         ]);
 
-        // If validation fails, return errors
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -62,7 +63,6 @@ class AttributeController extends Controller
 
         $attributes = $request->input('attributes');
 
-        // Loop through attributes and create them
         foreach ($attributes as $attr) {
             $attribute = Attribute::create([
                 'name' => $attr['name'],
@@ -74,32 +74,36 @@ class AttributeController extends Controller
                 'has_image' => filter_var($attr['has_image'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'has_icon' => filter_var($attr['has_icon'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'has_dependency' => filter_var($attr['has_dependency'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                // 'allow_quantity' => filter_var($attr['allow_quantity'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                'is_composite' => filter_var($attr['is_composite'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'has_setup_charge' => filter_var($attr['has_setup_charge'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'require_both_images' => filter_var($attr['require_both_images'] ?? false, FILTER_VALIDATE_BOOLEAN),
-
-                // 'dependency_parent' => $attr['dependency_parent'] ?? null,
+                'main_frame_changes' => filter_var($attr['main_frame_changes'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'required_file_uploads' => filter_var($attr['required_file_uploads'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'has_image_dependency' => filter_var($attr['has_image_dependency'] ?? false, FILTER_VALIDATE_BOOLEAN),
             ]);
 
-            // Save dependency parents
             if (!empty($attr['dependency_parent'])) {
                 $attribute->parents()->sync($attr['dependency_parent']);
+            } else {
+                $attribute->parents()->detach();
+            }
+
+            if (!empty($attr['image_dependency_parent']) && !empty($attr['has_image_dependency'])) {
+                $attribute->imageParents()->sync($attr['image_dependency_parent']);
+            } else {
+                $attribute->imageParents()->detach();
             }
         }
 
-        // Return success response
         return $request->ajax()
             ? response()->json(['success' => true, 'message' => 'Attributes added.'])
             : redirect()->route('admin.attributes.index')->with('success', 'Attributes added.');
     }
 
-
     public function edit($id)
     {
-        $attribute = Attribute::findOrFail($id);
-        $attributes = Attribute::where('id', '!=', $id)->get(); // exclude current one
-
+        $attribute = Attribute::with(['parents', 'imageParents'])->findOrFail($id);
+        $attributes = Attribute::where('id', '!=', $id)->get();
+// dd($attribute->toArray());
         return response()->json([
             'success' => true,
             'html' => view('admin.attributes.edit', [
@@ -113,6 +117,7 @@ class AttributeController extends Controller
     public function update(Request $request, $id)
     {
         $attribute = Attribute::findOrFail($id);
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:attributes,name,' . $attribute->id,
             'input_type' => 'required|in:dropdown,radio,select_area,select_image,select_colour',
@@ -129,7 +134,10 @@ class AttributeController extends Controller
             'dependency_parent' => 'nullable|array',
             'dependency_parent.*' => 'exists:attributes,id',
             'require_both_images' => 'nullable|boolean',
-
+            'main_frame_changes' => 'nullable|boolean',
+            'required_file_uploads' => 'nullable|boolean',
+            'image_dependency_parent' => 'nullable|array',
+            'image_dependency_parent.*' => 'exists:attributes,id',
         ]);
 
         if ($validator->fails()) {
@@ -139,8 +147,6 @@ class AttributeController extends Controller
                 'errors' => $validator->errors(),
             ]);
         }
-
-        // $allowQuantity = $request->input('allow_quantity', $request->input('allow_quantity_hidden'));
 
         $attribute->update([
             'name' => $request->name,
@@ -156,13 +162,21 @@ class AttributeController extends Controller
             // 'allow_quantity' => (bool) $allowQuantity,
             'has_setup_charge' => $request->boolean('has_setup_charge'),
             'require_both_images' => $request->boolean('require_both_images'),
-
+            'main_frame_changes' => $request->boolean('main_frame_changes'),
+            'required_file_uploads' => $request->boolean('required_file_uploads'),
+            'has_image_dependency' => $request->boolean('has_image_dependency'),
         ]);
 
         if ($request->has('dependency_parent')) {
             $attribute->parents()->sync($request->dependency_parent);
         } else {
             $attribute->parents()->detach();
+        }
+
+        if ($request->has('image_dependency_parent') && $request->has('has_image_dependency') && $request->has_image_dependency) {
+            $attribute->imageParents()->sync($request->image_dependency_parent);
+        } else {
+            $attribute->imageParents()->detach();
         }
 
         return $request->ajax()
@@ -173,10 +187,8 @@ class AttributeController extends Controller
     public function destroy($id)
     {
         $attribute = Attribute::findOrFail($id);
-
         $attribute->delete();
 
         return response()->json(['success' => true]);
-
     }
 }

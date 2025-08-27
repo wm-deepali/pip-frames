@@ -11,7 +11,7 @@
                     @foreach($subcategories as $subcategory)
                         <div>
                             <div class="option-card1 {{ $loop->first ? 'active' : '' }}" data-id="{{ $subcategory->id }}"
-                                onclick="selectSubcategory(this)">
+                                data-name="{{$subcategory->name }}" onclick="selectSubcategory(this)">
                                 <img src="{{ asset('storage/' . ($subcategory->thumbnail ?? '')) }}"
                                     alt="{{ $subcategory->name ?? ''}}">
 
@@ -20,7 +20,8 @@
                         </div>
                     @endforeach
                 </div>
-                <h2>Cartoon Portrait</h2>
+                <h2 id="selected-subcategory-name">{{ $subcategories->first()->name ?? '' }} Portrait</h2>
+
                 <p class="offer">
                     <span class="old-price">£71.94</span>
                     <span class="new-price">£59.95</span>
@@ -55,17 +56,11 @@
                     <div class="step-box" id="step-4" style="display:none;">
 
                         <!-- Upload photo -->
-                        <h4 class="mb-2">Upload a picture of your pet</h4>
+                        <h4 class="mb-2">Upload a picture</h4>
                         <a href="#" class="tips-link">📷 Click here for photo tips</a>
 
-                        <div class="upload-box" id="upload-block">
-                            <label class="upload-btn">
-                                <b>Choose a photo</b>
-                                <input type="file" name="photos[]" accept="image/*" hidden>
-                            </label>
-                            <span class="file-name"></span>
-                        </div>
-                        <button type="button" id="add-photo-btn">+ Add photo</button>
+
+                        <div id="upload-block"></div>
 
                         <!-- Container to show image previews -->
                         <div id="preview-container" style="margin-top:10px; display:flex; flex-wrap:wrap; gap:10px;">
@@ -79,8 +74,8 @@
 
                         <!-- Form fields -->
                         <div class="form-fields">
-                            <input id="petNameInput" type="text" placeholder="Name of pet(s) - optional">
-                            <input id="petBirthdateInput" type="text" placeholder="Birthdate - optional">
+                            <input id="petNameInput" type="text" placeholder="Enter the names (if required)">
+                            <!-- <input id="petBirthdateInput" type="text" placeholder="Birthdate - optional"> -->
                             <input id="petTextInput" type="text" placeholder="Personal text - optional">
                             <textarea id="noteInput"
                                 placeholder="Note to artist - optional (e.g. Draw a bow tie, remove collar...)"></textarea>
@@ -170,7 +165,8 @@
                 </div>
 
                 <!-- Landscape preview -->
-                <div id="landscapePreview" class="preview-container" style="position: relative; display: none;">
+                <div id="landscapePreview" class="preview-container"
+                    style="position: relative; display: none;     margin-top: -17px;">
                     <img id="mainImageLandscape" class="preview-img-landscape" src="" alt="Pet Portrait Landscape" />
                     <!-- Frame overlay for landscape -->
                     <img id="frameOverlayLandscape" class="frame-overlay-landscape" />
@@ -318,6 +314,80 @@
         showStep(step);
     }
 
+    function updateUploadInputs(requiredCount) {
+        const uploadBlockContainer = document.getElementById('upload-block');
+        const previewContainer = document.getElementById('preview-container');
+
+        // Remove existing upload-box elements, except for the original add-photo button
+        uploadBlockContainer.querySelectorAll('.upload-box').forEach(el => el.remove());
+        previewContainer.innerHTML = ''; // Clear existing previews
+
+        for (let i = 0; i < requiredCount; i++) {
+            const uploadDiv = document.createElement('div');
+            uploadDiv.classList.add('upload-box');
+            uploadDiv.style.marginTop = '10px';
+
+            const label = document.createElement('label');
+            label.className = 'upload-btn';
+            label.innerHTML = '<b>Choose a photo</b>';
+            label.style.cursor = 'pointer';
+
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.name = 'photos[]';
+            input.accept = 'image/*';
+            input.hidden = true;
+
+            // Unique id for preview
+            const fileId = 'file-input-' + i;
+            input.dataset.fileId = fileId;
+
+            const fileNameSpan = document.createElement('span');
+            fileNameSpan.className = 'file-name';
+            fileNameSpan.style.marginLeft = '10px';
+            fileNameSpan.style.fontSize = '0.9em';
+
+            label.appendChild(input);
+            uploadDiv.appendChild(label);
+            uploadDiv.appendChild(fileNameSpan);
+
+            uploadBlockContainer.appendChild(uploadDiv);
+
+            // File input change event handling...
+            input.addEventListener('change', () => {
+                if (input.files && input.files[0]) {
+                    fileNameSpan.textContent = input.files[0].name;
+
+                    // Remove old preview if exists
+                    const existingPreview = previewContainer.querySelector(`img[data-file-id="${fileId}"]`);
+                    if (existingPreview) previewContainer.removeChild(existingPreview);
+
+                    // Create new preview
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.dataset.fileId = fileId;
+                        img.style.height = '80px';
+                        img.style.border = '1px solid #ccc';
+                        img.style.borderRadius = '4px';
+                        img.style.objectFit = 'cover';
+                        img.style.marginRight = '8px';
+                        img.style.marginTop = '8px';
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                } else {
+                    fileNameSpan.textContent = '';
+                    const existingPreview = previewContainer.querySelector(`img[data-file-id="${fileId}"]`);
+                    if (existingPreview) previewContainer.removeChild(existingPreview);
+                }
+            });
+
+            label.addEventListener('click', () => input.click());
+        }
+    }
+
 
     // function goToStep(step) {
     //     if (step < 1) step = 1;
@@ -389,6 +459,11 @@
                     } else if (currentSelections[attr.id] === undefined && idx === 0) {
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
+                        if (val.required_file_uploads && val.required_file_uploads > 0) {
+                            updateUploadInputs(val.required_file_uploads);
+                        } else {
+                            updateUploadInputs(0);
+                        }
                     }
 
                     if (stepNumber === 3 && attr.name.toLowerCase() === 'how do you want it framed?') {
@@ -436,6 +511,13 @@
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
 
+                        if (val.required_file_uploads && val.required_file_uploads > 0) {
+
+                            updateUploadInputs(val.required_file_uploads);
+                        } else {
+                            // Optionally clear extra upload boxes if none required
+                            updateUploadInputs(0);
+                        }
 
                         if (stepNumber === 3 && attr.name.toLowerCase() === 'how do you want it framed?') {
 
@@ -505,6 +587,8 @@
                 widthLabel.appendChild(widthInput);
                 colWidth.appendChild(widthLabel);
 
+
+
                 rowDiv.appendChild(colHeight);
                 rowDiv.appendChild(colWidth);
 
@@ -553,19 +637,28 @@
 
                 heightInput.addEventListener('input', () => {
                     const value = parseFloat(heightInput.value);
-                    hideFieldValidationError(attr.id, 'height');
+                    if (!isValidEvenNumber(value)) {
+                        showFieldValidationError(attr.id, 'height', 'Height must be an even number.');
+                    } else {
+                        hideFieldValidationError(attr.id, 'height');
+                        applyPriceAndAttributes();
+                        updateAreaDisplay();
+                    }
                     currentSelections[attr.id].height = value;
-                    updateAreaDisplay();
-                    applyPriceAndAttributes();
                 });
 
                 widthInput.addEventListener('input', () => {
                     const value = parseFloat(widthInput.value);
-                    hideFieldValidationError(attr.id, 'width');
+                    if (!isValidEvenNumber(value)) {
+                        showFieldValidationError(attr.id, 'width', 'Width must be an even number.');
+                    } else {
+                        hideFieldValidationError(attr.id, 'width');
+                        updateAreaDisplay();
+                        applyPriceAndAttributes();
+                    }
                     currentSelections[attr.id].width = value;
-                    updateAreaDisplay();
-                    applyPriceAndAttributes();
                 });
+
             } else if (attr.input_type === "select_colour") {
                 const optionsDiv = document.createElement("div");
                 optionsDiv.className = "options cards";
@@ -580,6 +673,11 @@
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
                         currentSelections[`${attr.id}_colour_code`] = val.colour_code;
+                        if (val.required_file_uploads && val.required_file_uploads > 0) {
+                            updateUploadInputs(val.required_file_uploads);
+                        } else {
+                            updateUploadInputs(0);
+                        }
                     }
 
                     optionCard.innerHTML = `
@@ -588,10 +686,20 @@
                 `;
 
                     optionCard.onclick = () => {
+
                         optionsDiv.querySelectorAll(".option-card").forEach(card => card.classList.remove("active"));
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
                         currentSelections[`${attr.id}_colour_code`] = val.colour_code;
+
+                        if (val.required_file_uploads && val.required_file_uploads > 0) {
+
+                            updateUploadInputs(val.required_file_uploads);
+                        } else {
+                            // Optionally clear extra upload boxes if none required
+                            updateUploadInputs(0);
+                        }
+
                         applyPriceAndAttributes();
                         // Update related option images dynamically
                         updateOptionImages();
@@ -603,6 +711,7 @@
 
                 attrWrapper.appendChild(optionsDiv);
 
+
                 if (currentSelections[attr.id] === undefined && attr.values.length > 0) {
                     currentSelections[attr.id] = attr.values[0].id;
                     currentSelections[`${attr.id}_colour_code`] = attr.values[0].colour_code;
@@ -613,13 +722,15 @@
 
                 attr.values.forEach((val, idx) => {
                     const radioWrapper = document.createElement("label");
+                    radioWrapper.style.width = "140px";
+                    radioWrapper.style.background = "#f4f4f4";
                     radioWrapper.style.display = "flex";             // use flex layout for better alignment
                     radioWrapper.style.alignItems = "center";
                     radioWrapper.style.cursor = "pointer";           // pointer on hover
                     radioWrapper.style.marginBottom = "10px";        // spacing between radios
                     radioWrapper.style.padding = "8px 12px";          // add some padding
                     radioWrapper.style.border = "1px solid #ccc";     // border for visibility
-                    radioWrapper.style.borderRadius = "20px";         // rounded corners
+                    radioWrapper.style.borderRadius = "5px";         // rounded corners
                     radioWrapper.style.userSelect = "none";           // prevent accidental text select
 
                     const radioInput = document.createElement("input");
@@ -627,7 +738,11 @@
                     radioInput.name = `attribute_${attr.id}`;
                     radioInput.value = val.id;
                     radioInput.checked = (currentSelections[attr.id] === val.id) || (currentSelections[attr.id] === undefined && idx === 0);
-
+                    if (val.required_file_uploads && val.required_file_uploads > 0) {
+                        updateUploadInputs(val.required_file_uploads);
+                    } else {
+                        updateUploadInputs(0);
+                    }
                     radioInput.style.marginRight = "12px";            // space between radio and label text
                     radioInput.style.width = "18px";                   // larger size
                     radioInput.style.height = "18px";
@@ -637,6 +752,13 @@
                     radioInput.addEventListener("change", () => {
                         currentSelections[attr.id] = val.id;
                         applyPriceAndAttributes();
+                        if (val.required_file_uploads && val.required_file_uploads > 0) {
+
+                            updateUploadInputs(val.required_file_uploads);
+                        } else {
+                            // Optionally clear extra upload boxes if none required
+                            updateUploadInputs(0);
+                        }
                     });
 
                     radioWrapper.appendChild(radioInput);
@@ -1155,6 +1277,7 @@
                                     currentSelections[`${attr.id}_colour_code`] = attr.values[0].colour_code;
                                 }
                             }
+
                         });
                     }
 
@@ -1225,6 +1348,15 @@
         const container = document.getElementById('thumbnails-container');
         container.innerHTML = ''; // Clear old thumbnails
 
+        const selectedName = el.getAttribute('data-name') || '';
+
+        // Update the title element
+        const titleEl = document.getElementById('selected-subcategory-name');
+        if (titleEl) {
+            titleEl.textContent = selectedName + ' Portrait';
+        }
+
+
         const gallery = subcategoryGalleries[subcategoryId] || [];
         gallery.forEach(image => {
             const img = document.createElement('img');
@@ -1235,6 +1367,7 @@
         });
 
     }
+
 
 
     // Collect form data
@@ -1261,8 +1394,8 @@
         const petName = document.getElementById('petNameInput');
         if (petName) formData.append('pet_name', petName.value);
 
-        const petBirthdate = document.getElementById('petBirthdateInput');
-        if (petBirthdate) formData.append('pet_birthdate', petBirthdate.value);
+        // const petBirthdate = document.getElementById('petBirthdateInput');
+        // if (petBirthdate) formData.append('pet_birthdate', petBirthdate.value);
 
         const petText = document.getElementById('petTextInput');
         if (petText) formData.append('pet_text', petText.value);

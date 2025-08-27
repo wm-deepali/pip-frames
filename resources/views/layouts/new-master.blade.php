@@ -49,25 +49,31 @@
 </head>
 
 <body>
+  @php
+    use App\Models\ContactInfo;
+    $contact = ContactInfo::first();
+  @endphp
   <div class="boxed_wrapper">
 
     <div class="preloader"></div>
 
     <!-- Hidden Navigation Bar -->
+
     <section class="hidden-bar right-align">
       <div class="hidden-bar-closer">
         <button><span class="flaticon-multiply"></span></button>
       </div>
       <div class="hidden-bar-wrapper">
         <div class="logo">
-          <a href="index-2.html"><img src="{{ asset('site_assets') }}/images/resources/hidden-bar-logo.png"
-              alt="Logo" /></a>
+          <a href="{{ Route('home') }}"><img src="{{ asset('site_assets') }}/images/resources/logo.png" alt="Logo"
+              style="width:100px;" /></a>
         </div>
         <div class="hiddenbar-about-us">
           <h3>About Us</h3>
           <div class="text">
-            <p>We must explain to you how all seds this mistakens idea off denouncing pleasures and praising pain was
-              born and I will give you a completed accounts off the system and expound the actually teaching.</p>
+            <p>PIP Frames brings your memories to life with customised portraits of Pets, People, and Illustrations.
+              Each piece is crafted with care, turning your special moments into timeless art that beautifully
+              complements your space</p>
           </div>
         </div>
         <div class="contact-info-box">
@@ -75,15 +81,15 @@
           <ul>
             <li>
               <h5>Address</h5>
-              <p>Romanian 9520 Faires Farm Road,<br> Carlsbad, NC 28213.</p>
+              <p>Unit 7 Lotherton Way Garforth <br> Leeds LS252JY</p>
             </li>
             <li>
               <h5>Phone</h5>
-              <p><a href="tel:123456789">+1 555-7890-123</a></p>
+              <p><a href="tel:+01132 874724">+01132 874724</a></p>
             </li>
             <li>
               <h5>Email</h5>
-              <p><a href="mailto:info@templatepath.com">supportyou@example.com</a></p>
+              <p><a href="mailto:andy@pipframes.co.uk">andy@pipframes.co.uk</a></p>
             </li>
           </ul>
         </div>
@@ -99,7 +105,7 @@
           </form>
         </div>
         <div class="copy-right-text">
-          <p>© CarePress 2020, All Rights Reserved.</p>
+          <p>© Pipframes 2025, All Rights Reserved.</p>
         </div>
       </div>
     </section>
@@ -115,8 +121,15 @@
             <div class="header-top-left pull-left">
               <div class="header-contact-info">
                 <ul>
-                  <li><span class="icon-envelope"></span><a href="mailto:logistic@email.com">info@website.com</a></li>
-                  <li><span class="icon-phone-call"></span><a href="tel:123456789">+098987 876 767</a></li>
+                  @if($contact->show_on_header_email && !empty($contact->email))
+                    <li><span class="icon-envelope"></span><a
+                        href="mailto:{{ $contact->email }}">{{ $contact->email }}</a></li>
+                  @endif
+                  @if($contact->show_on_header_mobile && !empty($contact->mobile_number))
+                    <li><span class="icon-phone-call"></span><a
+                        href="tel:{{ $contact->mobile_number }}">{{ $contact->mobile_number }}</a></li>
+                  @endif
+
                 </ul>
               </div>
             </div>
@@ -155,7 +168,7 @@
             <div class="header-left clearfix pull-left">
 
               <div class="logo">
-                <a href="index-2.html"><img src="{{ asset('site_assets') }}/images/resources/logo.png"
+                <a href="{{ Route('home') }}"><img src="{{ asset('site_assets') }}/images/resources/logo.png"
                     alt="Awesome Logo" title=""></a>
               </div>
 
@@ -172,64 +185,50 @@
                 <nav class="main-menu style1 navbar-expand-md navbar-light">
                   <div class="collapse navbar-collapse show clearfix" id="navbarSupportedContent">
                     <ul class="navigation clearfix">
-                      <li class="dropdown current"><a href="#">Home</a>
-                        <ul>
-                          <li><a href="index-2.html">Home Page 01</a></li>
-                          <li><a href="index-3.html">Home Page 02</a></li>
-                          <li><a href="index-box-layout.html">Home Boxed Layout</a></li>
-                          <li><a href="index-rtl.html">Home RTL</a></li>
-                          <li><a href="index-onepage.html">Home OnePage</a></li>
-                          <li class="dropdown"><a href="#">Header Styles</a>
-                            <ul>
-                              <li><a href="index-2.html">Header Style One</a></li>
-                              <li><a href="index-3.html">Header Style Two</a></li>
-                            </ul>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="dropdown">
-                        <a href="#">Categories</a>
-                        <ul>
-                          @php
-                            use App\Models\Category;
-                            $categories = Category::latest()->get();
-                           @endphp
+                      <li><a href="{{ Route('home') }}">Home</a> </li>
 
-                          @foreach($categories as $category)
-                            <li>
-                              <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
-                            </li>
-                          @endforeach
-                        </ul>
-                      </li>
+                      @php
+                        use App\Models\Category;
+                        $categories = Category::latest()->get();
+                       @endphp
+
+                      @foreach($categories as $category)
+                        <li>
+                          <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+
+                        </li>
+                      @endforeach
 
 
                       <li><a href="{{ Route('about-us') }}">About</a></li>
-                      <li class="dropdown"><a href="#">Services</a>
-                        <ul>
+                      <li><a href="{{ Route('how-it-works') }}">How it Works</a> </li>
+                      <!-- <ul>
                           <li><a href="{{ Route('services') }}">View All Services</a></li>
                           <li><a href="{{ Route('ser-pet-grooming') }}">Pet Grooming</a></li>
                           <li><a href="{{ Route('ser-dog-setting') }}">Dog Setting</a></li>
                           <li><a href="{{ Route('ser-healthy-meals') }}">Healthy Meals</a></li>
                           <li><a href="{{ Route('ser-veterinary-service') }}">Veterinary Service</a></li>
-                        </ul>
-                      </li>
-                      <li class="dropdown"><a href="#">Pages</a>
+                        </ul> -->
+
+                      <li><a href="{{ Route('faq') }}">Faq</a></li>
+                      <!-- <li><a href="{{ Route('team') }}">Our Team</a></li> -->
+                      <!--<li class="dropdown"><a href="#">Pages</a>
                         <ul>
                           <li><a href="{{ Route('shop') }}">Our Shop</a></li>
                           <li><a href="{{ Route('shop-details') }}">Product Details</a></li>
-                          <li><a href="{{ Route('faq') }}">Faq</a></li>
-                          <li><a href="{{ Route('team') }}">Our Team</a></li>
+                          
+                          
                           <li><a href="{{ Route('error') }}">404 Error page</a></li>
                         </ul>
-                      </li>
-                      <li class="dropdown"><a href="#">News</a>
+                      </li> -->
+                      <li><a href="{{ Route('blogs') }}">Blogs</a></li>
+                      <!-- <li class="dropdown"><a href="#">News</a>
                         <ul>
-                          <li><a href="{{ Route('blogs') }}">Blog with sidebar</a></li>
+                          
                           <li><a href="blog-v2.html">Blog Grid View</a></li>
                           <li><a href="{{ Route('blog-details') }}">Blog Details</a></li>
                         </ul>
-                      </li>
+                      </li> -->
                       <li><a href="{{ Route('contact-us') }}">Contact</a></li>
                     </ul>
                   </div>
@@ -242,10 +241,6 @@
 
             <!--Start Header Right-->
             <div class="header-right pull-right clearfix">
-
-              <div class="button">
-                <a class="btn-one" href="#"><span class="txt">Customize Portrait</span></a>
-              </div>
               <div class="hidden-content-button bar-box">
                 <a class="side-nav-toggler nav-toggler hidden-bar-opener" href="#">
                   <ul>
@@ -278,13 +273,13 @@
           <div class="clearfix">
             <!--Logo-->
             <div class="logo float-left">
-              <a href="index-2.html" class="img-responsive"><img
-                  src="{{ asset('site_assets') }}/images/resources/sticky-logo.png" alt="" title=""></a>
+              <a href="{{ Route('home') }}" class="img-responsive"><img
+                  src="{{ asset('site_assets') }}/images/resources/logo.png" alt="" title=""></a>
             </div>
             <!--Right Col-->
-            <div class="right-col float-right">
+            <div class="right-col " style="padding-left:80px;">
               <!-- Main Menu -->
-              <nav class="main-menu clearfix">
+              <nav class="main-menu clearfix" style="padding-left:80px;">
                 <!--Keep This Empty / Menu will come through Javascript-->
               </nav>
             </div>
@@ -299,8 +294,8 @@
         <div class="close-btn"><span class="icon flaticon-multiply"></span></div>
 
         <nav class="menu-box">
-          <div class="nav-logo"><a href="index-2.html"><img
-                src="{{ asset('site_assets') }}/images/resources/mobilemenu-logo.png" alt="" title=""></a></div>
+          <div class="nav-logo"><a href="{{ Route('home') }}"><img
+                src="{{ asset('site_assets') }}/images/resources/logo.png" alt="" title=""></a></div>
           <div class="menu-outer"><!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header--></div>
           <!--Social Links-->
           <div class="social-links">
@@ -333,26 +328,62 @@
                       alt="Awesome Footer Logo" title="Logo"></a>
                 </div>
                 <div class="copy-right">
-                  <p>Copyright & Design By</p>
-                  <h4>WebTend - 2020</h4>
+                  <p>All rights reserved</p>
+                  <h4>Pip Frames - 2025</h4>
                 </div>
               </div>
               <div class="footer-menu">
                 <ul>
-                  <li><a href="#">Terms & Conditions</a></li>
-                  <li><a href="#">Privacy Policy</a></li>
-                  <li><a href="#">Refund Policy</a></li>
-                  <li><a href="#">Get Support</a></li>
+                  @php
+                    use App\Models\Page;
+                    $footerPages = Page::where('status', 'published')->get();
+                  @endphp
+                  @foreach($footerPages as $page)
+                    <li><a href="{{ route('page.show', $page->slug) }}">{{ $page->page_name }}</a></li>
+                  @endforeach
                 </ul>
               </div>
+              <!-- Footer Contact Info -->
               <div class="footer-contact-info">
+                @if($contact->show_on_footer && !empty($contact->contact_number))
+                  <div class="single-box">
+                    <div class="icon"><span class="icon-phone-call"></span></div>
+                    <div class="title">
+                      <span>Customer Support</span>
+                      <h3><a href="tel:{{ $contact->contact_number }}">{{ $contact->contact_number }}</a></h3>
+                    </div>
+                  </div>
+                @endif
+
+                @if($contact->show_on_footer && !empty($contact->email))
+                  <div class="single-box">
+                    <div class="icon"><span class="icon-envelope"></span></div>
+                    <div class="title">
+                      <span>Support Email</span>
+                      <h3><a href="mailto:{{ $contact->email }}">{{ $contact->email }}</a></h3>
+                    </div>
+                  </div>
+                @endif
+
+                @if(!empty($contact->full_address))
+                  <div class="single-box">
+                    <div class="icon"><span class="icon-pin-2"></span></div>
+                    <div class="title">
+                      <span>Address</span>
+                      <h3>{{ $contact->full_address }}</h3>
+                    </div>
+                  </div>
+                @endif
+              </div>
+
+              <!-- <div class="footer-contact-info">
                 <div class="single-box">
                   <div class="icon">
                     <span class="icon-phone-call"></span>
                   </div>
                   <div class="title">
-                    <span>Emergency Call</span>
-                    <h3><a href="tel:123456789">+987 876 877 876 6</a></h3>
+                    <span>Customer Support</span>
+                    <h3><a href="tel:+01132 874724">+01132 874724</a></h3>
                   </div>
                 </div>
                 <div class="single-box">
@@ -361,7 +392,7 @@
                   </div>
                   <div class="title">
                     <span>Support Email</span>
-                    <h3><a href="mailto:logistic@email.com">info@webmail.com</a></h3>
+                    <h3><a href="mailto:andy@pipframes.co.uk">andy@pipframes.co.uk</a></h3>
                   </div>
                 </div>
                 <div class="single-box">
@@ -370,7 +401,7 @@
                   </div>
                   <div class="title">
                     <span>Address</span>
-                    <h3>14/A, New York, NYC</h3>
+                    <h3>Unit 7 Lotherton Way Garforth Leeds LS252JY</h3>
                   </div>
                 </div>
                 <div class="footer-social-info">
@@ -379,7 +410,7 @@
                   <a href="#" class="you-clr"><i class="fa fa-youtube"></i></a>
                   <a href="#" class="sk-clr"><i class="fa fa-skype"></i></a>
                 </div>
-              </div>
+              </div> -->
 
             </div>
 

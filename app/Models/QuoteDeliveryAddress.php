@@ -19,8 +19,8 @@ class QuoteDeliveryAddress extends Model
         'delivery_instructions',
         'plain_packaging',
         'same_as_billing',
-         'city',             // Added city
-        'postcode',    
+        'city',             // Added city
+        'postcode',
     ];
 
     public function quote()
@@ -28,5 +28,12 @@ class QuoteDeliveryAddress extends Model
         return $this->belongsTo(Quote::class);
     }
 
-    
+    protected $appends = ['country_name'];
+
+    public function getCountryNameAttribute()
+    {
+        $country = Country::find($this->country);
+        return $country->name ?? null;
+    }
+
 }

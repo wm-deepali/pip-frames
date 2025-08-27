@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-md" role="document">
+<div class="modal-dialog modal-lg" role="document">
   <div class="modal-content">
     <form id="attribute-value-form" enctype="multipart/form-data">
       <div class="modal-header">
@@ -34,6 +34,14 @@
               <input type="text" name="attribute_values[0][title]" class="form-control">
               <span class="text-danger validation-err" id="values_0_title-err"></span>
             </div>
+
+            <div class="form-group required-file-uploads-wrapper d-none" id="required-file-uploads-wrapper-0">
+              <label for="required_file_uploads_0">Required File Uploads</label>
+              <input type="number" name="attribute_values[0][required_file_uploads]" min="0" class="form-control"
+                id="required_file_uploads_0" placeholder="Enter number">
+              <span class="text-danger validation-err" id="values_0_required_file_uploads-err"></span>
+            </div>
+
 
             <div class="form-group" id="icon-class-wrapper-0">
               <label>Icon Class (optional)</label>
@@ -141,7 +149,9 @@
     }
 
 
-    function toggleFieldsForBlock(index) {
+
+
+    function toggleFieldsForBlock(index, valueData = {}) {
       const attributeId = $('#attribute-select').val();
       const config = attributeConfigs[attributeId] || {};
       const inputType = config.input_type || '';
@@ -150,6 +160,20 @@
       const requireBothImages = config.require_both_images === true || config.require_both_images === 1;
 
       const blockWrapper = $(`#value-input-wrapper-${index}`).closest('.value-block');
+
+      // Show/hide Required File Uploads field
+      if (config.required_file_uploads) {
+        $(`#required-file-uploads-wrapper-${index}`).removeClass('d-none');
+      } else {
+        $(`#required-file-uploads-wrapper-${index}`).addClass('d-none');
+      }
+
+      // Prefill the input if valueData has it
+      if (valueData.required_file_uploads !== undefined) {
+        $(`#required_file_uploads_${index}`).val(valueData.required_file_uploads);
+      } else {
+        $(`#required_file_uploads_${index}`).val('');
+      }
 
       if (inputType === 'select_colour') {
         $(`#colour-fields-wrapper-${index}`).removeClass('d-none');
@@ -161,7 +185,12 @@
         blockWrapper.addClass('d-none');
       } else {
         blockWrapper.removeClass('d-none');
-        renderValueField(index, isFileType, inputType, requireBothImages);
+        // Render image dependency fields if flag is true, else render normal value field
+        if (config.has_image_dependency) {
+          renderImageDependencyFields(index, config.imageParents, valueData);
+        } else {
+          renderValueField(index, isFileType, inputType, requireBothImages);
+        }
       }
 
       if (['text', 'number', 'file'].includes(customInputType)) {
@@ -190,6 +219,40 @@
       }
     }
 
+
+
+    function renderImageDependencyFields(index, parentImageAttributes, valueData = {}) {
+      const wrapper = $('#value-input-wrapper-' + index);
+      let html = '';
+
+      parentImageAttributes.forEach(parentAttr => {
+        // Each parentAttr has an array of .values
+        parentAttr.values.forEach(val => {
+          const parentImages = valueData.parent_images || {};
+          const valueImageData = (parentImages[parentAttr.id] && parentImages[parentAttr.id][val.id]) || {};
+          const checked = valueImageData && valueImageData.enabled ? 'checked' : '';
+          const selectedOrientation = valueImageData.orientation || 'portrait';
+          const previewUrl = valueImageData.preview || ''; // fill with existing preview if editing
+
+          html += `
+        <div class="parent-image-block mb-3">
+          <label>
+            <input type="checkbox" name="attribute_values[${index}][parent_images][${parentAttr.id}][${val.id}][enabled]" ${checked}>
+            ${val.title || val.value}
+          </label>
+          <select name="attribute_values[${index}][parent_images][${parentAttr.id}][${val.id}][orientation]" class="form-control d-inline-block mx-2" style="width:120px;">
+            <option value="portrait" ${selectedOrientation === 'portrait' ? 'selected' : ''}>Portrait</option>
+            <option value="landscape" ${selectedOrientation === 'landscape' ? 'selected' : ''}>Landscape</option>
+          </select>
+          <input type="file" name="attribute_values[${index}][parent_images][${parentAttr.id}][${val.id}][file]" class="form-control-file d-inline-block mx-1" style="width:100px;">
+          ${previewUrl ? `<img src="${previewUrl}" style="height:40px;">` : ''}
+        </div>
+      `;
+        });
+      });
+
+      wrapper.html(html);
+    }
 
 
     // Initial toggle
@@ -222,6 +285,13 @@
             <input type="text" name="attribute_values[${valueIndex}][title]" class="form-control">
             <span class="text-danger validation-err" id="values_${valueIndex}_title-err"></span>
           </div>
+
+          <div class="form-group required-file-uploads-wrapper d-none" id="required-file-uploads-wrapper-0">
+              <label for="required_file_uploads_${valueIndex}">Required File Uploads</label>
+              <input type="number" name="attribute_values[${valueIndex}][required_file_uploads]" min="0" class="form-control"
+                id="required_file_uploads_0" placeholder="Enter number">
+              <span class="text-danger validation-err" id="values_${valueIndex}_required_file_uploads-err"></span>
+            </div>
 
           <div class="form-group" id="icon-class-wrapper-${valueIndex}">
             <label>Icon Class (optional)</label>

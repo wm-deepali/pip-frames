@@ -1,5 +1,5 @@
 <!-- resources/views/admin/attributes/edit.blade.php -->
-<div class="modal-dialog modal-lg" role="document">
+<div class="modal-dialog modal-xl" role="document">
   <div class="modal-content">
     <form id="attribute-form" enctype="multipart/form-data">
 
@@ -95,7 +95,7 @@
             </div>
           </div>
 
-          <div class="col-md-6 portrait-landscape-wrapper"
+          <div class="col-md-2 portrait-landscape-wrapper"
             style="<?php echo e($attribute->input_type == 'select_image' ? '' : 'display: none;'); ?>">
             <div class="form-group">
               <label for="require_both_images">Require Both Portrait and Landscape Images</label>
@@ -106,7 +106,7 @@
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-2">
             <div class="form-group">
               <label for="edit-setup">Setup Charges</label>
               <select name="has_setup_charge" id="edit-setup" class="form-control">
@@ -116,6 +116,29 @@
               </select>
             </div>
           </div>
+
+
+          <!-- <div class="col-md-2">
+            <div class="form-group">
+              <label for="main_frame_changes">Main Frame Image Changes</label>
+              <select name="main_frame_changes" id="main-frame-changes" class="form-control">
+                <option value="0" <?php echo e($attribute->main_frame_changes == 0 ? 'selected' : ''); ?>>No</option>
+                <option value="1" <?php echo e($attribute->main_frame_changes == 1 ? 'selected' : ''); ?>>Yes</option>
+              </select>
+
+            </div>
+          </div> -->
+
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="required_file_uploads">Required File Uploads</label>
+              <select name="required_file_uploads" id="required-file-uploads" class="form-control">
+                <option value="0" <?php echo e($attribute->required_file_uploads == 0 ? 'selected' : ''); ?>>No</option>
+                <option value="1" <?php echo e($attribute->required_file_uploads == 1 ? 'selected' : ''); ?>>Yes</option>
+              </select>
+            </div>
+          </div>
+
 
 
           <!-- <div class="col-md-3">
@@ -160,9 +183,9 @@
             </div>
           </div> -->
 
-          <div class="col-md-3">
+          <div class="col-md-2">
             <div class="form-group">
-              <label for="edit-dependency">Has Dependency</label>
+              <label for="edit-dependency">Price Rule Dependency</label>
               <select name="has_dependency" class="form-control" id="edit-dependency">
                 <option value="1" <?php echo e($attribute->has_dependency ? 'selected' : ''); ?>>Yes</option>
                 <option value="0" <?php echo e(!$attribute->has_dependency ? 'selected' : ''); ?>>No</option>
@@ -170,6 +193,17 @@
             </div>
           </div>
 
+          <!-- Image Dependency Toggle -->
+          <!-- <div class="col-md-2">
+            <div class="form-group">
+              <label for="edit-image-dependency">Image Dependency</label>
+              <select name="has_image_dependency" id="edit-image-dependency" class="form-control">
+                <option value="">-- Select --</option>
+                <option value="1" <?php echo e(($attribute->has_image_dependency ?? 0) == 1 ? 'selected' : ''); ?>>Yes</option>
+                <option value="0" <?php echo e(empty($attribute->has_image_dependency) ? 'selected' : ''); ?>>No</option>
+              </select>
+            </div>
+          </div> -->
 
           <div class="col-md-6 dependency-parent-wrapper"
             style="<?php echo e(!$attribute->has_dependency ? 'display: none;' : ''); ?>">
@@ -185,6 +219,30 @@
                         <?php echo e($parentAttr->name); ?>
 
                       </label>
+                    </div>
+                  <?php endif; ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col-md-6" id="image-dependency-wrapper"
+            style="<?php echo e(empty($attribute->has_image_dependency) ? 'display:none;' : ''); ?>">
+            <div class="form-group">
+              <label>Image Dependency Parents <span class="text-danger">*</span></label>
+              <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                <?php $__currentLoopData = $attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $parent): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <?php
+                    $imageParentIds = $attribute->imageParents->pluck('id')->toArray();
+                    $isChecked = in_array($parent->id, $imageParentIds);
+                    print_r($imageParentIds);
+                  ?>
+                  <?php if($parent->id != $attribute->id): ?>
+                    <div class="form-check">
+                      <input type="checkbox" class="image-dependency-checkbox" name="image_dependency_parent[]"
+                        value="<?php echo e($parent->id); ?>" id="image-dep-<?php echo e($parent->id); ?>" <?php echo e($isChecked ? 'checked' : ''); ?>>
+                      <label for="image-dep-<?php echo e($parent->id); ?>"><?php echo e($parent->name); ?></label>
                     </div>
                   <?php endif; ?>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -209,15 +267,36 @@
     const excludedTypes = ['select_image', 'select_icon', 'grouped_select', 'range', 'toggle', 'number'];
 
     // Pricing Basis - Allow Quantity auto set
-    // function autoSetAllowQuantity(pricingBasis) {
-    //   if (pricingBasis === 'per_page') {
-    //     $('#edit-quantity').val('1').prop('disabled', true); // set to Yes and disable
-    //     $('#allow_quantity_hidden').val('1'); // mirror to hidden
-    //   } else {
-    //     $('#edit-quantity').prop('disabled', false);
-    //     $('#allow_quantity_hidden').val($('#edit-quantity').val()); // mirror current value
-    //   }
-    // }
+    function autoSetAllowQuantity(pricingBasis) {
+      if (pricingBasis === 'per_page') {
+        $('#edit-quantity').val('1').prop('disabled', true); // set to Yes and disable
+        $('#allow_quantity_hidden').val('1'); // mirror to hidden
+      } else {
+        $('#edit-quantity').prop('disabled', false);
+        $('#allow_quantity_hidden').val($('#edit-quantity').val()); // mirror current value
+      }
+    }
+
+
+    function toggleImageDependencyField(value) {
+      const $wrapper = $('#image-dependency-wrapper');
+      if (value === '1') {
+        $wrapper.css('display', 'block');
+      } else {
+        $wrapper.css('display', 'none');
+        $wrapper.find('input[type="checkbox"]').prop('checked', false);
+      }
+    }
+
+    // On page load
+    toggleImageDependencyField($('#image-dependency').val());
+
+    // On change event
+    $('#image-dependency').on('change', function () {
+      toggleImageDependencyField($(this).val());
+    });
+
+
 
     $('select[name="input_type"]').on('change', function () {
       toggleEditSupportFields($(this).val());
@@ -291,6 +370,19 @@
       autoSetAllowQuantity($(this).val());
     });
 
+    // Toggle image dependency parents visibility
+    $('#edit-image-dependency').on('change', function () {
+      const val = $(this).val();
+      if (val === '1') {
+        $('#image-dependency-wrapper').show();
+      } else {
+        $('#image-dependency-wrapper').hide();
+        $('.image-dependency-checkbox').prop('checked', false);
+      }
+    });
+
+    // Trigger on page load to set visibility correctly
+    $('#edit-image-dependency').trigger('change');
 
   });
 

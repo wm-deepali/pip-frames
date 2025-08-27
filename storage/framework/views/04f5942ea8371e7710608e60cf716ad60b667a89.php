@@ -1,5 +1,5 @@
 <!-- Add Modal -->
-<div class="modal-dialog modal-lg" role="document">
+<div class="modal-dialog modal-xl" role="document">
   <div class="modal-content">
     <form id="attribute-form" enctype="multipart/form-data">
       <div class="modal-header">
@@ -101,13 +101,37 @@
               </div>
 
 
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <div class="form-group">
                   <label for="setup-0">Setup Charges</label>
                   <select name="attributes[0][has_setup_charge]" id="setup-0" class="form-control">
                     <option value="">-- Select --</option>
                     <option value="1">Yes</option>
                     <option value="0">No</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Main Frame Changes -->
+              <!-- <div class="col-md-2">
+                <div class="form-group">
+                  <label for="main-frame-changes-INDEX">Main Frame Changes</label>
+                  <select name="attributes[INDEX][main_frame_changes]" class="form-control"
+                    id="main-frame-changes-INDEX">
+                    <option value="0" selected>No</option>
+                    <option value="1">Yes</option>
+                  </select>
+                </div>
+              </div> -->
+
+              <!-- Required File Uploads -->
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label for="required-file-uploads-INDEX">Required File Uploads</label>
+                  <select name="attributes[INDEX][required_file_uploads]" class="form-control"
+                    id="required-file-uploads-INDEX">
+                    <option value="0" selected>No</option>
+                    <option value="1">Yes</option>
                   </select>
                 </div>
               </div>
@@ -157,9 +181,9 @@
                 </div>
               </div> -->
 
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <div class="form-group">
-                  <label for="dependency-0">Has Dependency</label>
+                  <label for="dependency-0">Price Rule Dependency</label>
                   <select name="attributes[0][has_dependency]" id="dependency-0" class="form-control">
                     <option value="">-- Select --</option>
                     <option value="1">Yes</option>
@@ -167,6 +191,20 @@
                   </select>
                 </div>
               </div>
+
+
+              <!-- <div class="col-md-2">
+                <div class="form-group">
+                  <label for="image-dependency-INDEX">Image Dependency</label>
+                  <select name="attributes[INDEX][has_image_dependency]" class="form-control"
+                    id="image-dependency-INDEX">
+                    <option value="">-- Select --</option>
+                    <option value="1">Yes</option>
+                    <option value="0" selected>No</option>
+                  </select>
+                </div>
+              </div> -->
+
 
               <div class="col-md-6 dependency-parent-wrapper d-none">
                 <div class="form-group">
@@ -181,6 +219,23 @@
                           <?php echo e($attribute->name); ?>
 
                         </label>
+                      </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 image-dependency-parent-wrapper d-none">
+                <div class="form-group">
+                  <label for="image-parent-INDEX">Image Dependency Parent <span class="text-danger">*</span></label>
+                  <div class="border p-1 rounded" style="max-height: 200px; overflow-y: auto;">
+                    <?php $__currentLoopData = $attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attribute): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input image-dependency-checkbox"
+                          name="attributes[INDEX][image_dependency_parent][]" id="img-dep-INDEX-<?php echo e($attribute->id); ?>"
+                          value="<?php echo e($attribute->id); ?>">
+                        <label class="form-check-label"
+                          for="img-dep-INDEX-<?php echo e($attribute->id); ?>"><?php echo e($attribute->name); ?></label>
                       </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </div>
@@ -283,6 +338,41 @@
   //   }
   // });
 
+  $(document).on('change', 'select[name$="[has_image_dependency]"]', function () {
+    const $item = $(this).closest('.attribute-item');
+    const hasImageDependency = $(this).val() === '1';
+    const $imageDependencyWrapper = $item.find('.image-dependency-parent-wrapper');
+    const $imageDependencySelect = $imageDependencyWrapper.find('input.image-dependency-checkbox');
+
+    if (hasImageDependency) {
+      // Show image dependency checkboxes
+      $imageDependencyWrapper.removeClass('d-none');
+
+      // Optionally populate image dependency attributes dynamically (as in your dependency logic)
+      // You can also append newly added attributes dynamically if you want
+    } else {
+      // Hide and clear selections
+      $imageDependencyWrapper.addClass('d-none');
+      $imageDependencySelect.prop('checked', false);
+    }
+  });
+
+  $('.attribute-item').each(function () {
+    const $item = $(this);
+
+    // Existing dependency trigger
+    const hasDependency = $item.find('select[name$="[has_dependency]"]').val() === '1';
+    if (hasDependency) {
+      $item.find('select[name$="[has_dependency]"]').trigger('change');
+    }
+
+    // New image dependency trigger
+    const hasImageDependency = $item.find('select[name$="[has_image_dependency]"]').val() === '1';
+    if (hasImageDependency) {
+      $item.find('select[name$="[has_image_dependency]"]').trigger('change');
+    }
+  });
+
 
   // Handle Dependency toggle
   $(document).on('change', 'select[name$="[has_dependency]"]', function () {
@@ -364,7 +454,7 @@
                 </div>
               </div>
 
-     <div class="col-md-3">
+     <div class="col-md-2">
         <div class="form-group">
           <label for="setup-${attributeIndex}">Setup Charges</label>
           <select name="attributes[${attributeIndex}][has_setup_charge]" class="form-control" id="setup-${attributeIndex}">
@@ -375,10 +465,21 @@
         </div>
     </div>
 
-    
-    <div class="col-md-3">
+     
+
+        <div class="col-md-2">
+        <div class="form-group">
+          <label for="required-file-uploads-${attributeIndex}">Required File Uploads</label>
+          <select name="attributes[${attributeIndex}][required_file_uploads]" class="form-control" id="required-file-uploads-${attributeIndex}">
+            <option value="0" selected>No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+      </div>
+
+    <div class="col-md-2">
       <div class="form-group">
-        <label for="dependency-${attributeIndex}">Has Dependency</label>
+        <label for="dependency-${attributeIndex}">Price Rule Dependency</label>
         <select name="attributes[${attributeIndex}][has_dependency]" class="form-control"
           id="dependency-${attributeIndex}">
           <option value="">-- Select --</option>
@@ -387,6 +488,7 @@
         </select>
       </div>
     </div>
+
 
 
  <div class="col-md-6 dependency-parent-wrapper d-none">
@@ -408,6 +510,23 @@
                 </div>
               </div>
               
+   
+
+<div class="col-md-6 image-dependency-parent-wrapper d-none">
+  <div class="form-group">
+    <label for="image-parent-${attributeIndex}">Image Dependency Parent <span class="text-danger">*</span></label>
+    <div class="border p-1 rounded" style="max-height: 200px; overflow-y: auto;">
+      
+      <?php $__currentLoopData = $attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attribute): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input image-dependency-checkbox" name="attributes[${attributeIndex}][image_dependency_parent][]" id="img-dep-${attributeIndex}-<?php echo e($attribute->id); ?>" value="<?php echo e($attribute->id); ?>">
+          <label class="form-check-label" for="img-dep-${attributeIndex}-<?php echo e($attribute->id); ?>"><?php echo e($attribute->name); ?></label>
+        </div>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </div>
+  </div>
+</div>
+
 
     <div class="col-md-12 text-right">
       <button type="button" class="btn btn-danger btn-sm remove-attribute">Remove</button>

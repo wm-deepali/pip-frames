@@ -95,15 +95,24 @@
             -
         @endif
     @else
-        @if ($value->image_path)
+        @if($value->parentImages->isNotEmpty() && $value->attribute->has_image_dependency)
+      @foreach($value->parentImages as $pi)
+        <div class="mb-2">
+          <strong>{{ $pi->parentAttribute->name ?? 'Parent Attr' }}</strong> - 
+          {{ $pi->parentAttributeValue->value ?? 'Value' }}<br>
+          <img src="{{ asset('storage/' . $pi->image_path) }}" width="40" alt="Parent Image">
+          <small>{{ ucfirst($pi->orientation) }}</small>
+        </div>
+      @endforeach
+    @else
+       @if ($value->image_path)
             <img src="{{ asset('storage/' . $value->image_path) }}" width="40">
-        @else
-            -
         @endif
+    @endif
     @endif
 </td>
 
-            <!-- <td>{!! $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-' !!}</td> -->
+    <!-- <td>{!! $value->icon_class ? "<i class='{$value->icon_class}'></i>" : '-' !!}</td> -->
             <!-- <td>{{ $value->custom_input_label ?? '-' }}</td> -->
 
             <td>{{ $value->created_at->format('d M Y') }}</td>

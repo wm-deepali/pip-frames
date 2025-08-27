@@ -1,6 +1,6 @@
-@extends('layouts.master')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
     <div class="app-content content">
         <div class="content-overlay"></div>
         <div class="header-navbar-shadow"></div>
@@ -11,8 +11,8 @@
                         <div class="col-12">
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('admin.header-contact.index') }}">Header &
+                                    <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="<?php echo e(route('admin.header-contact.index')); ?>">Header &
                                             Contact Info</a></li>
                                     <li class="breadcrumb-item active">Add Contact Info</li>
                                 </ol>
@@ -30,7 +30,7 @@
                     </div>
                     <div class="card-body">
                         <form id="contactForm" method="POST" novalidate>
-                            @csrf
+                            <?php echo csrf_field(); ?>
                             <div class="row">
                                 <!-- Contact Number -->
                                 <div class="col-md-6">
@@ -44,8 +44,8 @@
                                             <label for="show_on_header" class="form-check-label">Show on Header</label>
                                         </div>
                                          <div class="form-check mt-1">
-                                            <input type="checkbox" name="show_on_footer" value="1"
-                                                class="form-check-input" id="show_on_footer">
+                                            <input type="checkbox" name="show_on_footer_mobile" value="1"
+                                                class="form-check-input" id="show_on_footer_mobile">
                                             <label for="show_on_footer" class="form-check-label">Show on
                                                 Footer</label>
                                         </div>
@@ -124,7 +124,7 @@
 
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary">Save</button>
-                                    <a href="{{ route('admin.header-contact.index') }}" class="btn btn-secondary">Cancel</a>
+                                    <a href="<?php echo e(route('admin.header-contact.index')); ?>" class="btn btn-secondary">Cancel</a>
                                 </div>
                             </div>
                         </form>
@@ -134,9 +134,9 @@
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('after-scripts')
+<?php $__env->startPush('after-scripts'); ?>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -167,7 +167,7 @@
                 $('input, textarea').removeClass('is-invalid');
 
                 $.ajax({
-                    url: "{{ route('admin.header-contact.store') }}",
+                    url: "<?php echo e(route('admin.header-contact.store')); ?>",
                     method: "POST",
                     data: $(this).serialize(),
                     success: function (response) {
@@ -176,7 +176,7 @@
                             title: 'Saved',
                             text: 'Contact info saved successfully!',
                         }).then(() => {
-                            window.location.href = "{{ route('admin.header-contact.index') }}";
+                            window.location.href = "<?php echo e(route('admin.header-contact.index')); ?>";
                         });
                     },
                     error: function (xhr) {
@@ -207,4 +207,5 @@
             });
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/admin/info/create.blade.php ENDPATH**/ ?>

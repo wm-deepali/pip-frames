@@ -8,14 +8,21 @@ use App\Models\AttributeValue;
 use App\Models\SubcategoryAttributeValue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\AttributeValueParentImage;
 
 class AttributeValueController extends Controller
 {
     public function index()
     {
-        $values = AttributeValue::with(['attribute', 'components'])->latest()->get();
+        $values = AttributeValue::with([
+            'attribute',
+            'components',
+            'parentImages', // Load parent images relationship
+        ])->latest()->get();
+// dd($values->toArray());
         return view('admin.attribute-values.index', compact('values'));
     }
+
 
     public function getValues($id, Request $request)
     {
@@ -40,8 +47,10 @@ class AttributeValueController extends Controller
 
     public function create()
     {
-        $attributes = Attribute::all();
+        // Load attributes with imageParentsWithValues eager loaded
+        $attributes = Attribute::with(['imageParentsWithValues'])->get();
 
+        // Map each attribute config including imageParents with their values
         $attributeConfigs = $attributes->mapWithKeys(function ($attribute) {
             return [
                 $attribute->id => [
@@ -51,6 +60,24 @@ class AttributeValueController extends Controller
                     'custom_input_type' => $attribute->custom_input_type,
                     'is_composite' => $attribute->is_composite,
                     'require_both_images' => $attribute->require_both_images,
+                    'has_image_dependency' => $attribute->has_image_dependency,
+                    'required_file_uploads' => $attribute->required_file_uploads,
+
+                    // Use imageParentsWithValues here, not imageParents
+                    'imageParents' => $attribute->imageParentsWithValues->map(function ($parentAttr) {
+                        return [
+                            'id' => $parentAttr->id,
+                            'name' => $parentAttr->name,
+                            'values' => $parentAttr->values->map(function ($val) {
+                                return [
+                                    'id' => $val->id,
+                                    'value' => $val->value,
+                                    'title' => $val->title,
+                                    // add other needed fields
+                                ];
+                            }),
+                        ];
+                    }),
                 ],
             ];
         });
@@ -67,14 +94,13 @@ class AttributeValueController extends Controller
                 });
             });
 
-
+        // dd($attributeConfigs->toArray());
         $view = view('admin.attribute-values.add', [
             'attributeConfigs' => $attributeConfigs,
             'attributes' => $attributes,
-            'existingValuesGrouped' => $existingValuesGrouped
+            'existingValuesGrouped' => $existingValuesGrouped,
         ])->render();
 
-        // dd($attributeConfigs);
         return response()->json([
             'success' => true,
             'html' => $view,
@@ -88,11 +114,10 @@ class AttributeValueController extends Controller
         $inputType = $attribute->input_type;
         $requireBothImages = $attribute->require_both_images;
 
-        // Add validation rules for portrait and landscape if needed
+        // Basic validation rules
         $rules = [
             'attribute_id' => 'required|exists:attributes,id',
             'attribute_values' => 'required|array|min:1',
-            'attribute_values.*.value' => 'required_without_all:attribute_values.*.image_portrait,attribute_values.*.image_landscape',
             'attribute_values.*.title' => 'nullable|string|max:255',
             'attribute_values.*.icon_class' => 'nullable|string|max:255',
             'attribute_values.*.image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -100,11 +125,42 @@ class AttributeValueController extends Controller
             'attribute_values.*.is_composite' => 'nullable|boolean',
             'attribute_values.*.composed_of' => 'nullable|array',
             'attribute_values.*.fixed_extra_charges' => 'nullable|boolean',
+            'attribute_values.*.required_file_uploads' => 'nullable|integer|min:0',
         ];
+
+        if (!$attribute->has_image_dependency) {
+            $rules['attribute_values.*.value'] = 'required_without_all:attribute_values.*.image_portrait,attribute_values.*.image_landscape';
+        } else {
+            // No 'value' required if has_image_dependency = true
+            $rules['attribute_values.*.value'] = 'nullable';
+        }
 
         if ($requireBothImages) {
             $rules['attribute_values.*.image_portrait'] = 'required|image|mimes:jpeg,png,jpg,webp|max:2048';
             $rules['attribute_values.*.image_landscape'] = 'required|image|mimes:jpeg,png,jpg,webp|max:2048';
+        }
+
+        // Validate parent images inputs per parent attribute and parent value
+        if ($attribute->has_image_dependency && $request->has('attribute_values')) {
+            foreach ($request->attribute_values as $idx => $valueData) {
+                if (!empty($valueData['parent_images'])) {
+                    foreach ($valueData['parent_images'] as $parentAttrId => $parentValues) {
+                        foreach ($parentValues as $parentValueId => $parentImageData) {
+                            $fileInputKey = "attribute_values.$idx.parent_images.$parentAttrId.$parentValueId.file";
+                            $hasFile = $request->hasFile($fileInputKey);
+                            // Parent image file input is optional if checkbox enabled, adjust as needed
+                            if (!empty($parentImageData['enabled']) && $hasFile) {
+                                $rules[$fileInputKey] = 'image|mimes:jpeg,png,jpg,webp|max:2048';
+                            }
+                            // Validate orientation required if enabled
+                            $orientationKey = "attribute_values.$idx.parent_images.$parentAttrId.$parentValueId.orientation";
+                            if (!empty($parentImageData['enabled'])) {
+                                $rules[$orientationKey] = 'required|in:portrait,landscape';
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         $validator = Validator::make($request->all(), $rules);
@@ -119,49 +175,65 @@ class AttributeValueController extends Controller
                 'icon_class' => $valueData['icon_class'] ?? null,
                 'title' => $valueData['title'] ?? null,
                 'custom_input_label' => $valueData['custom_input_label'] ?? null,
-                'is_composite_value' => !empty($valueData['is_composite']) ? true : false,
-                'fixed_extra_charges' => !empty($valueData['fixed_extra_charges']) ? true : false,
+                'is_composite_value' => !empty($valueData['is_composite']),
+                'fixed_extra_charges' => !empty($valueData['fixed_extra_charges']),
+                'required_file_uploads' => $valueData['required_file_uploads'] ?? null,
             ];
 
             if ($requireBothImages) {
-                // Handle portrait image
                 if ($request->hasFile("attribute_values.{$index}.image_portrait")) {
                     $data['image_portrait_path'] = $request->file("attribute_values.{$index}.image_portrait")->store('attribute_values', 'public');
                 }
-                // Handle landscape image
                 if ($request->hasFile("attribute_values.{$index}.image_landscape")) {
                     $data['image_landscape_path'] = $request->file("attribute_values.{$index}.image_landscape")->store('attribute_values', 'public');
                 }
-
-                // Set value if needed (title or other)
                 $data['value'] = $valueData['title'] ?? null;
-
             } elseif (in_array($inputType, ['select_image', 'select_icon'])) {
-                $uploadedValueFile = $request->file("attribute_values.{$index}.value");
-                if ($uploadedValueFile) {
-                    $data['image_path'] = $uploadedValueFile->store('attribute_values', 'public');
+                if ($request->hasFile("attribute_values.{$index}.value")) {
+                    $data['image_path'] = $request->file("attribute_values.{$index}.value")->store('attribute_values', 'public');
                 }
                 $data['value'] = $valueData['title'] ?? null;
             } else {
-                $data['value'] = $valueData['value'];
+                $data['value'] = $valueData['value'] ?? null;
             }
 
-            // Optional additional image field
-            $uploadedImage = $request->file("attribute_values.{$index}.image");
-            if ($uploadedImage) {
-                $data['image_path'] = $uploadedImage->store('attribute_values', 'public');
+            if ($request->hasFile("attribute_values.{$index}.image")) {
+                $data['image_path'] = $request->file("attribute_values.{$index}.image")->store('attribute_values', 'public');
             }
 
             if ($inputType === 'select_colour') {
-                $data['value'] = $valueData['value']; // colour name
+                $data['value'] = $valueData['value'] ?? null;
                 $data['colour_code'] = $valueData['colour_code'] ?? null;
             }
 
             $attributeValue = AttributeValue::create($data);
 
+            // Handle composite components sync
             if (!empty($valueData['is_composite']) && !empty($valueData['composed_of'])) {
                 $componentIds = array_map('intval', $valueData['composed_of']);
                 $attributeValue->components()->sync($componentIds);
+            }
+
+            // Handle parent image dependencies - save uploaded files and save records accordingly
+            if (!empty($valueData['parent_images'])) {
+                foreach ($valueData['parent_images'] as $parentAttrId => $parentValues) {
+                    foreach ($parentValues as $parentValueId => $parentImageData) {
+                        // Only if enabled and file uploaded
+                        if (!empty($parentImageData['enabled']) && $request->hasFile("attribute_values.{$index}.parent_images.{$parentAttrId}.{$parentValueId}.file")) {
+                            $file = $request->file("attribute_values.{$index}.parent_images.{$parentAttrId}.{$parentValueId}.file");
+                            $path = $file->store('attribute_values/parent_images', 'public');
+
+                            // Save or create attributeValueParentImage record (you must create this model/table)
+                            \App\Models\AttributeValueParentImage::create([
+                                'attribute_value_id' => $attributeValue->id,
+                                'parent_attribute_id' => $parentAttrId,
+                                'parent_attribute_value_id' => $parentValueId,
+                                'image_path' => $path,
+                                'orientation' => $parentImageData['orientation'] ?? null,
+                            ]);
+                        }
+                    }
+                }
             }
         }
 
@@ -169,10 +241,11 @@ class AttributeValueController extends Controller
     }
 
 
+
     public function edit($id)
     {
-        $attributeValue = AttributeValue::findOrFail($id);
-        $attribute = Attribute::findOrFail($attributeValue->attribute_id);
+        $attributeValue = AttributeValue::with('parentImages')->findOrFail($id);
+        $attribute = Attribute::with('imageParentsWithValues')->findOrFail($attributeValue->attribute_id);
 
         $attributeConfigs = [
             $attribute->id => [
@@ -181,30 +254,54 @@ class AttributeValueController extends Controller
                 'input_type' => $attribute->input_type,
                 'custom_input_type' => $attribute->custom_input_type,
                 'is_composite' => $attribute->is_composite,
-                'require_both_images' => $attribute->require_both_images,
-            ]
+                'require_both' => $attribute->require_both,
+                'has_image_dependency' => $attribute->has_image_dependency,
+                'required_file_uploads' => $attribute->required_file_uploads,
+                'imageParents' => $attribute->imageParentsWithValues->map(function ($parentAttr) {
+                    return [
+                        'id' => $parentAttr->id,
+                        'name' => $parentAttr->name,
+                        'values' => $parentAttr->values->map(function ($val) {
+                            return [
+                                'id' => $val->id,
+                                'value' => $val->value,
+                                'title' => $val->title,
+                            ];
+                        }),
+                    ];
+                }),
+            ],
         ];
+
+        // Prepare existing parent images structured for JS use
+        $parentImagesData = [];
+        foreach ($attributeValue->parentImages as $pi) {
+            $parentImagesData[$pi->parent_attribute_id][$pi->parent_attribute_value_id] = [
+                'id' => $pi->id,
+                'image_path' => $pi->image_path,
+                'preview' => $pi->image_path ? asset('storage/' . $pi->image_path) : null,
+                'orientation' => $pi->orientation,
+            ];
+        }
 
         $data = [
             'attributeValue' => $attributeValue,
             'attribute' => $attribute,
             'attributeConfigs' => $attributeConfigs,
-            'action' => route('admin.attribute-values.update', $attributeValue->id),
-            'method' => 'PUT',
-            'buttonText' => 'Update',
+            'parentImagesData' => $parentImagesData,
+            // Other data like available values for composite, etc.
         ];
 
-        // Only fetch composite-related data if is_composite is true
         if ($attribute->is_composite) {
             $availableValues = AttributeValue::where('attribute_id', $attribute->id)
-                ->where('id', '!=', $attributeValue->id)
-                ->get();
+                ->where('id', '!=', $attributeValue->id)->get();
 
             $attributeValue->load('components');
             $attributeValue->composed_of_array = $attributeValue->components->pluck('id')->toArray();
 
             $data['availableValues'] = $availableValues;
         }
+
         $view = view('admin.attribute-values.edit', $data)->render();
 
         return response()->json([
@@ -228,7 +325,8 @@ class AttributeValueController extends Controller
             'is_composite_value' => 'sometimes|boolean',
             'composed_of' => 'nullable|array',
             'composed_of.*' => 'integer|exists:attribute_values,id',
-            'fixed_extra_charges' => 'nullable|boolean'
+            'fixed_extra_charges' => 'nullable|boolean',
+            'required_file_uploads' => 'nullable|integer|min:0',
         ];
 
         if (in_array($inputType, ['select_image', 'select_icon'])) {
@@ -245,7 +343,6 @@ class AttributeValueController extends Controller
         }
 
         $validator = Validator::make($request->all(), $rules);
-
         if ($validator->fails()) {
             return $this->validationError($validator);
         }
@@ -254,11 +351,12 @@ class AttributeValueController extends Controller
             'attribute_id',
             'title',
             'icon_class',
+            'custom_input_label',
+            'required_file_uploads',
         ]);
 
         $data['fixed_extra_charges'] = $request->boolean('fixed_extra_charges');
         $data['is_composite_value'] = $request->boolean('is_composite_value');
-        $data['custom_input_label'] = $request->filled('custom_input_label') ? $request->input('custom_input_label') : null;
 
         if ($requireBothImages) {
             if ($request->hasFile('image_portrait')) {
@@ -288,6 +386,7 @@ class AttributeValueController extends Controller
 
         $attributeValue->update($data);
 
+        // Sync composite components if applicable
         if ($data['is_composite_value']) {
             $components = $request->input('composed_of', []);
             $attributeValue->components()->sync($components);
@@ -295,8 +394,68 @@ class AttributeValueController extends Controller
             $attributeValue->components()->detach();
         }
 
+        // Handle parent image dependencies update
+        // dd($request->parent_images);
+        if ($request->has('parent_images')) {
+            $existingParentImages = $attributeValue->parentImages()->get()->keyBy(function ($item) {
+                return $item->parent_attribute_id . '-' . $item->parent_attribute_value_id;
+            });
+
+            $newKeys = [];
+            foreach ($request->parent_images as $parentAttrId => $parentValues) {
+                foreach ($parentValues as $parentValueId => $parentImageData) {
+                    $key = $parentAttrId . '-' . $parentValueId;
+                    $newKeys[] = $key;
+
+                    if (!empty($parentImageData['enabled'])) {
+                        if ($existingParentImages->has($key)) {
+                            // dd($existingParentImages->has($key));
+                            $existing = $existingParentImages->get($key);
+
+                            if ($request->hasFile("parent_images.{$parentAttrId}.{$parentValueId}.file")) {
+                                // Update file
+                                $file = $request->file("parent_images.{$parentAttrId}.{$parentValueId}.file");
+                                $path = $file->store('attribute_values/parent_images', 'public');
+                                $existing->image_path = $path;
+                            }
+                            $existing->orientation = $parentImageData['orientation'] ?? $existing->orientation;
+                            $existing->save();
+                        } else {
+                            // Create new
+                            if ($request->hasFile("parent_images.{$parentAttrId}.{$parentValueId}.file")) {
+                                $file = $request->file("parent_images.{$parentAttrId}.{$parentValueId}.file");
+                                $path = $file->store('attribute_values/parent_images', 'public');
+                                AttributeValueParentImage::create([
+                                    'attribute_value_id' => $attributeValue->id,
+                                    'parent_attribute_id' => $parentAttrId,
+                                    'parent_attribute_value_id' => $parentValueId,
+                                    'image_path' => $path,
+                                    'orientation' => $parentImageData['orientation'] ?? null,
+                                ]);
+                            }
+                        }
+                    } else {
+                        // If not enabled and exists, delete it
+                        if ($existingParentImages->has($key)) {
+                            $existingParentImages->get($key)->delete();
+                        }
+                    }
+                }
+            }
+
+            // Delete any existing entries that are NOT in the new keys (if needed)
+            foreach ($existingParentImages as $key => $existing) {
+                if (!in_array($key, $newKeys)) {
+                    $existing->delete();
+                }
+            }
+        }
+
+
         return $this->respondSuccess($request, 'Attribute value updated successfully.');
     }
+
+
 
 
     public function destroy(AttributeValue $attributeValue)

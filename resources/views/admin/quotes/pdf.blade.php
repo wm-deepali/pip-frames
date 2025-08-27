@@ -8,7 +8,7 @@
     <style>
         {!! file_get_contents(public_path('admin_assets/css/bootstrap.min.css')) !!}
         {!! file_get_contents(public_path('admin_assets/css/style.css')) !!}
- </style>
+    </style>
 </head>
 
 <body>
@@ -63,7 +63,9 @@
                             {{ \Carbon\Carbon::parse($quote->delivery_date)->format('d F Y') ?? 'N/A' }}</p>
                         <p><strong>Date & Time:</strong> {{ $quote->created_at->format('d F Y, h:i A') ?? 'N/A' }}</p>
                         <p><strong>Delivery Address:</strong>
-                            {{ $quote->deliveryAddress->address ?? '' }}
+                            {{ $quote->deliveryAddress->address ?? '' }}, {{ $quote->deliveryAddress->city ?? '' }},
+                            {{ $quote->deliveryAddress->postcode ?? '' }},
+                            {{ $quote->deliveryAddress->country_name ?? '' }}
                         </p>
 
                     </div>
@@ -81,82 +83,134 @@
                 {{-- Quote Items --}}
                 <h5 class="mb-2">Quote Items</h5>
                 <div class="table-responsive">
-                    <table class="table table-bordered">
+                    @php
+                        $totalExtraOptions = 0;
+                        foreach ($quote->items as $item) {
+                            $options = json_decode($item->extra_options, true) ?: [];
+                            foreach ($options as $opt) {
+                                if (!empty($opt['price']) && floatval($opt['price']) > 0) {
+                                    $totalExtraOptions += floatval($opt['price']);
+                                }
+                            }
+                        }
+                    @endphp
+
+                    <table class="table table-bordered" style="font-size: 14px;">
                         <thead class="thead-light">
                             <tr>
-                                <th style="width: 60%;">Detail</th>
-                                <th style="width: 20%;">Quantity</th>
-                                <th style="width: 20%;">Price (£)</th>
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th>Rate (£)</th>
+                                <th>Total (£)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($quote->items as $item)
+                            @foreach ($quote->items as $item)
+                                @php
+                                    $extraOptions = json_decode($item->extra_options, true) ?: [];
+                                    $extraOptionsTotal = 0;
+                                    foreach ($extraOptions as $opt) {
+                                        if (!empty($opt['price']) && floatval($opt['price']) > 0) {
+                                            $extraOptionsTotal += floatval($opt['price']);
+                                        }
+                                    }
+                                    $itemTotalWithExtras = $item->sub_total + $extraOptionsTotal;
+                                    $rate = ($item->quantity > 0) ? $itemTotalWithExtras / $item->quantity : 0;
+                                  @endphp
                                 <tr>
                                     <td>
-                                        {{-- Subcategory Name --}}
-                                        <div style="font-weight: 600; margin-bottom: 4px;">
+                                        <div style="font-weight: 600; margin-bottom: 5px;">
                                             {{ $item->subcategory->name ?? 'N/A' }}
                                             ({{ optional($item->subcategory->categories->first())->name ?? 'N/A' }})
                                         </div>
-
-                                        {{-- Attribute Name-Value List --}}
-                                        @if($item->attributes && $item->attributes->count())
-                                            <div>
-                                                @foreach($item->attributes as $attr)
-                                                    <div style="font-size: 14px; margin-left: 10px;">
-                                                        <strong>{{ $attr->attribute->name ?? 'Attribute' }}:</strong>
-                                                        @if($attr->attributeValue)
-                                                            {{ $attr->attributeValue->value }}
-                                                        @elseif($attr->length && $attr->width)
-                                                            {{ $attr->length }} x {{ $attr->width }} {{ $attr->unit }}
-                                                        @elseif($attr->length)
-                                                            {{ $attr->length }} {{ $attr->unit }}
-                                                        @else
-                                                            -
-                                                        @endif
-                                                    </div>
-                                                @endforeach
-
-                                            </div>
-                                        @else
-                                            <div class="text-muted" style="font-size: 13px; margin-left: 10px;">No attributes
-                                                selected.</div>
+                                        @if ($item->attributes->count())
+                                            @foreach ($item->attributes as $attribute)
+                                                <div style="font-size: 13px; margin-left: 8px;">
+                                                    <strong>{{ $attribute->attribute->name ?? '' }}:</strong>
+                                                    @if ($attribute->attributeValue)
+                                                        {{ $attribute->attributeValue->value }}
+                                                    @elseif ($attribute->length && $attribute->width)
+                                                        {{ $attribute->length }} x {{ $attribute->width }} {{ $attribute->unit }}
+                                                    @elseif ($attribute->length)
+                                                        {{ $attribute->length }} {{ $attribute->unit }}
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </div>
+                                            @endforeach
                                         @endif
 
-                                        {{-- Pages --}}
-                                        @if (!is_null($item->pages))
-                                            <div style="font-size: 14px; margin-left: 10px;">
-                                                <strong> Pages:</strong> {{ $item->pages }}
+                                        @if($item->pet_name || $item->pet_birthdate || $item->personal_text || $item->note)
+                                            <div
+                                                style="margin-top: 8px; font-size: 13px; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
+                                                <strong>Pet Details:</strong><br>
+                                                @if($item->pet_name)
+                                                <div>Name: {{ $item->pet_name }}</div>@endif
+                                                @if($item->pet_birthdate)
+                                                <div>Birthdate: {{ $item->pet_birthdate->format('d M Y') }}</div>@endif
+                                                @if($item->personal_text)
+                                                <div>Personal Text: {{ $item->personal_text }}</div>@endif
+                                                @if($item->note)
+                                                <div>Note: {{ $item->note }}</div>@endif
+                                            </div>
+                                        @endif
+
+                                        @if(count($extraOptions))
+                                            <div style="margin-top: 8px;">
+                                                <strong>Extra Options:</strong><br>
+                                                @foreach ($extraOptions as $opt)
+                                                    <span
+                                                        style="background: #17a2b8; color: #fff; padding: 3px 8px; margin-right: 4px; border-radius: 12px; font-size: 12px;">
+                                                        {{ $opt['title'] }}
+                                                        @if(!empty($opt['price']) && floatval($opt['price']) > 0)(£{{ number_format(floatval($opt['price']), 2) }})@endif
+                                                    </span>
+                                                @endforeach
                                             </div>
                                         @endif
                                     </td>
-
                                     <td>{{ $item->quantity }}</td>
-                                    <td>{{ number_format($item->sub_total, 2) }}</td>
+                                    <td>£{{ number_format($rate, 2) }}</td>
+                                    <td>£{{ number_format($itemTotalWithExtras, 2) }}</td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="text-center">No quote items found.</td>
-                                </tr>
-                            @endforelse
-
-                            {{-- Proofreading price row --}}
-                            @if($quote->proof_type && $quote->proof_price)
-                                <tr>
-                                    <td><strong>Proof Type:</strong> {{ ucfirst($quote->proof_type) }}</td>
-                                    <td>—</td>
-                                    <td>{{ number_format($quote->proof_price, 2) }}</td>
-                                </tr>
-                            @endif
-
+                            @endforeach
                         </tbody>
                     </table>
+
+                    {{-- Totals --}}
+                    @php
+                        $subtotalWithExtras = $quote->items->sum('sub_total') + $totalExtraOptions + ($quote->proof_price ?? 0);
+                    @endphp
+
+                    <div class="row justify-content-end mt-4">
+                        <div class="col-md-5">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Subtotal:</th>
+                                    <td class="text-right">£{{ number_format($subtotalWithExtras, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Delivery Charge:</th>
+                                    <td class="text-right">£{{ number_format($quote->delivery_price, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <th>VAT ({{ (int) $quote->vat_percentage }}%):</th>
+                                    <td class="text-right">£{{ number_format($quote->vat_amount, 2) }}</td>
+                                </tr>
+                                <tr
+                                    style="border-top: 2px solid #6B3DF4; border-bottom: 2px solid #6B3DF4; font-weight: bold; font-size: 18px; color: #6B3DF4;">
+                                    <th>Total:</th>
+                                    <td class="text-right">£{{ number_format($quote->grand_total, 2) }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
 
 
 
                 {{-- Summary --}}
-                <div class="row justify-content-end mt-4">
+                <!-- <div class="row justify-content-end mt-4">
                     <div class="col-md-5">
                         <table class="table table-borderless">
                             <tr>
@@ -180,14 +234,14 @@
                             </tr>
                         </table>
                     </div>
-                </div>
+                </div> -->
 
 
                 {{-- Horizontal Line --}}
-                <hr>
+                <!-- <hr> -->
 
                 {{-- Customer Documents --}}
-                <h5>Customer Documents</h5>
+                <!-- <h5>Customer Documents</h5>
                 <div class="table-responsive">
                     <table class="table table-bordered mt-2">
                         <thead>
@@ -225,10 +279,10 @@
                             @endforelse
                         </tbody>
                     </table>
-                </div>
+                </div> -->
 
 
-                {{-- Action Buttons --}}
+                <!-- {{-- Action Buttons --}}
                 <div class="row justify-content-center mt-4">
                     <div class="col-md-2">
                         <a href="{{ route('admin.quotes.download.pdf', $quote->id) }}" class="btn btn-primary btn-block"
@@ -240,7 +294,7 @@
                     <div class="col-md-2">
                         <button class="btn btn-success btn-block">Send Email</button>
                     </div>
-                </div>
+                </div> -->
 
             </div>
         </div>

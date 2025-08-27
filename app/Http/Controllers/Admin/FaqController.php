@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContactInfo;
 use App\Models\Faq;
 use Illuminate\Http\Request;
 
@@ -49,6 +50,7 @@ class FaqController extends Controller
     public function publicIndex()
     {
         $faqs = Faq::where('status', 'published')->get();
-        return view('front.faq', compact('faqs'));
+        $contact = ContactInfo::first();
+        return view('front.faq', compact('faqs', 'contact'));
     }
 }

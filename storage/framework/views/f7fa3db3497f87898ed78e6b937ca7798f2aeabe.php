@@ -1,6 +1,6 @@
-@extends('layouts.master')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
     <div class="app-content content">
         <div class="content-overlay"></div>
         <div class="header-navbar-shadow"></div>
@@ -11,10 +11,10 @@
                         <div class="col-12">
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('admin.header-contact.index') }}">Header &
+                                    <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="<?php echo e(route('admin.header-contact.index')); ?>">Header &
                                             Contact Info</a></li>
-                                    <li class="breadcrumb-item active">Add Contact Info</li>
+                                    <li class="breadcrumb-item active">Edit Contact Info</li>
                                 </ol>
                             </div>
                         </div>
@@ -26,50 +26,53 @@
             <div class="content-body">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Add Contact Information</h4>
+                        <h4 class="card-title">Edit Contact Information</h4>
                     </div>
                     <div class="card-body">
                         <form id="contactForm" method="POST" novalidate>
-                            @csrf
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('POST'); ?>
+                            <input type="hidden" name="id" value="<?php echo e($contact->id); ?>">
                             <div class="row">
                                 <!-- Contact Number -->
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Contact Number</label>
-                                        <input type="text" name="contact_number" class="form-control">
+                                        <input type="text" name="contact_number" class="form-control"
+                                            value="<?php echo e(old('contact_number', $contact->contact_number)); ?>">
                                         <div class="invalid-feedback" id="error-contact_number"></div>
-                                        <div class="form-check mt-1">
+ <div class="form-check mt-1">
                                             <input type="checkbox" name="show_on_header" value="1" class="form-check-input"
-                                                id="show_on_header">
+                                                id="show_on_header"  <?php echo e(old('show_on_header', $contact->show_on_header) ? 'checked' : ''); ?>>
                                             <label for="show_on_header" class="form-check-label">Show on Header</label>
                                         </div>
                                          <div class="form-check mt-1">
                                             <input type="checkbox" name="show_on_footer" value="1"
-                                                class="form-check-input" id="show_on_footer">
+                                                class="form-check-input" id="show_on_footer" <?php echo e(old('show_on_footer', $contact->show_on_footer) ? 'checked' : ''); ?>>
                                             <label for="show_on_footer" class="form-check-label">Show on
                                                 Footer</label>
                                         </div>
+                                      
+
                                     </div>
                                 </div>
 
                                 <!-- Mobile Number -->
-                                <!-- Mobile Number -->
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Mobile Number</label>
-                                        <input type="text" name="mobile_number" class="form-control">
+                                        <input type="text" name="mobile_number" class="form-control"
+                                            value="<?php echo e(old('mobile_number', $contact->mobile_number)); ?>">
                                         <div class="invalid-feedback" id="error-mobile_number"></div>
-
-                                        <div class="form-check mt-1">
-                                            <input type="checkbox" name="show_on_header_mobile" value="1"
-                                                class="form-check-input" id="show_on_header_mobile">
-                                            <label for="show_on_header_mobile" class="form-check-label">Show on
-                                                Header</label>
+                                          <div class="form-check mt-1">
+                                            <input type="checkbox" name="show_on_header_mobile" value="1" class="form-check-input"
+                                                id="show_on_header_mobile" <?php echo e(old('show_on_header_mobile', $contact->show_on_header_mobile) ? 'checked' : ''); ?>>
+                                            <label for="show_on_header_mobile" class="form-check-label" >Show on Header</label>
                                         </div>
-                                        <div class="form-check mt-1">
+                                         <div class="form-check mt-1">
                                             <input type="checkbox" name="show_on_footer_mobile" value="1"
-                                                class="form-check-input" id="show_on_footer_mobile">
-                                            <label for="show_on_footer_mobile" class="form-check-label">Show on
+                                                class="form-check-input" id="show_on_footer_mobile"  <?php echo e(old('show_on_footer_mobile', $contact->show_on_footer_mobile) ? 'checked' : ''); ?>>
+                                            <label for="show_on_footer_mobile" class="form-check-label" >Show on
                                                 Footer</label>
                                         </div>
                                     </div>
@@ -79,30 +82,32 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Email</label>
-                                        <input type="email" name="email" class="form-control">
+                                        <input type="email" name="email" class="form-control"
+                                            value="<?php echo e(old('email', $contact->email)); ?>">
                                         <div class="invalid-feedback" id="error-email"></div>
-
-                                        <div class="form-check mt-1">
+                                         <div class="form-check mt-1">
                                             <input type="checkbox" name="show_on_header_email" value="1"
-                                                class="form-check-input" id="show_on_header_email">
+                                                class="form-check-input" id="show_on_header_email"  <?php echo e(old('show_on_header_email', $contact->show_on_header_email) ? 'checked' : ''); ?>>
                                             <label for="show_on_header_email" class="form-check-label">Show on
                                                 Header</label>
                                         </div>
                                         <div class="form-check mt-1">
                                             <input type="checkbox" name="show_on_footer_email" value="1"
                                                 class="form-check-input" id="show_on_footer_email">
-                                            <label for="show_on_footer_email" class="form-check-label">Show on
+                                            <label for="show_on_footer_email" class="form-check-label" <?php echo e(old('show_on_footer_email', $contact->show_on_footer_email) ? 'checked' : ''); ?>>Show on
                                                 Footer</label>
                                         </div>
+                                        
+
                                     </div>
                                 </div>
-
 
                                 <!-- Website URL -->
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Website URL</label>
-                                        <input type="url" name="website_url" class="form-control">
+                                        <input type="url" name="website_url" class="form-control"
+                                            value="<?php echo e(old('website_url', $contact->website_url)); ?>">
                                         <div class="invalid-feedback" id="error-website_url"></div>
                                     </div>
                                 </div>
@@ -112,19 +117,17 @@
                                     <div class="form-group">
                                         <label>Full Address</label>
                                         <textarea name="full_address" id="full_address" class="form-control"
-                                            rows="3"></textarea>
+                                            rows="3"><?php echo e(old('full_address', $contact->full_address)); ?></textarea>
                                         <div class="invalid-feedback" id="error-full_address"></div>
                                     </div>
-                                    <div id="map-preview" style="width:100%; height:250px; margin-top:10px;">
-                                        <p>Please enter an address to preview the map.</p>
-                                    </div>
+                                    <div id="map-preview" style="width:100%;height:250px;margin-top:10px;"></div>
                                 </div>
 
-                                <!-- Removed manual Google Map Embed Code textarea -->
+                                <!-- Remove Google Map Embed Code input as we will generate it dynamically -->
 
                                 <div class="col-12">
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                    <a href="{{ route('admin.header-contact.index') }}" class="btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <a href="<?php echo e(route('admin.header-contact.index')); ?>" class="btn btn-secondary">Cancel</a>
                                 </div>
                             </div>
                         </form>
@@ -134,14 +137,14 @@
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('after-scripts')
+<?php $__env->startPush('after-scripts'); ?>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Function to update Google Map preview based on address input
+        // Function to update Google Map preview based on address field
         function updateMap() {
             let address = $('#full_address').val();
             let mapPreview = $('#map-preview');
@@ -156,7 +159,7 @@
         $(document).ready(function () {
             updateMap();
 
-            // Update map preview live on address change
+            // Update map preview on address change
             $('#full_address').on('input', updateMap);
 
             $('#contactForm').on('submit', function (e) {
@@ -167,16 +170,16 @@
                 $('input, textarea').removeClass('is-invalid');
 
                 $.ajax({
-                    url: "{{ route('admin.header-contact.store') }}",
+                    url: "<?php echo e(route('admin.header-contact.update', $contact->id)); ?>",
                     method: "POST",
                     data: $(this).serialize(),
                     success: function (response) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Saved',
-                            text: 'Contact info saved successfully!',
+                            title: 'Updated',
+                            text: 'Contact info updated successfully!',
                         }).then(() => {
-                            window.location.href = "{{ route('admin.header-contact.index') }}";
+                            window.location.href = "<?php echo e(route('admin.header-contact.index')); ?>";
                         });
                     },
                     error: function (xhr) {
@@ -185,6 +188,8 @@
                             let errorText = '';
                             for (let field in errors) {
                                 errorText += errors[field][0] + '<br>';
+
+                                // Show error next to input
                                 if ($('#error-' + field).length) {
                                     $('#error-' + field).text(errors[field][0]);
                                     $('[name="' + field + '"]').addClass('is-invalid');
@@ -207,4 +212,5 @@
             });
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/admin/info/edit.blade.php ENDPATH**/ ?>

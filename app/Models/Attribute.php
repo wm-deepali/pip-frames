@@ -21,8 +21,10 @@ class Attribute extends Model
         'custom_input_type',
         'has_image',
         'has_icon',
+        'main_frame_changes',
+        'required_file_uploads',
+        'has_image_dependency',
     ];
-
     protected $casts = [
         'has_icon' => 'boolean',
         'has_image' => 'boolean',
@@ -31,7 +33,10 @@ class Attribute extends Model
         'has_dependency' => 'boolean',
         'pricing_basis' => 'string',
         'has_setup_charge' => 'boolean',
-        'require_both_images' => 'boolean'
+        'require_both_images' => 'boolean',
+        'main_frame_changes' => 'boolean',
+        'required_file_uploads' => 'boolean',
+        'has_image_dependency' => 'boolean',
     ];
 
 
@@ -83,4 +88,35 @@ class Attribute extends Model
         return $this->belongsToMany(AttributeGroup::class, 'attribute_group_attribute');
     }
 
+    public function imageParents()
+    {
+        return $this->belongsToMany(
+            Attribute::class,
+            'attribute_image_dependencies',
+            'child_attribute_id',
+            'parent_attribute_id'
+        );
+    }
+
+    public function imageParentsWithValues()
+{
+    return $this->belongsToMany(
+        Attribute::class,
+        'attribute_image_dependencies',
+        'child_attribute_id',
+        'parent_attribute_id'
+    )->with('values');
 }
+
+    public function imageChildren()
+    {
+        return $this->belongsToMany(
+            Attribute::class,
+            'attribute_image_dependencies',
+            'parent_attribute_id',
+            'child_attribute_id'
+        );
+    }
+
+}
+
