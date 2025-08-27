@@ -171,9 +171,9 @@
 
                 <!-- Landscape preview -->
                 <div id="landscapePreview" class="preview-container" style="position: relative; display: none;">
-                    <img id="mainImageLandscape" class="preview-img" src="" alt="Pet Portrait Landscape" />
+                    <img id="mainImageLandscape" class="preview-img-landscape" src="" alt="Pet Portrait Landscape" />
                     <!-- Frame overlay for landscape -->
-                    <img id="frameOverlayLandscape" class="frame-overlay" />
+                    <img id="frameOverlayLandscape" class="frame-overlay-landscape" />
                 </div>
 
 
@@ -303,41 +303,41 @@
     }
 
     // Go to a step, skipping empty steps
-    // function goToStep(step) {
-    //     if (step < 1) step = 1;
-    //     if (step > totalSteps) step = totalSteps;
-
-    //     while (step <= totalSteps && isStepEmpty(step)) {
-    //         step++;
-    //     }
-
-    //     if (step > totalSteps) {
-    //         step = totalSteps;
-    //     }
-
-    //     showStep(step);
-    // }
-
-
     function goToStep(step) {
         if (step < 1) step = 1;
         if (step > totalSteps) step = totalSteps;
 
-        if (step > currentStep) {
-            // Moving forward: skip empty steps going forward
-            while (step <= totalSteps && isStepEmpty(step)) {
-                step++;
-            }
-            if (step > totalSteps) step = totalSteps;
-        } else if (step < currentStep) {
-            // Moving backward: skip empty steps going backward
-            while (step >= 1 && isStepEmpty(step)) {
-                step--;
-            }
-            if (step < 1) step = 1;
+        while (step <= totalSteps && isStepEmpty(step)) {
+            step++;
         }
+
+        if (step > totalSteps) {
+            step = totalSteps;
+        }
+
         showStep(step);
     }
+
+
+    // function goToStep(step) {
+    //     if (step < 1) step = 1;
+    //     if (step > totalSteps) step = totalSteps;
+
+    //     if (step > currentStep) {
+    //         // Moving forward: skip empty steps going forward
+    //         while (step <= totalSteps && isStepEmpty(step)) {
+    //             step++;
+    //         }
+    //         if (step > totalSteps) step = totalSteps;
+    //     } else if (step < currentStep) {
+    //         // Moving backward: skip empty steps going backward
+    //         while (step >= 1 && isStepEmpty(step)) {
+    //             step--;
+    //         }
+    //         if (step < 1) step = 1;
+    //     }
+    //     showStep(step);
+    // }
 
     // Advance to next step
     function nextStep() {
@@ -391,7 +391,7 @@
                         currentSelections[attr.id] = val.id;
                     }
 
-                    if (stepNumber === 3) {
+                    if (stepNumber === 3 && attr.name.toLowerCase() === 'how do you want it framed?') {
                         const firstVal = attr.values[0]; // the first option
 
                         // Set localStorage keys for the frame
@@ -436,7 +436,9 @@
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
 
-                        if (stepNumber === 3) {
+
+                        if (stepNumber === 3 && attr.name.toLowerCase() === 'how do you want it framed?') {
+
                             // Check if the selected option is "no frame"
                             // Assuming val.value or another property identifies the no-frame option (adjust if your data differs)
                             if (val.value.toLowerCase() === 'no frame' || val.value.toLowerCase() === 'none') {
@@ -1216,7 +1218,7 @@
         el.classList.add("active");
 
         const subcategoryId = el.dataset.id;
-
+        goToStep(1);
         loadAttributes(subcategoryId);
         loadCategoryData(subcategoryId);
         // Update thumbnails dynamically

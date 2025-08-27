@@ -305,20 +305,20 @@
     }
 
     // Go to a step, skipping empty steps
-    // function goToStep(step) {
-    //     if (step < 1) step = 1;
-    //     if (step > totalSteps) step = totalSteps;
+    function goToStep(step) {
+        if (step < 1) step = 1;
+        if (step > totalSteps) step = totalSteps;
 
-    //     while (step <= totalSteps && isStepEmpty(step)) {
-    //         step++;
-    //     }
+        while (step <= totalSteps && isStepEmpty(step)) {
+            step++;
+        }
 
-    //     if (step > totalSteps) {
-    //         step = totalSteps;
-    //     }
+        if (step > totalSteps) {
+            step = totalSteps;
+        }
 
-    //     showStep(step);
-    // }
+        showStep(step);
+    }
 
 
     function goToStep(step) {
@@ -393,9 +393,8 @@
                         currentSelections[attr.id] = val.id;
                     }
 
-                    if (stepNumber === 3) {
+                    if (stepNumber === 3 && attr.name.toLowerCase() === 'how do you want it framed?') {
                         const firstVal = attr.values[0]; // the first option
-
                         // Set localStorage keys for the frame
                         if (firstVal.value.toLowerCase() === 'no frame' || firstVal.value === undefined) {
                             localStorage.removeItem(`selectedFramePortrait_${currentSelections.categoryId || currentCategoryId}`);
@@ -438,7 +437,7 @@
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
 
-                        if (stepNumber === 3) {
+                        if (stepNumber === 3 && attr.name.toLowerCase() === 'how do you want it framed?') {
                             // Check if the selected option is "no frame"
                             // Assuming val.value or another property identifies the no-frame option (adjust if your data differs)
                             if (val.value.toLowerCase() === 'no frame' || val.value.toLowerCase() === 'none') {
@@ -930,13 +929,7 @@
             }
         }
 
-        let selectedColor = null;
-        for (const key in currentSelections) {
-            if (key.includes('_colour_code') || key.includes('_color')) {
-                selectedColor = currentSelections[key];
-                break;
-            }
-        }
+
 
 
         const portraitPreview = document.getElementById("portraitPreview");
@@ -958,10 +951,16 @@
 
                 mainImgPortrait.src = matched.image;
 
-                if (selectedColor) {
-                    portraitPreview.style.backgroundColor = selectedColour || '';
-                    mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+                var selectedColour = null;
+                for (const key in currentSelections) {
+                    if (key.includes('_colour_code') || key.includes('_color')) {
+                        selectedColour = currentSelections[key];
+                        break;
+                    }
                 }
+                portraitPreview.style.backgroundColor = selectedColour || '';
+                mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+
 
                 // Set frame overlay for portrait
                 const framePortrait = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
@@ -979,10 +978,16 @@
                 mainImgLandscape.src = matched.image;
 
 
-                if (selectedColor) {
-                    landscapePreview.style.backgroundColor = selectedColour || '';
-                    mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+                var selectedColour = null;
+                for (const key in currentSelections) {
+                    if (key.includes('_colour_code') || key.includes('_color')) {
+                        selectedColour = currentSelections[key];
+                        break;
+                    }
                 }
+                landscapePreview.style.backgroundColor = selectedColour || '';
+                mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+
 
                 // Set frame overlay for landscape
                 const frameLandscape = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
@@ -1005,10 +1010,16 @@
                 mainImgPortrait.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
             }
 
-            if (selectedColor) {
-                portraitPreview.style.backgroundColor = selectedColour || '';
-                mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+            var selectedColour = null;
+            for (const key in currentSelections) {
+                if (key.includes('_colour_code') || key.includes('_color')) {
+                    selectedColour = currentSelections[key];
+                    break;
+                }
             }
+            portraitPreview.style.backgroundColor = selectedColour || '';
+            mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+
             frameOverlayPortrait.style.display = "none";
             frameOverlayLandscape.style.display = "none";
         }
