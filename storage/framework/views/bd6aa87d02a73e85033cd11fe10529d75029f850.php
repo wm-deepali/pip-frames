@@ -1,12 +1,23 @@
+<style>
+    @media  only screen and (max-width: 499px) {
+        .container {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+    }
+</style>
+
+
+
 <!-- Start Main Slider -->
 <section class="maintop-banner style1">
     <div class="container">
 
 
-        <div class="row align-items-start">
+        <div class="row align-items-start mobile-responsive">
             <!-- Left Part -->
-            <div class="col-lg-6 left-part">
-                <h2>Select Category</h2>
+            <div class="col-12 col-lg-6 left-part">
+                <h2 class="mobile-heading">Select Category</h2>
                 <div class="options cards mb-5">
                     <?php $__currentLoopData = $subcategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subcategory): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div>
@@ -20,7 +31,9 @@
                         </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-                <h2 id="selected-subcategory-name"><?php echo e($subcategories->first()->name ?? ''); ?> Portrait</h2>
+                <h2 id="selected-subcategory-name" class="mobile-heading"><?php echo e($subcategories->first()->name ?? ''); ?>
+
+                    Portrait</h2>
 
                 <p class="offer">
                     <span class="old-price">£71.94</span>
@@ -90,7 +103,7 @@
 
 
                     <!-- STEP 5 -->
-                    <div class="step-box" id="step-5" style="display:none;">
+                    <div class="step-box" id="step-5" style="display:none; width:90%;">
                         <h3 class="mb-3" style="font-size:1.6rem; margin-bottom:18px; font-weight:bold;">Extra options
                         </h3>
 
@@ -120,7 +133,9 @@
                                 style="font-weight:bold; font-size:1.25em;">£0.00</span>
                         </div>
 
-                        <div style="display:flex; gap:24px;">
+                        <div style="display:flex; flex-direction: column;
+    gap: 24px;
+    align-items: center;">
                             <button class="prev-btn" type="button" onclick="goToStep(4)"
                                 style="flex:1; background:#fff; border:2px solid #ff3b7c; color:#ff3b7c; font-weight:bold; font-size:1.1rem; border-radius:30px; padding:13px 0; box-shadow:0 1px 8px rgba(0,0,0,0.07); cursor:pointer;">
                                 Previous step
@@ -151,7 +166,7 @@
             </div>
 
             <!-- Right Part -->
-            <div class="col-lg-6 right-part text-center">
+            <div class="col-12 col-lg-6 right-part text-center">
                 <!-- <div class="preview">
                     <img src="<?php echo e(asset('storage/' . ($subcategories->first()->thumbnail ?? ''))); ?>" alt="Pet Portrait"
                         class="preview-img" id="main-img">
@@ -305,18 +320,47 @@
         if (step < 1) step = 1;
         if (step > totalSteps) step = totalSteps;
 
-        while (step <= totalSteps && isStepEmpty(step)) {
-            step++;
-        }
-
-        if (step > totalSteps) {
-            step = totalSteps;
+        if (step > currentStep) {
+            // Moving forward: skip empty steps going forward
+            while (step <= totalSteps && isStepEmpty(step)) {
+                step++;
+            }
+            if (step > totalSteps) step = totalSteps;
+        } else if (step < currentStep) {
+            // Moving backward: skip empty steps going backward
+            while (step >= 1 && isStepEmpty(step)) {
+                step--;
+            }
+            if (step < 1) step = 1;
         }
 
         showStep(step);
     }
 
+    function nextStep() {
+        let nextStep = currentStep + 1;
+        while (nextStep <= totalSteps && isStepEmpty(nextStep)) {
+            nextStep++;
+        }
+        if (nextStep > totalSteps) {
+            alert("All steps completed");
+            return;
+        }
+        goToStep(nextStep);
+    }
+
+    function previous() {
+        let prevStep = currentStep - 1;
+        while (prevStep >= 1 && isStepEmpty(prevStep)) {
+            prevStep--;
+        }
+        if (prevStep < 1) prevStep = 1;
+        goToStep(prevStep);
+    }
+
+
     function updateUploadInputs(requiredCount) {
+
         const uploadBlockContainer = document.getElementById('upload-block');
         const previewContainer = document.getElementById('preview-container');
 
@@ -412,17 +456,17 @@
     // }
 
     // Advance to next step
-    function nextStep() {
-        let next = currentStep + 1;
-        while (next <= totalSteps && isStepEmpty(next)) {
-            next++;
-        }
-        if (next > totalSteps) {
-            alert('All steps completed!');
-        } else {
-            goToStep(next);
-        }
-    }
+    // function nextStep() {
+    //     let next = currentStep + 1;
+    //     while (next <= totalSteps && isStepEmpty(next)) {
+    //         next++;
+    //     }
+    //     if (next > totalSteps) {
+    //         alert('All steps completed!');
+    //     } else {
+    //         goToStep(next);
+    //     }
+    // }
 
     // Change main preview image on thumbnail click
     function changeImage(img) {
@@ -436,7 +480,7 @@
         if (!container) return;
 
         container.innerHTML = "";
-
+        let parentSelectionsToProcess = [];
         attributes.forEach(attr => {
             const attrWrapper = document.createElement("div");
             attrWrapper.className = "attribute-block";
@@ -458,13 +502,14 @@
                     // Only auto-select for steps other than 3
                     if (currentSelections[attr.id] === val.id) {
                         optionCard.classList.add("active");
+                        parentSelectionsToProcess.push({ attrId: attr.id, valId: val.id });
                     } else if (currentSelections[attr.id] === undefined && idx === 0) {
+
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
-                        if (val.required_file_uploads && val.required_file_uploads > 0) {
+                        parentSelectionsToProcess.push({ attrId: attr.id, valId: val.id });
+                        if (attr.required_file_uploads && val.required_file_uploads && val.required_file_uploads > 0) {
                             updateUploadInputs(val.required_file_uploads);
-                        } else {
-                            updateUploadInputs(0);
                         }
                     }
 
@@ -512,13 +557,9 @@
                         optionsDiv.querySelectorAll(".option-card").forEach(card => card.classList.remove("active"));
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
-
-                        if (val.required_file_uploads && val.required_file_uploads > 0) {
-
+                        updateDependentAttributeImages(attr.id, val.id);
+                        if (attr.required_file_uploads && val.required_file_uploads && val.required_file_uploads > 0) {
                             updateUploadInputs(val.required_file_uploads);
-                        } else {
-                            // Optionally clear extra upload boxes if none required
-                            updateUploadInputs(0);
                         }
 
                         if (stepNumber === 3 && attr.name.toLowerCase() === 'how do you want it framed?') {
@@ -550,7 +591,6 @@
 
 
                         applyPriceAndAttributes();
-                        updateOptionImages(); // or your image update method
                         updateMainImage();
                     };
 
@@ -674,11 +714,11 @@
                     } else if (currentSelections[attr.id] === undefined && idx === 0) {
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
+                        parentSelectionsToProcess.push({ attrId: attr.id, valId: val.id });
+
                         currentSelections[`${attr.id}_colour_code`] = val.colour_code;
-                        if (val.required_file_uploads && val.required_file_uploads > 0) {
+                        if (attr.required_file_uploads && val.required_file_uploads && val.required_file_uploads > 0) {
                             updateUploadInputs(val.required_file_uploads);
-                        } else {
-                            updateUploadInputs(0);
                         }
                     }
 
@@ -692,19 +732,14 @@
                         optionsDiv.querySelectorAll(".option-card").forEach(card => card.classList.remove("active"));
                         optionCard.classList.add("active");
                         currentSelections[attr.id] = val.id;
+                        updateDependentAttributeImages(attr.id, val.id);
                         currentSelections[`${attr.id}_colour_code`] = val.colour_code;
 
-                        if (val.required_file_uploads && val.required_file_uploads > 0) {
-
+                        if (attr.required_file_uploads && val.required_file_uploads && val.required_file_uploads > 0) {
                             updateUploadInputs(val.required_file_uploads);
-                        } else {
-                            // Optionally clear extra upload boxes if none required
-                            updateUploadInputs(0);
                         }
 
                         applyPriceAndAttributes();
-                        // Update related option images dynamically
-                        updateOptionImages();
                         updateMainImage();
                     };
 
@@ -740,10 +775,10 @@
                     radioInput.name = `attribute_${attr.id}`;
                     radioInput.value = val.id;
                     radioInput.checked = (currentSelections[attr.id] === val.id) || (currentSelections[attr.id] === undefined && idx === 0);
-                    if (val.required_file_uploads && val.required_file_uploads > 0) {
+                    if (idx === 0 && attr.required_file_uploads && val.required_file_uploads && val.required_file_uploads > 0) {
                         updateUploadInputs(val.required_file_uploads);
-                    } else {
-                        updateUploadInputs(0);
+                        parentSelectionsToProcess.push({ attrId: attr.id, valId: val.id });
+
                     }
                     radioInput.style.marginRight = "12px";            // space between radio and label text
                     radioInput.style.width = "18px";                   // larger size
@@ -753,7 +788,12 @@
 
                     radioInput.addEventListener("change", () => {
                         currentSelections[attr.id] = val.id;
+                        updateDependentAttributeImages(attr.id, val.id);
                         applyPriceAndAttributes();
+                        if (attr.required_file_uploads && val.required_file_uploads && val.required_file_uploads > 0) {
+
+                            updateUploadInputs(val.required_file_uploads);
+                        }
                     });
 
                     radioWrapper.appendChild(radioInput);
@@ -776,6 +816,11 @@
             }
 
             container.appendChild(attrWrapper);
+        });
+
+        // After rendering *all* these options for this step:
+        parentSelectionsToProcess.forEach(sel => {
+            updateDependentAttributeImages(sel.attrId, sel.valId);
         });
 
         const navDiv = document.createElement("div");
@@ -926,8 +971,21 @@
     function fetchPrice() {
         if (!currentCategoryId) return;
 
-        const filteredSelections = {};
+        // Sync height and width inputs from DOM to currentSelections
+        document.querySelectorAll('[data-attribute-id]').forEach(attrEl => {
+            const attrId = attrEl.dataset.attributeId;
+            const heightInput = attrEl.querySelector('input[type=number][placeholder*=height]');
+            const widthInput = attrEl.querySelector('input[type=number][placeholder*=width]');
+            if (heightInput && widthInput) {
+                if (!currentSelections[attrId] || typeof currentSelections[attrId] !== 'object') {
+                    currentSelections[attrId] = {};
+                }
+                currentSelections[attrId].height = heightInput.value;
+                currentSelections[attrId].width = widthInput.value;
+            }
+        });
 
+        const filteredSelections = {};
         for (const [attrId, val] of Object.entries(currentSelections)) {
             if (attrId.includes('_colour_code') || attrId.includes('_frame_image')) continue;
             const attrEl = document.querySelector(`[data-attribute-id='${attrId}']`);
@@ -967,7 +1025,6 @@
             }
         });
     }
-
 
     function showValidationErrors(errors) {
         document.querySelectorAll('.validation-error').forEach(el => {
@@ -1029,124 +1086,169 @@
         fetchPrice();
     }
 
-
     function updateMainImage() {
-        let matched = null;
-        for (const cond of imageConditions) {
-            let match = true;
-            for (const attrId in cond.combination) {
-                const key = Number(attrId);
-                if (!(key in currentSelections) || currentSelections[key] === null || currentSelections[key] !== cond.combination[key]) {
-                    match = false;
-                    break;
-                }
-            }
-            if (match) {
-                matched = cond;
-                break;
-            }
-        }
-
-
-
-
         const portraitPreview = document.getElementById("portraitPreview");
         const landscapePreview = document.getElementById("landscapePreview");
-
         const mainImgPortrait = document.getElementById("mainImagePortrait");
         const frameOverlayPortrait = document.getElementById("frameOverlayPortrait");
-
         const mainImgLandscape = document.getElementById("mainImageLandscape");
         const frameOverlayLandscape = document.getElementById("frameOverlayLandscape");
 
         if (!mainImgPortrait || !mainImgLandscape || !portraitPreview || !landscapePreview) return;
 
-        if (matched) {
-            if (matched.orientation === 'portrait') {
-                // Show portrait, hide landscape
-                portraitPreview.style.display = 'block';
-                landscapePreview.style.display = 'none';
+        // Find the attribute that controls the main frame change
+        let mainFrameAttr = null;
+        for (let attrId in loadedAttributes) {
+            if (loadedAttributes[attrId].main_frame_changes) {
+                mainFrameAttr = loadedAttributes[attrId];
+                break;
+            }
+        }
 
-                mainImgPortrait.src = matched.image;
+        if (mainFrameAttr) {
 
-                var selectedColour = null;
-                for (const key in currentSelections) {
-                    if (key.includes('_colour_code') || key.includes('_color')) {
-                        selectedColour = currentSelections[key];
-                        break;
-                    }
-                }
-                portraitPreview.style.backgroundColor = selectedColour || '';
-                mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+            const selectedValId = currentSelections[mainFrameAttr.id];
+            // Find the option element in the DOM for the selected value
+            const optionEl = document.querySelector(`[data-attribute-id='${mainFrameAttr.id}'] .option-card[data-value-id='${selectedValId}']`);
+
+            if (!optionEl) return;
+
+            // Get the image inside this option card
+            const imgEl = optionEl.querySelector('img');
+            if (!imgEl) return;
+
+            // Get image src from img element
+            let mainImageSrc = imgEl.src || "";
+            if (mainImageSrc && !mainImageSrc.startsWith('http')) {
+                // If relative path, prepend domain or base path as needed
+                mainImageSrc = window.location.origin + mainImageSrc;
+            }
 
 
-                // Set frame overlay for portrait
-                const framePortrait = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
-                if (framePortrait) {
-                    frameOverlayPortrait.src = framePortrait;
+            // Get orientation from stored mapping or default to portrait
+            const orientation = imgEl.getAttribute('data-orientation') || 'portrait';
+
+            console.log(orientation, 'orientation');
+            if (orientation === 'portrait') {
+                portraitPreview.style.display = "block";
+                landscapePreview.style.display = "none";
+                mainImgPortrait.src = mainImageSrc;
+
+                const selectedColour = Object.values(currentSelections).find(val => typeof val === "string" && val.startsWith("#"));
+                portraitPreview.style.backgroundColor = selectedColour || "";
+                mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
+
+                const frameImg = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
+                if (frameImg) {
+                    frameOverlayPortrait.src = frameImg;
                     frameOverlayPortrait.style.display = "block";
                 } else {
                     frameOverlayPortrait.style.display = "none";
                 }
-            } else if (matched.orientation === 'landscape') {
-                // Show landscape, hide portrait
-                landscapePreview.style.display = 'block';
-                portraitPreview.style.display = 'none';
-
-                mainImgLandscape.src = matched.image;
+                frameOverlayLandscape.style.display = "none";
 
 
-                var selectedColour = null;
-                for (const key in currentSelections) {
-                    if (key.includes('_colour_code') || key.includes('_color')) {
-                        selectedColour = currentSelections[key];
-                        break;
-                    }
-                }
-                landscapePreview.style.backgroundColor = selectedColour || '';
-                mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+            } else if (orientation === 'landscape') {
+                // Show landscape version
+                landscapePreview.style.display = "block";
+                portraitPreview.style.display = "none";
+                mainImgLandscape.src = mainImageSrc;
 
+                const selectedColour = Object.values(currentSelections).find(val => typeof val === "string" && val.startsWith("#"));
+                landscapePreview.style.backgroundColor = selectedColour || "";
 
-                // Set frame overlay for landscape
-                const frameLandscape = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
-                if (frameLandscape) {
-                    frameOverlayLandscape.src = frameLandscape;
+                mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
+
+                const frameImg = localStorage.getItem(`selectedFrameLandscape_${mainFrameAttr.id}`) || localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
+                if (frameImg) {
+                    frameOverlayLandscape.src = frameImg;
                     frameOverlayLandscape.style.display = "block";
                 } else {
                     frameOverlayLandscape.style.display = "none";
                 }
+
+                // Hide portrait overlays
+                frameOverlayPortrait.style.display = "none";
             }
+
         } else {
-            // Default fallback to portrait view
-            portraitPreview.style.display = 'block';
-            landscapePreview.style.display = 'none';
-
-            // Fallback image for portrait
-            if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
-                mainImgPortrait.src = `/storage/${subcategoryThumbnails[currentCategoryId]}`;
-            } else {
-                mainImgPortrait.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
-            }
-
-            var selectedColour = null;
-            for (const key in currentSelections) {
-                if (key.includes('_colour_code') || key.includes('_color')) {
-                    selectedColour = currentSelections[key];
+            // Fall back to original behavior with imageConditions, or default image
+            let matched = null;
+            for (const cond of imageConditions) {
+                let doesMatch = true;
+                for (const attrId in cond.combination) {
+                    if (currentSelections[attrId] !== cond.combination[attrId]) {
+                        doesMatch = false;
+                        break;
+                    }
+                }
+                if (doesMatch) {
+                    matched = cond;
                     break;
                 }
             }
-            portraitPreview.style.backgroundColor = selectedColour || '';
-            mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
 
-            frameOverlayPortrait.style.display = "none";
-            frameOverlayLandscape.style.display = "none";
+            if (matched) {
+                if (matched.orientation === 'portrait') {
+                    portraitPreview.style.display = "block";
+                    landscapePreview.style.display = "none";
+                    mainImgPortrait.src = matched.image;
+
+                    const selectedColour = Object.values(currentSelections).find(val => typeof val === "string" && val.startsWith("#"));
+                    portraitPreview.style.backgroundColor = selectedColour || "";
+                    mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
+
+                    const frameImg = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
+                    if (frameImg) {
+                        frameOverlayPortrait.src = frameImg;
+                        frameOverlayPortrait.style.display = "block";
+                    } else {
+                        frameOverlayPortrait.style.display = "none";
+                    }
+                    frameOverlayLandscape.style.display = "none";
+
+                } else {
+                    landscapePreview.style.display = "block";
+                    portraitPreview.style.display = "none";
+                    mainImgLandscape.src = matched.image;
+
+                    const selectedColour = Object.values(currentSelections).find(val => typeof val === "string" && val.startsWith("#"));
+                    landscapePreview.style.backgroundColor = selectedColour || "";
+                    mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
+
+                    const frameImg = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
+                    if (frameImg) {
+                        frameOverlayLandscape.src = frameImg;
+                        frameOverlayLandscape.style.display = "block";
+                    } else {
+                        frameOverlayLandscape.style.display = "none";
+                    }
+                    frameOverlayPortrait.style.display = "none";
+                }
+            } else {
+                // Default fallback image when no matched condition
+                portraitPreview.style.display = "block";
+                landscapePreview.style.display = "none";
+
+                if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
+                    mainImgPortrait.src = "/storage/" + subcategoryThumbnails[currentCategoryId];
+                } else {
+                    mainImgPortrait.src = "https://mypetframe.co.uk/img/default-fallback.jpg";
+                }
+
+                const selectedColour = Object.values(currentSelections).find(val => typeof val === "string" && val.startsWith("#"));
+                portraitPreview.style.backgroundColor = selectedColour || "";
+                mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
+
+                frameOverlayPortrait.style.display = "none";
+                frameOverlayLandscape.style.display = "none";
+            }
         }
     }
 
 
     // function updateMainImage() {
     //     let matched = null;
-
     //     for (const cond of imageConditions) {
     //         let match = true;
     //         for (const attrId in cond.combination) {
@@ -1162,96 +1264,105 @@
     //         }
     //     }
 
-    //     const previewContainer = document.querySelector(".preview");
-    //     const mainImg = document.getElementById("main-img");
-    //     if (!mainImg || !previewContainer) return;
+
+
+
+    //     const portraitPreview = document.getElementById("portraitPreview");
+    //     const landscapePreview = document.getElementById("landscapePreview");
+
+    //     const mainImgPortrait = document.getElementById("mainImagePortrait");
+    //     const frameOverlayPortrait = document.getElementById("frameOverlayPortrait");
+
+    //     const mainImgLandscape = document.getElementById("mainImageLandscape");
+    //     const frameOverlayLandscape = document.getElementById("frameOverlayLandscape");
+
+    //     if (!mainImgPortrait || !mainImgLandscape || !portraitPreview || !landscapePreview) return;
 
     //     if (matched) {
-    //         mainImg.src = matched.image;
-    //     } else if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
-    //         mainImg.src = `/storage/${subcategoryThumbnails[currentCategoryId]}`;
-    //     } else {
-    //         mainImg.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
-    //     }
+    //         if (matched.orientation === 'portrait') {
+    //             // Show portrait, hide landscape
+    //             portraitPreview.style.display = 'block';
+    //             landscapePreview.style.display = 'none';
 
-    //     // Apply background color and border from selected colour option
-    //     let selectedColour = null;
-    //     for (const key in currentSelections) {
-    //         if (key.includes('_colour_code')) {
-    //             selectedColour = currentSelections[key];
-    //             break;
+    //             mainImgPortrait.src = matched.image;
+
+    //             var selectedColour = null;
+    //             for (const key in currentSelections) {
+    //                 if (key.includes('_colour_code') || key.includes('_color')) {
+    //                     selectedColour = currentSelections[key];
+    //                     break;
+    //                 }
+    //             }
+    //             portraitPreview.style.backgroundColor = selectedColour || '';
+    //             mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+
+
+    //             // Set frame overlay for portrait
+    //             const framePortrait = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
+    //             if (framePortrait) {
+    //                 frameOverlayPortrait.src = framePortrait;
+    //                 frameOverlayPortrait.style.display = "block";
+    //             } else {
+    //                 frameOverlayPortrait.style.display = "none";
+    //             }
+    //         } else if (matched.orientation === 'landscape') {
+    //             // Show landscape, hide portrait
+    //             landscapePreview.style.display = 'block';
+    //             portraitPreview.style.display = 'none';
+
+    //             mainImgLandscape.src = matched.image;
+
+
+    //             var selectedColour = null;
+    //             for (const key in currentSelections) {
+    //                 if (key.includes('_colour_code') || key.includes('_color')) {
+    //                     selectedColour = currentSelections[key];
+    //                     break;
+    //                 }
+    //             }
+    //             landscapePreview.style.backgroundColor = selectedColour || '';
+    //             mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
+
+
+    //             // Set frame overlay for landscape
+    //             const frameLandscape = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
+    //             if (frameLandscape) {
+    //                 frameOverlayLandscape.src = frameLandscape;
+    //                 frameOverlayLandscape.style.display = "block";
+    //             } else {
+    //                 frameOverlayLandscape.style.display = "none";
+    //             }
     //         }
-    //     }
-    //     previewContainer.style.backgroundColor = selectedColour || '';
-    //     mainImg.style.border = selectedColour ? `0px solid ${selectedColour}` : '';
+    //     } else {
+    //         // Default fallback to portrait view
+    //         portraitPreview.style.display = 'block';
+    //         landscapePreview.style.display = 'none';
 
-    //     // Retrieve saved frame images from localStorage
-    //     const framePortrait = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
-    //     const frameLandscape = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
+    //         // Fallback image for portrait
+    //         if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
+    //             mainImgPortrait.src = `/storage/${subcategoryThumbnails[currentCategoryId]}`;
+    //         } else {
+    //             mainImgPortrait.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
+    //         }
 
+    //         var selectedColour = null;
+    //         for (const key in currentSelections) {
+    //             if (key.includes('_colour_code') || key.includes('_color')) {
+    //                 selectedColour = currentSelections[key];
+    //                 break;
+    //             }
+    //         }
+    //         portraitPreview.style.backgroundColor = selectedColour || '';
+    //         mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
 
-    //     // Remove any existing frame overlay
-    //     const existingFrame = previewContainer.querySelector('.frame-overlay');
-    //     if (existingFrame) existingFrame.remove();
-
-    //     // Determine orientation from matched or fallback
-    //     const orientation = matched ? matched.orientation : null;
-
-    //     let frameImagePath = null;
-    //     if (orientation === 'portrait' && framePortrait) {
-    //         frameImagePath = framePortrait;
-    //     } else if (orientation === 'landscape' && frameLandscape) {
-    //         frameImagePath = frameLandscape;
-    //     } else if (framePortrait) {
-    //         // Fallback to portrait if orientation unknown
-    //         frameImagePath = framePortrait;
-    //     }
-
-    //     if (frameImagePath) {
-    //         const frameImg = document.createElement('img');
-    //         frameImg.src = frameImagePath;
-    //         frameImg.className = 'frame-overlay';
-    //         frameImg.setAttribute('aria-label', 'Selected frame overlay');
-    //         previewContainer.appendChild(frameImg);
+    //         frameOverlayPortrait.style.display = "none";
+    //         frameOverlayLandscape.style.display = "none";
     //     }
     // }
 
 
+    let loadedAttributes = {}; // Global object to store attributes by id
 
-    function updateOptionImages() {
-        if (!groupedImageConditions) return;
-
-        // Reset all option images to default before updates
-        document.querySelectorAll('[data-attribute-id] .option-card img').forEach(img => {
-            if (img.dataset.defaultSrc) {
-                img.src = img.dataset.defaultSrc;
-            }
-        });
-
-        groupedImageConditions.forEach(condition => {
-            // Check if all dependencies satisfied by current selections
-            const allDepsMatch = condition.dependencies.every(dep => currentSelections[dep.attribute_id] == dep.value_id);
-
-            if (allDepsMatch) {
-                // For all affected values, update corresponding option image
-                condition.affected_values.forEach(av => {
-                    const container = document.querySelector(`[data-attribute-id="${av.affected_attribute_id}"]`);
-                    if (container) {
-                        const option = container.querySelector(`.option-card[data-value="${av.affected_value_id}"], .option-card[data-value-id="${av.affected_value_id}"]`);
-                        if (option) {
-                            const img = option.querySelector('img');
-                            if (img && av.image) {
-                                img.src = av.image;
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-
-    // Load attributes
     function loadAttributes(categoryId) {
         currentCategoryId = categoryId;
         $.ajax({
@@ -1262,17 +1373,18 @@
                 if (response.success && response.steps) {
                     attributeConditions = response.attribute_conditions || {};
                     currentSelections = {};
+                    loadedAttributes = {}; // reset on new load
 
                     for (let stepNum in response.steps) {
                         const attrs = response.steps[stepNum];
                         attrs.forEach(attr => {
+                            loadedAttributes[attr.id] = attr; // store by attribute id
                             if (attr.values && attr.values.length > 0 && stepNum != 3) {
                                 currentSelections[attr.id] = attr.values[0].id;
                                 if (attr.input_type === "select_colour") {
                                     currentSelections[`${attr.id}_colour_code`] = attr.values[0].colour_code;
                                 }
                             }
-
                         });
                     }
 
@@ -1299,6 +1411,35 @@
         });
     }
 
+    let attributeValueOrientations = {};  // key: attributeValueId, value: orientation string ('portrait' | 'landscape' | etc)
+
+    function updateDependentAttributeImages(parentAttrId, parentSelectedValueId) {
+        Object.values(loadedAttributes).forEach(attr => {
+            if (attr.has_image_dependency) {
+                const container = document.querySelector(`[data-attribute-id='${attr.id}']`);
+                if (!container) return;
+
+                attr.values.forEach(val => {
+                    const parentImg = (val.parent_images || []).find(pi => pi.parent_attribute_value_id === parentSelectedValueId);
+                    if (parentImg) {
+                        const optionCard = container.querySelector(`.option-card[data-value-id='${val.id}']`);
+                        if (optionCard) {
+                            const img = optionCard.querySelector('img');
+                            if (img) {
+                                img.src = `/storage/${parentImg.image_path}`;
+
+                                // Set data-orientation attribute on image element
+                                img.setAttribute('data-orientation', parentImg.orientation || '');
+
+                                // Store orientation in global mapping
+                                attributeValueOrientations[val.id] = parentImg.orientation || '';
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     function loadCategoryData(categoryId) {
         currentCategoryId = categoryId;

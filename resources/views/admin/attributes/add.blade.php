@@ -113,7 +113,7 @@
               </div>
 
               <!-- Main Frame Changes -->
-              <!-- <div class="col-md-2">
+              <div class="col-md-2">
                 <div class="form-group">
                   <label for="main-frame-changes-INDEX">Main Frame Changes</label>
                   <select name="attributes[INDEX][main_frame_changes]" class="form-control"
@@ -122,7 +122,7 @@
                     <option value="1">Yes</option>
                   </select>
                 </div>
-              </div> -->
+              </div>
 
               <!-- Required File Uploads -->
               <div class="col-md-2">
@@ -193,7 +193,7 @@
               </div>
 
 
-              <!-- <div class="col-md-2">
+              <div class="col-md-2">
                 <div class="form-group">
                   <label for="image-dependency-INDEX">Image Dependency</label>
                   <select name="attributes[INDEX][has_image_dependency]" class="form-control"
@@ -203,7 +203,7 @@
                     <option value="0" selected>No</option>
                   </select>
                 </div>
-              </div> -->
+              </div>
 
 
               <div class="col-md-6 dependency-parent-wrapper d-none">
@@ -464,7 +464,15 @@
         </div>
     </div>
 
-     
+     <div class="col-md-2">
+        <div class="form-group">
+          <label for="main-frame-changes-${attributeIndex}">Main Frame Changes</label>
+          <select name="attributes[${attributeIndex}][main_frame_changes]" class="form-control" id="main-frame-changes-${attributeIndex}">
+            <option value="0" selected>No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+      </div>
 
         <div class="col-md-2">
         <div class="form-group">
@@ -488,6 +496,16 @@
       </div>
     </div>
 
+<div class="col-md-2">
+  <div class="form-group">
+    <label for="image-dependency-${attributeIndex}">Image Dependency</label>
+    <select name="attributes[${attributeIndex}][has_image_dependency]" class="form-control" id="image-dependency-${attributeIndex}">
+      <option value="">-- Select --</option>
+      <option value="1">Yes</option>
+      <option value="0" selected>No</option>
+    </select>
+  </div>
+</div>
 
 
  <div class="col-md-6 dependency-parent-wrapper d-none">

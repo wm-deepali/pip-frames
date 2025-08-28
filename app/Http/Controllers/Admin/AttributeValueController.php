@@ -254,7 +254,7 @@ class AttributeValueController extends Controller
                 'input_type' => $attribute->input_type,
                 'custom_input_type' => $attribute->custom_input_type,
                 'is_composite' => $attribute->is_composite,
-                'require_both' => $attribute->require_both,
+                'require_both_images' => $attribute->require_both_images,
                 'has_image_dependency' => $attribute->has_image_dependency,
                 'required_file_uploads' => $attribute->required_file_uploads,
                 'imageParents' => $attribute->imageParentsWithValues->map(function ($parentAttr) {

@@ -118,7 +118,7 @@
           </div>
 
 
-          <!-- <div class="col-md-2">
+          <div class="col-md-2">
             <div class="form-group">
               <label for="main_frame_changes">Main Frame Image Changes</label>
               <select name="main_frame_changes" id="main-frame-changes" class="form-control">
@@ -127,7 +127,7 @@
               </select>
 
             </div>
-          </div> -->
+          </div>
 
           <div class="col-md-2">
             <div class="form-group">
@@ -194,7 +194,7 @@
           </div>
 
           <!-- Image Dependency Toggle -->
-          <!-- <div class="col-md-2">
+          <div class="col-md-2">
             <div class="form-group">
               <label for="edit-image-dependency">Image Dependency</label>
               <select name="has_image_dependency" id="edit-image-dependency" class="form-control">
@@ -203,7 +203,7 @@
                 <option value="0" {{ empty($attribute->has_image_dependency) ? 'selected' : '' }}>No</option>
               </select>
             </div>
-          </div> -->
+          </div>
 
           <div class="col-md-6 dependency-parent-wrapper"
             style="{{ !$attribute->has_dependency ? 'display: none;' : '' }}">
@@ -235,7 +235,6 @@
                   @php
                     $imageParentIds = $attribute->imageParents->pluck('id')->toArray();
                     $isChecked = in_array($parent->id, $imageParentIds);
-                    print_r($imageParentIds);
                   @endphp
                   @if ($parent->id != $attribute->id)
                     <div class="form-check">

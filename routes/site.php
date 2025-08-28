@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutControlller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiteController;
@@ -71,9 +72,13 @@ Route::get('/cart', [CartController::class, 'cart'])->name('cart');
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 Route::post('/cart/update/{index}', [CartController::class, 'update'])->name('cart.update');
 Route::get('/cart/remove/{index}', [CartController::class, 'remove'])->name('cart.remove');
-Route::get('checkout', [CartController::class, 'checkout'])->name('checkout');
-Route::post('checkout/submit', [CartController::class, 'checkoutSubmit'])->name('checkout.submit');
 Route::post('/check-postcode', [CartController::class, 'check'])->name('check.postcode');
+
+Route::get('checkout', [CheckoutControlller::class, 'checkout'])->name('checkout');
+Route::post('checkout/submit', [CheckoutControlller::class, 'checkoutSubmit'])->name('checkout.submit');
+
+Route::get('/payment-success', [CheckoutControlller::class, 'success'])->name('payment.success');
+Route::get('/payment-cancel', [CheckoutControlller::class, 'cancel'])->name('payment.cancel');
 
 
 Route::get('order-tracking', function () {
@@ -128,6 +133,7 @@ Route::get('blog-details', function () {
 Route::get('error', function () {
     return view('front.error');
 })->name('error');
+
 
 Route::get('blogs', [BlogController::class, 'publicIndex'])->name('blogs');
 Route::get('/blog/{slug}', [BlogController::class, 'publicShow'])->name('blogs.show');

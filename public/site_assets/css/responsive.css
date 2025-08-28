@@ -1550,11 +1550,11 @@
 }
     
 .main-slider .slide {
-    padding: 213px 0px 190px;
+    padding: 213px 0px 50px;
 }     
 .main-slider .content h2 {
-    font-size: 30px;
-    margin-top: 15px;
+    font-size: 26px;
+    margin-top: 180px;
     margin-bottom: 32px;
 }    
 .main-slider .content h2 .round {
@@ -1577,10 +1577,24 @@
 }        
     
 
- 
+ .header .outer-container{
+        height:63px;
+    }
 
 
-    
+    .nav-outer .mobile-nav-toggler {
+    position: relative;
+   
+    float: right;
+    cursor: pointer;
+    padding: 20px 0;
+}
+.logo img{
+    width: 71px;
+}
+.desktop-cart{
+    display:none;
+}
     
     
 }
@@ -1647,4 +1661,172 @@
     order: 1;
 } 
 
+}
+@media only screen and (max-width: 499px) {
+    .desktop-logo{
+        display:none !important;
+    }
+    .mobile-header-main{
+        width:100%;
+        padding:10px 15px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        border-bottom: 1px solid #dbd8d8;
+        
+    }
+    .m-heder{
+        display:none !important;
+    }
+    .header .outer-container {
+    position: static;
+    max-width: 100%;
+    /* padding: 0px 15px; */
+    margin: 0 auto;
+     border-bottom: 0px solid #8080802e !important; 
+     border-top: 0px solid #8080802e !important; 
+}
+.desktop-slider{
+    display:none !important;
+}
+    
+    .option-card1 {
+    flex: 1 1 80px;
+    height: 80px;
+    max-width: 80px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    background: #fff;
+}
+.maintop-banner {
+    margin-top: 140px;
+    width: 100%;
+    height: auto;
+    background-color: #fff;
+    /* display: grid
+; */
+    grid-template-columns: 12fr;
+    gap: 40px;
+    padding: 0px;
+}
+.mobile-heading{
+    font-size:18px;
+}
+h4{
+    font-size:18px;
+}
+.option-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    /* margin-bottom: 8px; */
+    background: #fff;
+    padding: 10px;
+    border: 2px solid #ddd;
+}
+.option-card {
+    
+    flex: 0 1 92px;
+    max-width: 93px;
+    height: 145px;
+    /* border: 2px solid #ddd; */
+    border-radius: 10px;
+    text-align: center;
+    /* padding: 10px; */
+    cursor: pointer;
+    transition: 0.3s;
+    /* background: #f9f9f9; */
+    background-image: url();
+}
+.options.cards {
+    width: 90%;
+    display: flex
+;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+.radio-options {
+    display: flex
+;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.mobile-responsive{
+        width: 100%;
+    margin: auto;
+    display: flex
+;
+    flex-direction: column-reverse;
+}
+.right-part {
+    display: flex
+;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    margin-top: 78px;
+    margin-bottom: 30px;
+}
+.step-box {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+.colour-swatch{
+    width:80px !important;
+    height:80px !important;
+}
+.step-nav {
+    display: flex
+;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-top: 20px;
+    gap:20px;
+    align-items: center;
+}
+.featured-area {
+    position: relative;
+    display: block;
+    margin-top: 175px;
+    padding-bottom: 60px;
+    z-index: 10;
+}
+.prev-btn{
+    flex:1; background:#fff; border:2px solid #ff3b7c; color:#ff3b7c; font-weight:bold; font-size:1.1rem; border-radius:30px; padding:13px 0; box-shadow:0 1px 8px rgba(0,0,0,0.07); cursor:pointer;
+}
+ .next-btn {
+   flex:2; background:#ff3b7c; color:#fff; font-weight:bold; font-size:1.13rem; border-radius:30px; border:none; padding:13px 0; box-shadow:0 1px 8px rgba(0,0,0,0.07); cursor:pointer;
+}
+.row {
+    display: -ms-flexbox;
+    display: flex
+;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+     margin-right: 0px !important; 
+     margin-left: 0px !important; 
+}
+
+}
+@media only screen and (min-width: 499px) {
+    .mobile-top-header{
+        display:none;
+    }
+    .shopping-cart{
+        display:none;
+    }
+    .mobile-logo{
+        display:none !important;
+    }
+    .mobile-header-main{
+        display:none !important;
+    }
+    .mobile-slider{
+    display:none !important;
+}
 }

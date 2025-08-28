@@ -45,8 +45,8 @@
                         <th>Price Rule Dependency</th>
                         <th>Parent Attribute</th>
                         <th>Has Setup Charge</th>
-                        <!-- <th>Images Dependency</th> -->
-                        <!-- <th>Images Dependency Attribute</th> -->
+                        <th>Images Dependency</th>
+                        <th>Images Dependency Attribute</th>
                         <!-- <th>Parent Attribute</th> -->
                         <!-- <th>Allow Quantity</th> -->
                         <!-- <th>Is Composite</th> -->
@@ -86,12 +86,12 @@
                                       {{ $attribute->has_setup_charge ? 'Yes' : 'No' }}
                                     </span>
                                   </td>
-                                  <!-- <td>
+                                  <td>
                                    <span class="badge badge-{{ $attribute->has_image_dependency ? 'success' : 'secondary' }}">
                                      {{ $attribute->has_image_dependency ? 'Yes' : 'No' }}
                                    </span>
-                                 </td> -->
-                                  <!-- <td>
+                                 </td>
+                                  <td>
                                     @if($attribute->has_image_dependency && $attribute->imageParents->isNotEmpty())
                                       @foreach($attribute->imageParents as $imageParent)
                                         <span class="badge badge-info">{{ $imageParent->name }}</span>
@@ -99,7 +99,7 @@
                                     @else
                                       <span class="text-muted">—</span>
                                     @endif
-                                  </td> -->
+                                  </td>
                                   <!-- <td>
                         <span class="badge badge-{{ $attribute->allow_quantity ? 'success' : 'secondary' }}">
                         {{ $attribute->allow_quantity ? 'Yes' : 'No' }}

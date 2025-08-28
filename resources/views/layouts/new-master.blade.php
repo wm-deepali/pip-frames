@@ -48,6 +48,14 @@
 
 </head>
 
+<style>
+  a {
+  color: inherit;        /* Keep the color same as surrounding text */
+  text-decoration: none; /* Remove underline */
+  cursor: default;       /* Optional: default cursor to avoid pointer hand */
+}
+
+</style>
 <body>
   @php
     use App\Models\ContactInfo;
@@ -66,7 +74,7 @@
       <div class="hidden-bar-wrapper">
         <div class="logo">
           <a href="{{ Route('home') }}"><img src="{{ asset('site_assets') }}/images/resources/logo.png" alt="Logo"
-              style="width:100px;" /></a>
+              style="width:127px;" /></a>
         </div>
         <div class="hiddenbar-about-us">
           <h3>About Us</h3>
@@ -117,44 +125,45 @@
       <div class="header-top">
         <div class="outer-container">
           <div class="outer-box clearfix">
+              <p class="text-center">Upto 30% OFF, No Coupon Required at www.pipframes.co.uk</p>
 
-            <div class="header-top-left pull-left">
-              <div class="header-contact-info">
-                <ul>
-                  @if($contact->show_on_header_email && !empty($contact->email))
-                    <li><span class="icon-envelope"></span><a
-                        href="mailto:{{ $contact->email }}">{{ $contact->email }}</a></li>
-                  @endif
-                  @if($contact->show_on_header_mobile && !empty($contact->mobile_number))
-                    <li><span class="icon-phone-call"></span><a
-                        href="tel:{{ $contact->mobile_number }}">{{ $contact->mobile_number }}</a></li>
-                  @endif
+            <!--<div class="header-top-left pull-left">-->
+            <!--  <div class="header-contact-info">-->
+            <!--    <ul>-->
+            <!--      @if($contact->show_on_header_email && !empty($contact->email))-->
+            <!--        <li><span class="icon-envelope"></span><a-->
+            <!--            href="mailto:{{ $contact->email }}">{{ $contact->email }}</a></li>-->
+            <!--      @endif-->
+            <!--      @if($contact->show_on_header_mobile && !empty($contact->mobile_number))-->
+            <!--        <li><span class="icon-phone-call"></span><a-->
+            <!--            href="tel:{{ $contact->mobile_number }}">{{ $contact->mobile_number }}</a></li>-->
+            <!--      @endif-->
 
-                </ul>
-              </div>
-            </div>
+            <!--    </ul>-->
+            <!--  </div>-->
+            <!--</div>-->
 
-            <div class="header-top-right pull-right">
-              <div class="header-social-link">
-                <ul>
-                  <li>
-                    <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-                  </li>
-                  <li>
-                    <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-                  </li>
-                  <li>
-                    <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-                  </li>
-                  <li>
-                    <a href="#"><i class="fa fa-behance" aria-hidden="true"></i></a>
-                  </li>
-                  <li>
-                    <a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <!--<div class="header-top-right pull-right">-->
+            <!--  <div class="header-social-link">-->
+            <!--    <ul>-->
+            <!--      <li>-->
+            <!--        <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>-->
+            <!--      </li>-->
+            <!--      <li>-->
+            <!--        <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>-->
+            <!--      </li>-->
+            <!--      <li>-->
+            <!--        <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>-->
+            <!--      </li>-->
+            <!--      <li>-->
+            <!--        <a href="#"><i class="fa fa-behance" aria-hidden="true"></i></a>-->
+            <!--      </li>-->
+            <!--      <li>-->
+            <!--        <a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a>-->
+            <!--      </li>-->
+            <!--    </ul>-->
+            <!--  </div>-->
+            <!--</div>-->
 
           </div>
         </div>
@@ -162,17 +171,63 @@
       <!--End header Top-->
 
       <div class="header">
+         
+        <div class="outer-container mobile-top-header" >
+          <div class="outer-box clearfix" style="background:#8fc424;">
+              <p class="text-center" style="color:#fff; padding:5px 0px;">Upto 30% OFF, No Coupon Required at www.pipframes.co.uk</p>
+
+          
+          </div>
+        </div>
+     <div class="mobile-header-main">
+        
+              <div class="mobile-nav-toggler">
+<div class="inner">
+    <i class="fa fa-bars" style="font-size:24px;"></i> <!-- Hamburger icon -->
+  </div>
+                </div>
+              <div class="logo mobile-logo">
+                <a href="{{ Route('home') }}"><img src="{{ asset('site_assets') }}/images/resources/logo.png"
+                    alt="Awesome Logo" title="" ></a>
+              </div>
+                <div class="">
+                  
+           <h4 >
+              <a href="/cart" title="View Cart">
+                <i class="fa fa-shopping-cart"></i>
+              </a>
+            </h4>
+              </div>
+                <!--Mobile Navigation Toggler-->
+                
+     </div>
         <div class="outer-container">
-          <div class="outer-box clearfix">
+          <div class="outer-box clearfix m-heder">
+
             <!--Start Header Left-->
             <div class="header-left clearfix pull-left">
 
-              <div class="logo">
+              <div class="logo desktop-logo">
                 <a href="{{ Route('home') }}"><img src="{{ asset('site_assets') }}/images/resources/logo.png"
-                    alt="Awesome Logo" title=""></a>
+                    alt="Awesome Logo" title="" ></a>
               </div>
+              
 
-              <div class="nav-outer clearfix">
+              <div class="nav-outer clearfix" style="display: flex;
+        flex-direction: row-reverse;
+    gap: 80px;
+        align-items: center;">
+                  <div class="">
+                 <h4 >
+              <a href="/cart" title="View Cart">
+                <i class="fa fa-shopping-cart"></i>
+              </a>
+            </h4>
+              </div>
+              <div class="logo mobile-logo">
+                <a href="{{ Route('home') }}"><img src="{{ asset('site_assets') }}/images/resources/logo.png"
+                    alt="Awesome Logo" title="" ></a>
+              </div>
                 <!--Mobile Navigation Toggler-->
                 <div class="mobile-nav-toggler">
                   <div class="inner">
@@ -181,6 +236,7 @@
                     <span class="icon-bar"></span>
                   </div>
                 </div>
+                
                 <!-- Main Menu -->
                 <nav class="main-menu style1 navbar-expand-md navbar-light">
                   <div class="collapse navbar-collapse show clearfix" id="navbarSupportedContent">
@@ -270,7 +326,7 @@
       <!--Sticky Header-->
       <div class="sticky-header">
         <div class="container">
-          <div class="clearfix">
+          <div class="header-left clearfix pull-left" style="width:80%;">
             <!--Logo-->
             <div class="logo float-left">
               <a href="{{ Route('home') }}" class="img-responsive"><img
@@ -284,6 +340,28 @@
               </nav>
             </div>
           </div>
+          <div class="header-right pull-right clearfix">
+              <div class="hidden-content-button bar-box">
+                <a class="side-nav-toggler nav-toggler hidden-bar-opener" href="#">
+                  <ul>
+                    <li class="red2"></li>
+                    <li class="red2"></li>
+                    <li></li>
+                  </ul>
+                  <ul>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                  </ul>
+                  <ul>
+                    <li class="red2"></li>
+                    <li></li>
+                    <li class="red2"></li>
+                  </ul>
+                </a>
+              </div>
+            </div>
+          
         </div>
       </div>
       <!--End Sticky Header-->
@@ -295,7 +373,7 @@
 
         <nav class="menu-box">
           <div class="nav-logo"><a href="{{ Route('home') }}"><img
-                src="{{ asset('site_assets') }}/images/resources/logo.png" alt="" title=""></a></div>
+                src="{{ asset('site_assets') }}/images/resources/logo.png" alt="" title="" style="width:90px;"></a></div>
           <div class="menu-outer"><!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header--></div>
           <!--Social Links-->
           <div class="social-links">

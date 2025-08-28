@@ -45,8 +45,8 @@
                         <th>Price Rule Dependency</th>
                         <th>Parent Attribute</th>
                         <th>Has Setup Charge</th>
-                        <!-- <th>Images Dependency</th> -->
-                        <!-- <th>Images Dependency Attribute</th> -->
+                        <th>Images Dependency</th>
+                        <th>Images Dependency Attribute</th>
                         <!-- <th>Parent Attribute</th> -->
                         <!-- <th>Allow Quantity</th> -->
                         <!-- <th>Is Composite</th> -->
@@ -89,13 +89,13 @@
 
                                     </span>
                                   </td>
-                                  <!-- <td>
+                                  <td>
                                    <span class="badge badge-<?php echo e($attribute->has_image_dependency ? 'success' : 'secondary'); ?>">
                                      <?php echo e($attribute->has_image_dependency ? 'Yes' : 'No'); ?>
 
                                    </span>
-                                 </td> -->
-                                  <!-- <td>
+                                 </td>
+                                  <td>
                                     <?php if($attribute->has_image_dependency && $attribute->imageParents->isNotEmpty()): ?>
                                       <?php $__currentLoopData = $attribute->imageParents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imageParent): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <span class="badge badge-info"><?php echo e($imageParent->name); ?></span>
@@ -103,7 +103,7 @@
                                     <?php else: ?>
                                       <span class="text-muted">—</span>
                                     <?php endif; ?>
-                                  </td> -->
+                                  </td>
                                   <!-- <td>
                         <span class="badge badge-<?php echo e($attribute->allow_quantity ? 'success' : 'secondary'); ?>">
                         <?php echo e($attribute->allow_quantity ? 'Yes' : 'No'); ?>

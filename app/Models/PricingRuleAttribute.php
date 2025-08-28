@@ -21,7 +21,9 @@ class PricingRuleAttribute extends Model
         // 'flat_rate_per_page',
         'is_default',
         'max_width',
-        'max_height'
+        'max_height',
+        'min_width',
+        'min_height'
     ];
 
     public function rule()

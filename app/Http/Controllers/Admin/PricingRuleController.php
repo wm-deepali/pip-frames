@@ -113,6 +113,8 @@ class PricingRuleController extends Controller
             if ($attributeInputTypes[$i] === 'select_area') {
                 $rules["rows.$i.max_width"] = 'nullable|numeric|min:0.1';
                 $rules["rows.$i.max_height"] = 'nullable|numeric|min:0.1';
+                $rules["rows.$i.min_width"] = 'nullable|numeric|min:0.1';
+                $rules["rows.$i.min_height"] = 'nullable|numeric|min:0.1';
             } else {
                 $rules["rows.$i.value_id"] = 'required|exists:attribute_values,id';
             }
@@ -176,6 +178,8 @@ class PricingRuleController extends Controller
 
                     'max_width' => $row['max_width'] ?? null,
                     'max_height' => $row['max_height'] ?? null,
+                    'min_width' => $row['min_width'] ?? null,
+                    'min_height' => $row['min_height'] ?? null,
                 ]);
 
                 // Save quantity ranges if provided
@@ -307,6 +311,8 @@ class PricingRuleController extends Controller
                 $rules["rows.$i.value_id"] = 'nullable';
                 $rules["rows.$i.max_width"] = 'nullable|numeric|min:0.1';
                 $rules["rows.$i.max_height"] = 'nullable|numeric|min:0.1';
+                $rules["rows.$i.min_width"] = 'nullable|numeric|min:0.1';
+                $rules["rows.$i.min_height"] = 'nullable|numeric|min:0.1';
             }
 
             $rules["rows.$i.dependency_value_ids"] = 'nullable|array';
@@ -371,6 +377,8 @@ class PricingRuleController extends Controller
 
                     'max_width' => $row['max_width'] ?? null,
                     'max_height' => $row['max_height'] ?? null,
+                    'min_width' => $row['min_width'] ?? null,
+                    'min_height' => $row['min_height'] ?? null,
                 ];
 
                 if (!empty($row['id'])) {

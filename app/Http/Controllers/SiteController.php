@@ -52,7 +52,6 @@ class SiteController extends Controller
         return view('front.category-detail', compact('subcategories', 'extraOptions', 'category'));
     }
 
-
     public function attributes(Request $request)
     {
         $request->validate([
@@ -80,7 +79,6 @@ class SiteController extends Controller
         $steps = [];
         foreach ($stepsGrouped as $stepNumber => $attributes) {
             $sortedAttributes = $attributes->sortBy('sort_order');
-
             $steps[$stepNumber] = $sortedAttributes->map(function ($sa) use ($attributeValuesMap) {
                 $attr = $sa->attribute;
                 $values = $attributeValuesMap[$attr->id] ?? collect();
@@ -93,8 +91,10 @@ class SiteController extends Controller
                     'area_unit' => $attr->area_unit ?? 'inch',
                     'require_both_images' => $attr->require_both_images,
                     'required_file_uploads' => $attr->required_file_uploads,
-                    'values' => $values->map(function ($sav) {
-                        return [
+                    'has_image_dependency' => $attr->has_image_dependency,
+                    'main_frame_changes' => $attr->main_frame_changes,
+                    'values' => $values->map(function ($sav) use ($attr) {
+                        $valueData = [
                             'id' => $sav->value->id,
                             'value' => $sav->value->value,
                             'colour_code' => $sav->value->colour_code,
@@ -103,8 +103,27 @@ class SiteController extends Controller
                             'image_landscape_path' => $sav->value->image_landscape_path ?? null,
                             'required_file_uploads' => $sav->value->required_file_uploads ?? 1,
                         ];
-                    })->values(),
 
+                        // Only if dependency is enabled
+                        if ($attr->has_image_dependency) {
+                            $valueData['parent_images'] = \App\Models\AttributeValueParentImage::where('attribute_value_id', $sav->value->id)
+                                ->with(['parentAttribute', 'parentAttributeValue'])
+                                ->get()
+                                ->map(function ($img) {
+                                    return [
+                                        'id' => $img->id,
+                                        'parent_attribute_id' => $img->parent_attribute_id,
+                                        'parent_attribute_value_id' => $img->parent_attribute_value_id,
+                                        'image_path' => $img->image_path,
+                                        'orientation' => $img->orientation,
+                                        'parent_attribute' => $img->parentAttribute?->name,
+                                        'parent_value' => $img->parentAttributeValue?->value,
+                                    ];
+                                });
+                        }
+
+                        return $valueData;
+                    })->values(),
                 ];
             })->values();
         }
@@ -123,6 +142,7 @@ class SiteController extends Controller
                 ];
             });
 
+        // dd($steps);
         // Return attributes grouped by steps and all conditions to apply on frontend
         return response()->json([
             'success' => true,
@@ -268,10 +288,10 @@ class SiteController extends Controller
             }
 
             $selectedValue = $selections[$attrId];
-
             if (is_array($selectedValue) && isset($selectedValue['height']) && isset($selectedValue['width'])) {
-                $height = floatval($selectedValue['height']);
                 $width = floatval($selectedValue['width']);
+                $height = floatval($selectedValue['height']);
+
 
                 // Round up height and width to nearest even number
                 $height = roundUpToEven($height);
@@ -279,15 +299,24 @@ class SiteController extends Controller
 
                 // Check max height and width limits if applicable
                 $errors = [];
+
                 if ($ruleAttr->max_height !== null && $height > $ruleAttr->max_height) {
                     $errors[$ruleAttr->attribute_id]['height'] = "Max height is " . number_format($ruleAttr->max_height, 2);
                 }
                 if ($ruleAttr->max_width !== null && $width > $ruleAttr->max_width) {
                     $errors[$ruleAttr->attribute_id]['width'] = "Max width is " . number_format($ruleAttr->max_width, 2);
                 }
+
+                if ($ruleAttr->min_height !== null && $height < $ruleAttr->min_height) {
+                    $errors[$ruleAttr->attribute_id]['height'] = "Min height is " . number_format($ruleAttr->min_height, 2);
+                }
+                if ($ruleAttr->min_width !== null && $width < $ruleAttr->min_width) {
+                    $errors[$ruleAttr->attribute_id]['width'] = "Min width is " . number_format($ruleAttr->min_width, 2);
+                }
                 if ($errors) {
                     return response()->json(['success' => false, 'errors' => $errors]);
                 }
+
 
                 $area = $height * $width;
 
@@ -325,7 +354,7 @@ class SiteController extends Controller
 
     }
 
-    //     $componentPages = [];
+
 
     //     // Step 1: Extract page count for component values inside composite values
     //     if ($request->has('composite_pages')) {
