@@ -105,6 +105,68 @@
       <div class="row">
         <div class="col-xl-12">
           <div class="contact-form contact-page">
+            <form id="contact-form" method="POST" action="<?php echo e(route('contact.store')); ?>">
+    <?php echo csrf_field(); ?>
+    <div class="row">
+        <div class="col-xl-4 col-lg-4">
+            <div class="input-box">
+                <input type="text" name="form_name" placeholder="Your name" required>
+                <div class="icon"><span class="icon-user"></span></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4">
+            <div class="input-box">
+                <input type="email" name="form_email" placeholder="Email address" required>
+                <div class="icon"><span class="icon-envelope"></span></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4">
+            <div class="input-box">
+                <select class="selectpicker" name="form_selected_subject" data-width="100%">
+                    <option selected="selected">Select Subject</option>
+                    <option>People Frames</option>
+                    <option>Pet Frames</option>
+                    <option>Illustration Frames</option>
+                    <option>Others</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="input-box">
+                <input type="text" name="form_phone" placeholder="Phone number">
+                <div class="icon"><span class="icon-phone"></span></div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="input-box">
+                <input type="text" name="form_subject" placeholder="Subject">
+                <div class="icon"><span class="icon-pen"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="input-box">
+                <textarea name="form_message" placeholder="Write message" required></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="button-box text-center">
+                <button class="btn-one gradient-bg-1" type="submit">
+                    <span class="txt"><i class="icon-send"></i>Submit Now</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
             <form id="contact-form" name="contact_form" class="default-form2"
               action="https://mehedi.asiandevelopers.com/demo/carepress/<?php echo e(asset('site_assets')); ?>/inc/sendmail.php"
               method="post">
@@ -197,4 +259,32 @@
   <!--End Google Map Area-->
 
 <?php $__env->stopSection(); ?>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$('#contact-form').on('submit', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+        url: "<?php echo e(route('contact.store')); ?>",
+        method: "POST",
+        data: $(this).serialize(),
+        success: function(response) {
+            if (response.success) {
+                alert(response.message);
+                $('#contact-form')[0].reset();
+            }
+        },
+        error: function(xhr) {
+            let errors = xhr.responseJSON.errors;
+            let errorMessage = "Please fix the following errors:\n";
+            $.each(errors, function(key, value) {
+                errorMessage += "- " + value[0] + "\n";
+            });
+            alert(errorMessage);
+        }
+    });
+});
+</script>
+
 <?php echo $__env->make('layouts.new-master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\web-mingo-project\pip_frames\resources\views/front/contact-us.blade.php ENDPATH**/ ?>

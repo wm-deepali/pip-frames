@@ -41,7 +41,6 @@ Route::get('/', [SiteController::class, 'index'])->name('home');
 
 Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
 
-
 Route::get('/category/{slug}', [SiteController::class, 'show'])->name('category.show');
 
 Route::get('/attributes', [SiteController::class, 'attributes'])->name('attributes');
@@ -50,22 +49,15 @@ Route::post('/get-price', [SiteController::class, 'calculatePrice'])->name('get-
 
 Route::get('/get-all-image-conditions', [SiteController::class, 'getAllImageConditions'])->name('get-all-image-conditions');
 
-Route::get('/thank-you', function () {
-    return view('front.thank-you');
-})->name('thank-you');
+
 Route::get('/how-it-works', function () {
     return view('front.how-it-works');
 })->name('how-it-works');
 
 
-Route::get('/top-form', function () {
-    return view('front.top-form');
-})->name('top-form');
-
-
 Route::get('/order/thankyou', function () {
     return view('front.thankyou');
-})->name('order.thankyou');
+})->name(name: 'order.thankyou');
 
 
 Route::get('/cart', [CartController::class, 'cart'])->name('cart');
@@ -81,54 +73,18 @@ Route::get('/payment-success', [CheckoutControlller::class, 'success'])->name('p
 Route::get('/payment-cancel', [CheckoutControlller::class, 'cancel'])->name('payment.cancel');
 
 
-Route::get('order-tracking', function () {
-    return view('front.order-tracking');
-})->name('order-tracking');
 
 Route::get('about-us', function () {
     return view('front.about-us');
 })->name('about-us');
 
-Route::get('services', function () {
-    return view('front.services');
-})->name('services');
+
 
 Route::get('contact-us', function () {
     $contact = ContactInfo::first();
     return view('front.contact-us', compact('contact'));
 })->name('contact-us');
 
-Route::get('ser-pet-grooming', function () {
-    return view('front.ser-pet-grooming');
-})->name('ser-pet-grooming');
-
-Route::get('ser-dog-setting', function () {
-    return view('front.ser-dog-setting');
-})->name('ser-dog-setting');
-
-Route::get('ser-healthy-meals', function () {
-    return view('front.ser-healthy-meals');
-})->name('ser-healthy-meals');
-
-Route::get('ser-veterinary-service', function () {
-    return view('front.ser-veterinary-service');
-})->name('ser-veterinary-service');
-
-Route::get('shop', function () {
-    return view('front.shop');
-})->name('shop');
-
-Route::get('shop-details', function () {
-    return view('front.shop-details');
-})->name('shop-details');
-
-Route::get('team', function () {
-    return view('front.team');
-})->name('team');
-
-Route::get('blog-details', function () {
-    return view('front.blog-details');
-})->name('blog-details');
 
 Route::get('error', function () {
     return view('front.error');
@@ -158,6 +114,9 @@ Route::get('authentication-signup', function () {
 })->name('authentication-signup');
 
 Route::get('/customer-data/{id}', [CustomerController::class, 'getCustomerData']);
+
+Route::post('/contact/store', [App\Http\Controllers\ContactMessageController::class, 'store'])
+    ->name('contact.store');
 
 
 Route::middleware(['web'])->group(function () {

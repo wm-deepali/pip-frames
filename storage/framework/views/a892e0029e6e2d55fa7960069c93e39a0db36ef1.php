@@ -30,7 +30,6 @@
         <?php
           $inputType = $attributeConfigs[$attribute->id]['input_type'] ?? 'text';
           $requireBothImages = $attributeConfigs[$attribute->id]['require_both_images'] ?? false;
-          echo($requireBothImages);
         ?>
 
         <div class="form-group" id="value-wrapper">

@@ -163,8 +163,14 @@
             <li><a class="dropdown-item d-flex align-items-center"
                 href="<?php echo e(route('admin.content.dynamic.pages')); ?>"><span>Dynamic Page Creations</span></a>
             </li>
-            <li><a class="dropdown-item d-flex align-items-center"
+            <!-- <li><a class="dropdown-item d-flex align-items-center"
                 href="<?php echo e(route('admin.content.manage.page.content')); ?>"><span>Manage Page Content</span></a>
+            </li> -->
+             <li><a class="dropdown-item d-flex align-items-center"
+                href="<?php echo e(route('admin.testimonials.index')); ?>"><span>Manage Testimonials Content</span></a>
+            </li>
+              <li><a class="dropdown-item d-flex align-items-center"
+                href="<?php echo e(route('admin.sliders.index')); ?>"><span>Manage Slider Content</span></a>
             </li>
           </ul>
         </li>
@@ -190,6 +196,13 @@
             </li>
           </ul>
         </li>
+
+        <li>
+          <a class="dropdown-item d-flex align-items-center" href="<?php echo e(route('admin.contact-enquires.index')); ?>">
+            <span>Enquires</span>
+          </a>
+        </li>
+
 
         <li>
           <a class="dropdown-item d-flex align-items-center" href="<?php echo e(route('admin.header-contact.index')); ?>">

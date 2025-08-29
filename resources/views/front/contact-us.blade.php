@@ -105,29 +105,24 @@
       <div class="row">
         <div class="col-xl-12">
           <div class="contact-form contact-page">
-            <form id="contact-form" name="contact_form" class="default-form2"
-              action="https://mehedi.asiandevelopers.com/demo/carepress/{{ asset('site_assets') }}/inc/sendmail.php"
-              method="post">
+            <form id="contact-form" method="POST" action="{{ route('contact.store') }}">
+              @csrf
               <div class="row">
                 <div class="col-xl-4 col-lg-4">
                   <div class="input-box">
-                    <input type="text" name="form_name" value="" placeholder="Your name" required="">
-                    <div class="icon">
-                      <span class="icon-user"></span>
-                    </div>
+                    <input type="text" name="form_name" placeholder="Your name" required>
+                    <div class="icon"><span class="icon-user"></span></div>
                   </div>
                 </div>
                 <div class="col-xl-4 col-lg-4">
                   <div class="input-box">
-                    <input type="email" name="form_email" value="" placeholder="Email address" required="">
-                    <div class="icon">
-                      <span class="icon-envelope"></span>
-                    </div>
+                    <input type="email" name="form_email" placeholder="Email address" required>
+                    <div class="icon"><span class="icon-envelope"></span></div>
                   </div>
                 </div>
                 <div class="col-xl-4 col-lg-4">
                   <div class="input-box">
-                    <select class="selectpicker" data-width="100%">
+                    <select class="selectpicker" name="form_selected_subject" data-width="100%">
                       <option selected="selected">Select Subject</option>
                       <option>People Frames</option>
                       <option>Pet Frames</option>
@@ -141,18 +136,14 @@
               <div class="row">
                 <div class="col-xl-6">
                   <div class="input-box">
-                    <input type="text" name="form_phone" value="" placeholder="Phone number">
-                    <div class="icon">
-                      <span class="icon-phone"></span>
-                    </div>
+                    <input type="text" name="form_phone" placeholder="Phone number">
+                    <div class="icon"><span class="icon-phone"></span></div>
                   </div>
                 </div>
                 <div class="col-xl-6">
                   <div class="input-box">
-                    <input type="text" name="form_subject" value="" placeholder="Subject">
-                    <div class="icon">
-                      <span class="icon-pen"></span>
-                    </div>
+                    <input type="text" name="form_subject" placeholder="Subject">
+                    <div class="icon"><span class="icon-pen"></span></div>
                   </div>
                 </div>
               </div>
@@ -160,23 +151,22 @@
               <div class="row">
                 <div class="col-xl-12">
                   <div class="input-box">
-                    <textarea name="form_message" placeholder="Write message" required=""></textarea>
-
+                    <textarea name="form_message" placeholder="Write message" required></textarea>
                   </div>
                 </div>
               </div>
+
               <div class="row">
                 <div class="col-xl-12">
                   <div class="button-box text-center">
-                    <input id="form_botcheck" name="form_botcheck" class="form-control" type="hidden" value="">
-                    <button class="btn-one gradient-bg-1" type="submit" data-loading-text="Please wait...">
+                    <button class="btn-one gradient-bg-1" type="submit">
                       <span class="txt"><i class="icon-send"></i>Submit Now</span>
                     </button>
                   </div>
                 </div>
               </div>
-
             </form>
+
           </div>
         </div>
       </div>
@@ -197,3 +187,30 @@
   <!--End Google Map Area-->
 
 @endsection
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $('#contact-form').on('submit', function (e) {
+    e.preventDefault();
+
+    $.ajax({
+      url: "{{ route('contact.store') }}",
+      method: "POST",
+      data: $(this).serialize(),
+      success: function (response) {
+        if (response.success) {
+          alert(response.message);
+          $('#contact-form')[0].reset();
+        }
+      },
+      error: function (xhr) {
+        let errors = xhr.responseJSON.errors;
+        let errorMessage = "Please fix the following errors:\n";
+        $.each(errors, function (key, value) {
+          errorMessage += "- " + value[0] + "\n";
+        });
+        alert(errorMessage);
+      }
+    });
+  });
+</script>

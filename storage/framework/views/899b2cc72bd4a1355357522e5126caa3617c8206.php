@@ -52,7 +52,6 @@
   a {
   color: inherit;        /* Keep the color same as surrounding text */
   text-decoration: none; /* Remove underline */
-  cursor: default;       /* Optional: default cursor to avoid pointer hand */
 }
 
 </style>
@@ -258,33 +257,12 @@
 
                       <li><a href="<?php echo e(Route('about-us')); ?>">About</a></li>
                       <li><a href="<?php echo e(Route('how-it-works')); ?>">How it Works</a> </li>
-                      <!-- <ul>
-                          <li><a href="<?php echo e(Route('services')); ?>">View All Services</a></li>
-                          <li><a href="<?php echo e(Route('ser-pet-grooming')); ?>">Pet Grooming</a></li>
-                          <li><a href="<?php echo e(Route('ser-dog-setting')); ?>">Dog Setting</a></li>
-                          <li><a href="<?php echo e(Route('ser-healthy-meals')); ?>">Healthy Meals</a></li>
-                          <li><a href="<?php echo e(Route('ser-veterinary-service')); ?>">Veterinary Service</a></li>
-                        </ul> -->
+
 
                       <li><a href="<?php echo e(Route('faq')); ?>">Faq</a></li>
-                      <!-- <li><a href="<?php echo e(Route('team')); ?>">Our Team</a></li> -->
-                      <!--<li class="dropdown"><a href="#">Pages</a>
-                        <ul>
-                          <li><a href="<?php echo e(Route('shop')); ?>">Our Shop</a></li>
-                          <li><a href="<?php echo e(Route('shop-details')); ?>">Product Details</a></li>
-                          
-                          
-                          <li><a href="<?php echo e(Route('error')); ?>">404 Error page</a></li>
-                        </ul>
-                      </li> -->
+                     
                       <li><a href="<?php echo e(Route('blogs')); ?>">Blogs</a></li>
-                      <!-- <li class="dropdown"><a href="#">News</a>
-                        <ul>
-                          
-                          <li><a href="blog-v2.html">Blog Grid View</a></li>
-                          <li><a href="<?php echo e(Route('blog-details')); ?>">Blog Details</a></li>
-                        </ul>
-                      </li> -->
+                     
                       <li><a href="<?php echo e(Route('contact-us')); ?>">Contact</a></li>
                     </ul>
                   </div>

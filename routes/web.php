@@ -21,24 +21,20 @@ use App\Http\Controllers\Admin\AttributeConditionController;
 use App\Http\Controllers\Admin\PricingRuleController;
 use App\Http\Controllers\Admin\QuoteController;
 
+
 use App\Http\Controllers\Admin\VatController;
 use App\Http\Controllers\DeliveryChargeController;
 use App\Http\Controllers\PostalCodeController;
 use App\Http\Controllers\ProofReadingController;
-use App\Models\Attribute;
-use App\Models\Subcategory;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\{
     HomeController,
     CategoryController,
     SubCategoryController,
 };
-use App\Http\Controllers\Admin\BookTypeController;
-use App\Http\Controllers\Admin\PageTypeController;
-use App\Http\Controllers\Admin\PageRangeController;
-use App\Http\Controllers\Admin\QuantityRangeController;
-use Illuminate\Support\Facades\Artisan;
 
+use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\SliderController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -138,6 +134,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('faqs/delete/{id}', [FaqController::class, 'destroy'])->name('faqs.delete');
         Route::get('faqs/edit/{id}', [FaqController::class, 'edit'])->name('faqs.edit');
 
+        Route::get('/contact-enquires', [App\Http\Controllers\ContactMessageController::class, 'index'])
+            ->name('contact-enquires.index');
 
         Route::get('content/blogs', [BlogController::class, 'index'])->name('content.blogs');
         Route::post('/blogs/store', [BlogController::class, 'store'])->name('content.blogs.store');
@@ -154,7 +152,8 @@ Route::group(['middleware' => 'auth'], function () {
             Route::delete('/{id}', [PageController::class, 'destroy'])->name('destroy');
         });
 
-
+        Route::resource('testimonials', TestimonialController::class);
+        Route::resource('sliders', SliderController::class);
 
         // ===== Category MANAGEMENT ROUTES ===== //
         Route::resource('manage-categories', CategoryController::class);

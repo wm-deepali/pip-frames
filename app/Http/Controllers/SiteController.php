@@ -9,8 +9,10 @@ use App\Models\ExtraOption;
 use App\Models\ImageCondition;
 use App\Models\PricingRule;
 use App\Models\ProofReading;
+use App\Models\Slider;
 use App\Models\Subcategory;
 use App\Models\Category;
+use App\Models\Testimonial;
 use App\Models\Vat;
 use Illuminate\Http\Request;
 use App\Models\PricingRuleAttribute;
@@ -25,7 +27,10 @@ class SiteController extends Controller
             ->take(6)
             ->get();
 
-        return view('front.index', compact('blogs'));
+        $testimonials = Testimonial::where('status', 'active')->latest()->get();
+        $sliders = Slider::where('status', 'active')->latest()->get();
+
+        return view('front.index', compact('blogs', 'testimonials', 'sliders'));
     }
 
 
@@ -151,90 +156,90 @@ class SiteController extends Controller
         ]);
     }
 
-    public function AttributeImages(Request $request)
-    {
-        $request->validate([
-            'category_id' => 'required|exists:subcategories,id',
-        ]);
+    // public function AttributeImages(Request $request)
+    // {
+    //     $request->validate([
+    //         'category_id' => 'required|exists:subcategories,id',
+    //     ]);
 
-        $subcategoryId = $request->category_id;
+    //     $subcategoryId = $request->category_id;
 
-        $conditions = ImageCondition::with(['dependencies', 'affectedValues'])->where('subcategory_id', $subcategoryId)->get();
+    //     $conditions = ImageCondition::with(['dependencies', 'affectedValues'])->where('subcategory_id', $subcategoryId)->get();
 
-        $response = [];
+    //     $response = [];
 
-        foreach ($conditions as $condition) {
-            foreach ($condition->affectedValues as $affectedValue) {
-                // Build combination mapping: dependency_attribute_id => value_id
-                $combination = [];
+    //     foreach ($conditions as $condition) {
+    //         foreach ($condition->affectedValues as $affectedValue) {
+    //             // Build combination mapping: dependency_attribute_id => value_id
+    //             $combination = [];
 
-                foreach ($condition->dependencies as $dep) {
-                    $combination[$dep->attribute_id] = $dep->value_id;
-                }
+    //             foreach ($condition->dependencies as $dep) {
+    //                 $combination[$dep->attribute_id] = $dep->value_id;
+    //             }
 
-                // Add the current affected value
-                $combination[$condition->affected_attribute_id] = $affectedValue->value_id;
+    //             // Add the current affected value
+    //             $combination[$condition->affected_attribute_id] = $affectedValue->value_id;
 
-                $response[] = [
-                    'condition_id' => $condition->id, // renamed for clarity
-                    'combination' => $combination,
-                    'image' => $affectedValue->image ? asset('storage/' . $affectedValue->image) : null,
-                    'orientation' => $affectedValue->orientation,
-                    'affected_attribute_id' => $condition->affected_attribute_id,
-                    'affected_value_id' => $affectedValue->value_id,
-                ];
-            }
-        }
+    //             $response[] = [
+    //                 'condition_id' => $condition->id, // renamed for clarity
+    //                 'combination' => $combination,
+    //                 'image' => $affectedValue->image ? asset('storage/' . $affectedValue->image) : null,
+    //                 'orientation' => $affectedValue->orientation,
+    //                 'affected_attribute_id' => $condition->affected_attribute_id,
+    //                 'affected_value_id' => $affectedValue->value_id,
+    //             ];
+    //         }
+    //     }
 
-        return response()->json([
-            'success' => true,
-            'conditions' => $response,
-        ]);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'conditions' => $response,
+    //     ]);
+    // }
 
-    public function getAllImageConditions(Request $request)
-    {
-        $request->validate([
-            'category_id' => 'required|integer|exists:subcategories,id', // or 'subcategories' if applicable
-        ]);
+    // public function getAllImageConditions(Request $request)
+    // {
+    //     $request->validate([
+    //         'category_id' => 'required|integer|exists:subcategories,id', // or 'subcategories' if applicable
+    //     ]);
 
-        $categoryId = $request->category_id;
+    //     $categoryId = $request->category_id;
 
-        $conditions = ImageCondition::with(['dependencies', 'affectedValues'])
-            ->where('subcategory_id', $categoryId) // filter by category ID
-            ->get();
+    //     $conditions = ImageCondition::with(['dependencies', 'affectedValues'])
+    //         ->where('subcategory_id', $categoryId) // filter by category ID
+    //         ->get();
 
-        $response = [];
+    //     $response = [];
 
-        foreach ($conditions as $condition) {
-            $deps = $condition->dependencies->map(function ($dep) {
-                return [
-                    'attribute_id' => $dep->attribute_id,
-                    'value_id' => $dep->value_id,
-                ];
-            });
+    //     foreach ($conditions as $condition) {
+    //         $deps = $condition->dependencies->map(function ($dep) {
+    //             return [
+    //                 'attribute_id' => $dep->attribute_id,
+    //                 'value_id' => $dep->value_id,
+    //             ];
+    //         });
 
-            $affectedVals = $condition->affectedValues->map(function ($val) use ($condition) {
-                return [
-                    'affected_attribute_id' => $condition->affected_attribute_id,
-                    'affected_value_id' => $val->value_id,
-                    'image' => $val->image ? asset('storage/' . $val->image) : null,
-                    'orientation' => $val->orientation,
-                ];
-            });
+    //         $affectedVals = $condition->affectedValues->map(function ($val) use ($condition) {
+    //             return [
+    //                 'affected_attribute_id' => $condition->affected_attribute_id,
+    //                 'affected_value_id' => $val->value_id,
+    //                 'image' => $val->image ? asset('storage/' . $val->image) : null,
+    //                 'orientation' => $val->orientation,
+    //             ];
+    //         });
 
-            $response[] = [
-                'id' => $condition->id,
-                'dependencies' => $deps,
-                'affected_values' => $affectedVals,
-            ];
-        }
+    //         $response[] = [
+    //             'id' => $condition->id,
+    //             'dependencies' => $deps,
+    //             'affected_values' => $affectedVals,
+    //         ];
+    //     }
 
-        return response()->json([
-            'success' => true,
-            'conditions' => $response,
-        ]);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'conditions' => $response,
+    //     ]);
+    // }
 
     public function calculatePrice(Request $request)
     {
@@ -301,17 +306,17 @@ class SiteController extends Controller
                 $errors = [];
 
                 if ($ruleAttr->max_height !== null && $height > $ruleAttr->max_height) {
-                    $errors[$ruleAttr->attribute_id]['height'] = "Max height is " . number_format($ruleAttr->max_height, 2);
+                    $errors[$ruleAttr->attribute_id]['height'] = "max height: " . number_format($ruleAttr->max_height, 0) . " sq_inch";
                 }
                 if ($ruleAttr->max_width !== null && $width > $ruleAttr->max_width) {
-                    $errors[$ruleAttr->attribute_id]['width'] = "Max width is " . number_format($ruleAttr->max_width, 2);
+                    $errors[$ruleAttr->attribute_id]['width'] = "max width " . number_format($ruleAttr->max_width, 0) . " sq_inch";
                 }
 
                 if ($ruleAttr->min_height !== null && $height < $ruleAttr->min_height) {
-                    $errors[$ruleAttr->attribute_id]['height'] = "Min height is " . number_format($ruleAttr->min_height, 2);
+                    $errors[$ruleAttr->attribute_id]['height'] = "min height " . number_format($ruleAttr->min_height, 0) . " sq_inch";
                 }
                 if ($ruleAttr->min_width !== null && $width < $ruleAttr->min_width) {
-                    $errors[$ruleAttr->attribute_id]['width'] = "Min width is " . number_format($ruleAttr->min_width, 2);
+                    $errors[$ruleAttr->attribute_id]['width'] = "min width " . number_format($ruleAttr->min_width, 0) . " sq_inch";
                 }
                 if ($errors) {
                     return response()->json(['success' => false, 'errors' => $errors]);

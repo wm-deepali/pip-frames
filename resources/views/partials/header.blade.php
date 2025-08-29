@@ -115,9 +115,9 @@
             <li><a class="dropdown-item d-flex align-items-center"
                 href="{{ route('admin.pricing-rules.index') }}"><span>Price Rule Setting
                 </span></a></li>
-            <li><a class="dropdown-item d-flex align-items-center"
+            <!-- <li><a class="dropdown-item d-flex align-items-center"
                 href="{{ route('admin.images.index') }}"><span>Images Settings
-                </span></a></li>
+                </span></a></li> -->
                   <li><a class="dropdown-item d-flex align-items-center"
                 href="{{ route('admin.extra_options.index') }}"><span>Extra options</span></a></li>
             <!-- <li><a class="dropdown-item d-flex align-items-center"
@@ -162,8 +162,14 @@
             <li><a class="dropdown-item d-flex align-items-center"
                 href="{{ route('admin.content.dynamic.pages') }}"><span>Dynamic Page Creations</span></a>
             </li>
-            <li><a class="dropdown-item d-flex align-items-center"
+            <!-- <li><a class="dropdown-item d-flex align-items-center"
                 href="{{ route('admin.content.manage.page.content') }}"><span>Manage Page Content</span></a>
+            </li> -->
+             <li><a class="dropdown-item d-flex align-items-center"
+                href="{{ route('admin.testimonials.index') }}"><span>Manage Testimonials Content</span></a>
+            </li>
+              <li><a class="dropdown-item d-flex align-items-center"
+                href="{{ route('admin.sliders.index') }}"><span>Manage Slider Content</span></a>
             </li>
           </ul>
         </li>
@@ -189,6 +195,13 @@
             </li>
           </ul>
         </li>
+
+        <li>
+          <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.contact-enquires.index') }}">
+            <span>Enquires</span>
+          </a>
+        </li>
+
 
         <li>
           <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.header-contact.index') }}">

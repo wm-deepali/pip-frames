@@ -236,13 +236,14 @@
                     $imageParentIds = $attribute->imageParents->pluck('id')->toArray();
                     $isChecked = in_array($parent->id, $imageParentIds);
                   @endphp
-                  @if ($parent->id != $attribute->id)
-                    <div class="form-check">
-                      <input type="checkbox" class="image-dependency-checkbox" name="image_dependency_parent[]"
-                        value="{{ $parent->id }}" id="image-dep-{{$parent->id}}" {{ $isChecked ? 'checked' : '' }}>
-                      <label for="image-dep-{{$parent->id}}">{{ $parent->name }}</label>
-                    </div>
-                  @endif
+
+                  {{-- Remove the self-check restriction --}}
+                  <div class="form-check">
+                    <input type="checkbox" class="image-dependency-checkbox" name="image_dependency_parent[]"
+                      value="{{ $parent->id }}" id="image-dep-{{$parent->id}}" {{ in_array($parent->id, $imageParentIds) ? 'checked' : '' }}>
+                    <label for="image-dep-{{$parent->id}}">{{ $parent->name }}</label>
+                  </div>
+
                 @endforeach
               </div>
             </div>
@@ -282,17 +283,21 @@
         $wrapper.css('display', 'block');
       } else {
         $wrapper.css('display', 'none');
-        $wrapper.find('input[type="checkbox"]').prop('checked', false);
+        // ⚠️ Remove this line so you don’t lose saved state
+        // $wrapper.find('input[type="checkbox"]').prop('checked', false);
       }
     }
 
+
     // On page load
-    toggleImageDependencyField($('#image-dependency').val());
+    // On page load
+    toggleImageDependencyField($('#edit-image-dependency').val());
 
     // On change event
-    $('#image-dependency').on('change', function () {
+    $('#edit-image-dependency').on('change', function () {
       toggleImageDependencyField($(this).val());
     });
+
 
 
 

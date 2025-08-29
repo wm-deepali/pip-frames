@@ -13,13 +13,17 @@
 			<!-- Banner Carousel -->
 			<div class="banner-carousel owl-theme owl-carousel">
 				<!-- Slide -->
+				 
 				<div class="slide">
-					<div class="image-layer"
-						style="background-image:url(<?php echo e(asset('site_assets')); ?>/images/slides/slide-v1-2.png)"></div>
+					<div class="image-layer desktop-slider"
+						style="background-image:url(<?php echo e(asset('site_assets')); ?>/images/slides/slide1.png)"></div>
+					<div class="image-layer mobile-slider"
+						style="background-image:url(<?php echo e(asset('site_assets')); ?>/images/slides/mobile-slider1.png)"></div>
 					<div class="auto-container">
 						<div class="content">
-							<h5>//<span>Turn Moments into Masterpieces</span>//</h5>
-							<h2>Beautifully hand-crafted <br> portraits designed just for you<span class="round"></span>
+							<!--	<h5>//<span>Turn Moments into Masterpieces</span>//</h5> -->
+							<h2>Different types of </br>creative art made by </br>talented designers<span
+									class="round"></span>
 							</h2>
 							<div class="btns-box">
 								<?php
@@ -30,32 +34,64 @@
 
 								<?php if($firstCategory): ?>
 									<a class="btn-one" href="<?php echo e(route('category.show', $firstCategory->slug)); ?>">
-										<span class="txt"><?php echo e($firstCategory->name); ?></span>
+										<span class="txt" style="color:#fff;"><?php echo e($firstCategory->name); ?> &nbsp;<i
+												class="fa fa-arrow-right ms-2"></i></span>
+
 									</a>
 
 								<?php endif; ?>
 
-								<a class="btn-one marleft style2" href="#"><span class="txt">+01132 874724</span></a>
+								<!--	<a class="btn-one marleft style2" href="#"><span class="txt">+01132 874724</span></a> -->
 							</div>
 						</div>
 					</div>
 				</div>
 				<!-- Slide -->
 				<div class="slide">
-					<div class="image-layer"
-						style="background-image:url(<?php echo e(asset('site_assets')); ?>/images/slides/slide-v1-2.png)"></div>
+					<div class="image-layer desktop-slider"
+						style="background-image:url(<?php echo e(asset('site_assets')); ?>/images/slides/slide2.png)"></div>
+					<div class="image-layer mobile-slider"
+						style="background-image:url(<?php echo e(asset('site_assets')); ?>/images/slides/mobile-slider2.png)"></div>
 					<div class="auto-container">
 						<div class="content">
-							<h5>//<span>Custom Portraits of Pets, People & More</span>//</h5>
-							<h2>Celebrate what you love <br> with art that lasts forever.<span class="round"></span></h2>
+							<!--	<h5>//<span>Custom Portraits of Pets, People & More</span>//</h5> -->
+							<h2>Make your portrait into a </br>frameless canvas print<span class="round"></span></h2>
 							<div class="btns-box">
 								<?php if($firstCategory): ?>
 									<a class="btn-one" href="<?php echo e(route('category.show', $firstCategory->slug)); ?>">
-										<span class="txt"><?php echo e($firstCategory->name); ?></span>
+										<span class="txt" style="color:#fff;"><?php echo e($firstCategory->name); ?> &nbsp;<i
+												class="fa fa-arrow-right ms-2"></i></span>
+
 									</a>
 
 								<?php endif; ?>
-								<a class="btn-one marleft style2" href="#"><span class="txt">+01132 874724</span></a>
+								<!--	<a class="btn-one marleft style2" href="#"><span class="txt">+01132 874724</span></a> -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Slide -->
+				<!-- Slide -->
+				<div class="slide">
+					<div class="image-layer desktop-slider"
+						style="background-image:url(<?php echo e(asset('site_assets')); ?>/images/slides/slide3.png)"></div>
+					<div class="image-layer mobile-slider"
+						style="background-image:url(<?php echo e(asset('site_assets')); ?>/images/slides/mobile-slider3.png)"></div>
+					<div class="auto-container">
+						<div class="content">
+							<!--	<h5>//<span>Custom Portraits of Pets, People & More</span>//</h5> -->
+							<h2 style="color:#fff;">Backlit picture frames </br>which will light up any</br> room<span
+									class="round"></span></h2>
+							<div class="btns-box">
+								<?php if($firstCategory): ?>
+									<a class="btn-one" href="<?php echo e(route('category.show', $firstCategory->slug)); ?>">
+										<span class="txt" style="color:#fff;"><?php echo e($firstCategory->name); ?> &nbsp;<i
+												class="fa fa-arrow-right ms-2"></i></span>
+
+									</a>
+
+								<?php endif; ?>
+								<!--	<a class="btn-one marleft style2" href="#"><span class="txt">+01132 874724</span></a> -->
 							</div>
 						</div>
 					</div>
@@ -79,8 +115,25 @@
 								<img src="<?php echo e(asset('site_assets')); ?>/images/slides/friend.png" style="width:60px;">
 							</div>
 							<div class="text">
-								<h3>Peoples</h3>
-								<p>Capture your cherished memories in timeless portraits.</p>
+								<h3>People</h3>
+								<p>Convert your loved ones in real pieces of art</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--End Single Featured Box-->
+
+				<!--Start Single Featured Box-->
+				<div class="col-xl-4">
+					<div class="single-featured-box">
+						<div class="inner">
+							<div class="icon">
+								<img src="<?php echo e(asset('site_assets')); ?>/images/slides/graphic-design-software.png"
+									style="width:60px;">
+							</div>
+							<div class="text">
+								<h3>Illustrations</h3>
+								<p>Painted Watercolour or draw the outline your wedding venue, building or home.</p>
 							</div>
 						</div>
 					</div>
@@ -95,23 +148,7 @@
 							</div>
 							<div class="text">
 								<h3>Pets</h3>
-								<p>Celebrate your furry friends with art full of love and detail.</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!--End Single Featured Box-->
-				<!--Start Single Featured Box-->
-				<div class="col-xl-4">
-					<div class="single-featured-box">
-						<div class="inner">
-							<div class="icon">
-								<img src="<?php echo e(asset('site_assets')); ?>/images/slides/graphic-design-software.png"
-									style="width:60px;">
-							</div>
-							<div class="text">
-								<h3>Illustrations</h3>
-								<p>Bring ideas to life with creative and personalised illustrations.</p>
+								<p>Celebrate your furry friends with real art , frame and keep forever</p>
 							</div>
 						</div>
 					</div>
@@ -150,18 +187,17 @@
 				<div class="col-xl-5">
 					<div class="about-style1-content-box">
 						<div class="sec-title">
-							<h5>//<span>About Us</span>//</h5>
-							<h2>Creating Custom Frames<br> For Every Memory<span class="round-box zoominout"></span></h2>
+							<!--	<h5>//<span>About Us</span>//</h5> -->
+							<h2>Designed and framed <br> in Yorkshire<span class="round-box zoominout"></span></h2>
 						</div>
 						<div class="inner-content">
 							<div class="text">
-								<p>With over 10 years of experience, we at PIP Frames specialize in crafting customized
-									portraits
-									and frames for Pets, People, and Illustrations. Each design is thoughtfully created to
-									preserve
-									your most precious moments, turning them into timeless pieces of art that bring warmth
-									and beauty
-									to your space.</p>
+								<p>Our talented team of designers with a combined skill set of over 60 years we at PIP
+									Frames specialize in crafting customized
+									portraits and frames for Pets, People, and Illustrations.
+									Each design is thoughtfully created based on your guidelines turning them into timeless
+									pieces of art that
+									brings you warmth and beauty to your space.</p>
 							</div>
 							<div class="row">
 								<div class="col-xl-6">
@@ -171,7 +207,7 @@
 												<span class="icon-tick"></span>
 											</div>
 											<div class="title">
-												<h5>Custom Portrait Experts</h5>
+												<h5>Artwork Portrait Experts</h5>
 											</div>
 										</li>
 									</ul>
@@ -183,7 +219,7 @@
 												<span class="icon-tick"></span>
 											</div>
 											<div class="title">
-												<h5>Premium Quality Frames</h5>
+												<h5>Premium Quality Frames Manufacturer</h5>
 											</div>
 										</li>
 									</ul>
@@ -195,24 +231,24 @@
 												<span class="icon-tick"></span>
 											</div>
 											<div class="title">
-												<h5>10+ Years Experience</h5>
+												<h5>Personalised For Every Customer</h5>
 											</div>
 										</li>
 									</ul>
 								</div>
-								<div class="col-xl-6">
-									<ul>
-										<li>
-											<div class="icon">
-												<span class="icon-tick"></span>
-											</div>
-											<div class="title">
-												<h5>Personalised For Every Story</h5>
-											</div>
-										</li>
-									</ul>
-									</d ---- </div>
-								</div>
+								<!--	<div class="col-xl-6">
+													<ul>
+														<li>
+															<div class="icon">
+																<span class="icon-tick"></span>
+															</div>
+															<div class="title">
+																<h5>Personalised For Every Story</h5>
+															</div>
+														</li>
+													</ul>
+													</d ---- </div>
+												</div> -->
 	</section>
 	<!--End About Style1 Area-->
 
@@ -221,80 +257,75 @@
 		<div class="shape1">
 			<img src="<?php echo e(asset('site_assets')); ?>/images/shape/shape-1.png" alt="">
 		</div>
-		<div class="shape2">
-			<img src="<?php echo e(asset('site_assets')); ?>/images/shape/shape-2.png" alt="">
-		</div>
+		<!--<div class="shape2">-->
+		<!--	<img src="<?php echo e(asset('site_assets')); ?>/images/shape/shape-2.png" alt="">-->
+		<!--</div>-->
 		<div class="container">
 			<div class="sec-title text-center">
-				<div class="icon">
-					<i class="icon-bone"></i>
-				</div>
-				<h2>What We Do<span class="round-box zoominout"></span></h2>
-				<p>At PIP Frames, we transform your memories into beautiful works of art.
-					From heartfelt portraits of people and pets to creative custom illustrations,
-					each frame is designed with care and precision.
-					Our goal is to help you preserve your most special moments in a way that
-					adds warmth, meaning, and style to your space.</p>
+				<!--<div class="icon">-->
+				<!--	<i class="icon-bone"></i>-->
+				<!--</div>-->
+				<h2>What We Create<span class="round-box zoominout"></span></h2>
+				<p>At PIP Frames, we transform your images into Beautiful Works of Art </p>
 			</div>
 
 			<div class="row">
 				<!--Start Single Service Style1-->
-				<div class="col-xl-4 col-lg-6 col-md-6 wow fadeInLeft" data-wow-delay="0ms" data-wow-duration="1500ms">
+				<div class="col-xl-3 col-lg-6 col-md-6 wow fadeInLeft" data-wow-delay="0ms" data-wow-duration="1500ms">
 					<div class="single-service-style1">
 						<div class="img-holder">
 							<div class="inner">
-								<img src="<?php echo e(asset('site_assets')); ?>/images/services/people-frames.jpg"
-									alt="People Portraits">
+								<img src="<?php echo e(asset('site_assets')); ?>/images/water-color-frame.png" alt="People Portraits">
 							</div>
 						</div>
 						<div class="text-holder">
-							<h3><a href="#">People</a></h3>
-							<p>Custom portraits that capture the essence of your loved ones,
-								turning moments into timeless memories.</p>
-							<div class="button">
-								<a href="#">Read More</a>
-							</div>
+							<h3><a href="#" class="text-center">Watercolour Painting</a></h3>
+
 						</div>
 					</div>
 				</div>
 				<!--End Single Service Style1-->
 
 				<!--Start Single Service Style1-->
-				<div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="100ms" data-wow-duration="1500ms">
+				<div class="col-xl-3 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="100ms" data-wow-duration="1500ms">
 					<div class="single-service-style1">
 						<div class="img-holder">
 							<div class="inner">
-								<img src="<?php echo e(asset('site_assets')); ?>/images/services/pet-frames.jpg" alt="Pet Portraits">
+								<img src="<?php echo e(asset('site_assets')); ?>/images/line-frame.png" alt="Pet Portraits">
 							</div>
 						</div>
 						<div class="text-holder">
-							<h3><a href="#">Pets</a></h3>
-							<p>Celebrate your furry friends with personalised portraits
-								designed with love, detail, and character.</p>
-							<div class="button">
-								<a href="#">Read More</a>
-							</div>
+							<h3><a href="#" class="text-center">Line Drawing Sketch</a></h3>
+
 						</div>
 					</div>
 				</div>
 				<!--End Single Service Style1-->
 
 				<!--Start Single Service Style1-->
-				<div class="col-xl-4 col-lg-6 col-md-6 wow fadeInRight" data-wow-delay="200ms" data-wow-duration="1500ms">
-					<div class="single-service-style1">fe
+				<div class="col-xl-3 col-lg-6 col-md-6 wow fadeInRight" data-wow-delay="200ms" data-wow-duration="1500ms">
+					<div class="single-service-style1">
 						<div class="img-holder">
 							<div class="inner">
-								<img src="<?php echo e(asset('site_assets')); ?>/images/services/illustration-frames.jpg"
-									alt="Custom Illustrations">
+								<img src="<?php echo e(asset('site_assets')); ?>/images/pop-frame.png" alt="Custom Illustrations">
 							</div>
 						</div>
 						<div class="text-holder">
-							<h3><a href="#">Illustrations</a></h3>
-							<p>Creative and personalised illustrations that bring your
-								imagination and stories beautifully to life.</p>
-							<div class="button">
-								<a href="#">Read More</a>
+							<h3><a href="#" class="text-center">Pop Art</a></h3>
+
+						</div>
+					</div>
+				</div>
+				<div class="col-xl-3 col-lg-6 col-md-6 wow fadeInRight" data-wow-delay="200ms" data-wow-duration="1500ms">
+					<div class="single-service-style1">
+						<div class="img-holder">
+							<div class="inner">
+								<img src="<?php echo e(asset('site_assets')); ?>/images/cartoon-frame.png" alt="Custom Illustrations">
 							</div>
+						</div>
+						<div class="text-holder">
+							<h3><a href="#" class="text-center">Cartoon</a></h3>
+
 						</div>
 					</div>
 				</div>
@@ -313,7 +344,7 @@
 				<div class="col-xl-6">
 					<div class="video-gallery-content-box text-center">
 						<!-- <img src="<?php echo e(asset('site_assets')); ?>/images/resources/video-gallery-image.png" alt="Custom Frames"> -->
-						<h2>Preserve Your Memories<br> With Custom Frames</h2>
+						<h2>How to Order – Watch our <br> short video</h2>
 						<p>At PIP Frames, we create stunning customised portraits and frames for People, Pets,
 							and Illustrations. Each piece is designed with care to turn your most cherished
 							moments into timeless works of art you’ll treasure forever.</p>
@@ -367,8 +398,8 @@
 								<li><span class="left">Wednesday</span> <span class="right">08AM - 10PM</span></li>
 								<li><span class="left">Thursday</span> <span class="right">08AM - 10PM</span></li>
 								<li><span class="left">Friday</span> <span class="right">08AM - 10PM</span></li>
-								<li><span class="left">Saturday</span> <span class="right">08AM - 10PM</span></li>
-								<li><span class="left">Sunday</span> <span class="right holiday">Holiday</span></li>
+								<li><span class="left">Saturday</span> <span class="right">Closed</span></li>
+								<li><span class="left">Sunday</span> <span class="right holiday">Closed</span></li>
 							</ul>
 						</div>
 					</div>
@@ -377,15 +408,15 @@
 				<div class="col-xl-6">
 					<div class="feautres-content-box">
 						<div class="sec-title">
-							<h5>//<span>Highlights</span>//</h5>
-							<h2>What our Creativity says<span class="round-box zoominout"></span></h2>
+							<!--	<h5>//<span>Highlights</span>//</h5> -->
+							<h2>Why do we stand out <span class="round-box zoominout"></span></h2>
 						</div>
 						<div class="inner-content">
 							<div class="text">
-								<p>At PIP Frames, we blend creativity and craftsmanship to deliver portraits and frames
-									that stand out. Our features are designed to give you the perfect mix of
-									personalisation,
-									quality, and timeless value.</p>
+								<p>At PIP Frames, we blend creativity and craftsmanship to deliver portraits and frames that
+									stand out.
+									Our features are designed to give you the perfect mix of personalisation, quality, and
+									timeless value..</p>
 							</div>
 
 							<ul class="top">
@@ -420,8 +451,8 @@
 											<span class="icon-experience"></span>
 										</div>
 										<div class="title">
-											<h3>10+ Years Experience</h3>
-											<p>Trusted expertise in customised portraits & frames.</p>
+											<h3>17+ Years trading Experience</h3>
+											<p>Trusted expertise in customised portraits & frames</p>
 										</div>
 									</div>
 								</li>
@@ -449,138 +480,142 @@
 
 	<!--Start Team Area-->
 	<!--	<section class="team-area">
-			<div class="container">
-				<div class="sec-title text-center">
-					<div class="icon">
-						<i class="icon-bone"></i>
-					</div>
-					<h2>Our Groomers<span class="round-box zoominout"></span></h2>
-				</div>
-				<div class="row">
-					<!--Start Single Team Member-->
+							<div class="container">
+								<div class="sec-title text-center">
+									<div class="icon">
+										<i class="icon-bone"></i>
+									</div>
+									<h2>Our Groomers<span class="round-box zoominout"></span></h2>
+								</div>
+								<div class="row">
+									<!--Start Single Team Member-->
 	<!--	<div class="col-xl-3 col-lg-6 col-md-6">
-						<div class="single-team-member wow animated fadeInUp" data-wow-delay="0.1s">
-							<div class="img-holder">
-								<div class="round-top"></div>
-								<div class="round-bottom"></div>
-								<div class="inner">
-									<img src="<?php echo e(asset('site_assets')); ?>/images/team/team-v1-1.png" alt="Awesome Image">
-									<div class="overlay-style-one bg1"></div>
-								</div>
-							</div>
-							<div class="title-holder text-center">
-								<h5>Founder</h5>
-								<h3><a href="#">Rosalina D. William</a></h3>
-								<div class="team-social-link">
-									<ul>
-										<li>
-											<a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-										</li>
-										<li>
-											<a class="tw" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-										</li>
-										<li>
-											<a class="linkedin" href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-										</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!--End Single Team Member-->
+										<div class="single-team-member wow animated fadeInUp" data-wow-delay="0.1s">
+											<div class="img-holder">
+												<div class="round-top"></div>
+												<div class="round-bottom"></div>
+												<div class="inner">
+													<img src="<?php echo e(asset('site_assets')); ?>/images/team/team-v1-1.png" alt="Awesome Image">
+													<div class="overlay-style-one bg1"></div>
+												</div>
+											</div>
+											<div class="title-holder text-center">
+												<h5>Founder</h5>
+												<h3><a href="#">Rosalina D. William</a></h3>
+												<div class="team-social-link">
+													<ul>
+														<li>
+															<a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+														</li>
+														<li>
+															<a class="tw" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+														</li>
+														<li>
+															<a class="linkedin" href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--End Single Team Member-->
 	<!--Start Single Team Member-->
 	<!--	<div class="col-xl-3 col-lg-6 col-md-6">
-						<div class="single-team-member wow animated fadeInUp" data-wow-delay="0.3s">
-							<div class="img-holder">
-								<div class="round-top"></div>
-								<div class="round-bottom"></div>
-								<div class="inner">
-									<img src="<?php echo e(asset('site_assets')); ?>/images/team/team-v1-2.png" alt="Awesome Image">
-									<div class="overlay-style-one bg2"></div>
-								</div>
-							</div>
-							<div class="title-holder text-center">
-								<h5>CEO</h5>
-								<h3><a href="#">Miranda H. Halim</a></h3>
-								<div class="team-social-link">
-									<ul>
-										<li>
-											<a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-										</li>
-										<li>
-											<a class="tw" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-										</li>
-										<li>
-											<a class="linkedin" href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-										</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!--End Single Team Member-->
+										<div class="single-team-member wow animated fadeInUp" data-wow-delay="0.3s">
+											<div class="img-holder">
+												<div class="round-top"></div>
+												<div class="round-bottom"></div>
+												<div class="inner">
+													<img src="<?php echo e(asset('site_assets')); ?>/images/team/team-v1-2.png" alt="Awesome Image">
+													<div class="overlay-style-one bg2"></div>
+												</div>
+											</div>
+											<div class="title-holder text-center">
+												<h5>CEO</h5>
+												<h3><a href="#">Miranda H. Halim</a></h3>
+												<div class="team-social-link">
+													<ul>
+														<li>
+															<a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+														</li>
+														<li>
+															<a class="tw" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+														</li>
+														<li>
+															<a class="linkedin" href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--End Single Team Member-->
 	<!--Start Single Team Member-->
 	<!--	<div class="col-xl-3 col-lg-6 col-md-6">
-						<div class="single-team-member wow animated fadeInUp" data-wow-delay="0.5s">
-							<div class="img-holder">
-								<div class="round-top"></div>
-								<div class="round-bottom"></div>
-								<div class="inner">
-									<img src="<?php echo e(asset('site_assets')); ?>/images/team/team-v1-3.png" alt="Awesome Image">
-									<div class="overlay-style-one bg2"></div>
-								</div>
-							</div>
-							<div class="title-holder text-center">
-								<h5>Groomer</h5>
-								<h3><a href="#">Hilixer D. Browni</a></h3>
-								<div class="team-social-link">
-									<ul>
-										<li>
-											<a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-										</li>
-										<li>
-											<a class="tw" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-										</li>
-										<li>
-											<a class="linkedin" href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-										</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!--End Single Team Member-->
+										<div class="single-team-member wow animated fadeInUp" data-wow-delay="0.5s">
+											<div class="img-holder">
+												<div class="round-top"></div>
+												<div class="round-bottom"></div>
+												<div class="inner">
+													<img src="<?php echo e(asset('site_assets')); ?>/images/team/team-v1-3.png" alt="Awesome Image">
+													<div class="overlay-style-one bg2"></div>
+												</div>
+											</div>
+											<div class="title-holder text-center">
+												<h5>Groomer</h5>
+												<h3><a href="#">Hilixer D. Browni</a></h3>
+												<div class="team-social-link">
+													<ul>
+														<li>
+															<a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+														</li>
+														<li>
+															<a class="tw" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+														</li>
+														<li>
+															<a class="linkedin" href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--End Single Team Member-->
 	<!--Start Single Team Member-->
 	<!--	<div class="col-xl-3 col-lg-6 col-md-6">
-						<div class="single-team-member wow animated fadeInUp" data-wow-delay="0.7s">
-							<div class="img-holder">
-								<div class="round-top"></div>
-								<div class="round-bottom"></div>
-								<div class="inner">
-									<img src="<?php echo e(asset('site_assets')); ?>/images/team/team-v1-4.png" alt="Awesome Image">
-									<div class="overlay-style-one bg2"></div>
-								</div>
-							</div>
-							<div class="title-holder text-center">
-								<h5>Groomer</h5>
-								<h3><a href="#">Yokolili Y. Yankee</a></h3>
-								<div class="team-social-link">
-									<ul>
-										<li>
-											<a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-										</li>
-										<li>
-											<a class="tw" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-										</li>
-										<li>
-											<a class="linkedin" href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-										</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!--End Single Team Member-->
+										<div class="single-team-member wow animated fadeInUp" data-wow-delay="0.7s">
+											<div class="img-holder">
+												<div class="round-top"></div>
+												<div class="round-bottom"></div>
+												<div class="inner">
+													<img src="<?php echo e(asset('site_assets')); ?>/images/team/team-v1-4.png" alt="Awesome Image">
+													<div class="overlay-style-one bg2"></div>
+												</div>
+											</div>
+											<div class="title-holder text-center">
+												<h5>Groomer</h5>
+												<h3><a href="#">Yokolili Y. Yankee</a></h3>
+												<div class="team-social-link">
+													<ul>
+														<li>
+															<a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+														</li>
+														<li>
+															<a class="tw" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+														</li>
+														<li>
+															<a class="linkedin" href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--End Single Team Member-->
+	</div>
+	</div>
+	</div>
+	</div>
 	</div>
 	</div>
 	</section>
@@ -592,8 +627,8 @@
 			<div class="row">
 				<div class="col-xl-12">
 					<div class="sec-title">
-						<h5>//<span>Insights</span>//</h5>
-						<h2>Custom &amp; Style <span class="round-box zoominout"></span></h2>
+						<!--	<h5>//<span>Insights</span>//</h5> -->
+						<h2>What Can I &amp; Transform? <span class="round-box zoominout"></span></h2>
 					</div>
 				</div>
 			</div>
@@ -621,21 +656,22 @@
 													<div class="top">
 														<div class="left pull-left">
 															<p>Custom Portrait</p>
-															<h2>Pets</h2>
+															<h2>People</h2>
 														</div>
 														<div class="right pull-right">
-															<h2><span>$</span>45</h2>
+															<h2><span>£</span>45</h2>
 														</div>
 													</div>
 													<ul>
-														<li>Custom Design<span class="icon-tick"></span></li>
-														<li>Multiple Design Style<span class="icon-tick"></span></li>
-														<li>Colour Selection<span class="icon-tick"></span></li>
-														<li>Choose Frame<span class="icon-tick"></span></li>
-														<li>Choose Colour<span class="icon-tick"></span></li>
-														<li>Multiple Size Options<span class="icon-tick"></span></li>
-														<li>Fastest Delivery<span class="icon-tick"></span></li>
-														<li>Best Price<span class="icon-tick"></span></li>
+
+														<li>Kids<span class="icon-tick"></span></li>
+														<li>Friends<span class="icon-tick"></span></li>
+														<li>Old Photos<span class="icon-tick"></span></li>
+														<li>Deceased People<span class="icon-tick"></span></li>
+														<li>Girlfriend/Wife<span class="icon-tick"></span></li>
+														<li>Boyfriend/Husband<span class="icon-tick"></span></li>
+														<li>Family<span class="icon-tick"></span></li>
+														<li>Parents<span class="icon-tick"></span></li>
 													</ul>
 													<div class="button">
 														<?php if($firstCategory): ?>
@@ -656,21 +692,21 @@
 													<div class="top">
 														<div class="left pull-left">
 															<p>Custom Portrait</p>
-															<h2>People</h2>
+															<h2>Illustrations</h2>
 														</div>
 														<div class="right pull-right">
-															<h2><span>$</span>45</h2>
+															<h2><span>£</span>45</h2>
 														</div>
 													</div>
 													<ul>
-														<li>Custom Design<span class="icon-tick"></span></li>
-														<li>Multiple Design Style<span class="icon-tick"></span></li>
-														<li>Colour Selection<span class="icon-tick"></span></li>
-														<li>Choose Frame<span class="icon-tick"></span></li>
-														<li>Choose Colour<span class="icon-tick"></span></li>
-														<li>Multiple Size Options<span class="icon-tick"></span></li>
-														<li>Fastest Delivery<span class="icon-tick"></span></li>
-														<li>Best Price<span class="icon-tick"></span></li>
+														<li>Wedding Venue<span class="icon-tick"></span></li>
+														<li>House<span class="icon-tick"></span></li>
+														<li>Farm<span class="icon-tick"></span></li>
+														<li>Building<span class="icon-tick"></span></li>
+														<li><span class="icon-tick"></span></li>
+														<li><span class="icon-tick"></span></li>
+														<li><span class="icon-tick"></span></li>
+														<li><span class="icon-tick"></span></li>
 													</ul>
 													<div class="button">
 														<?php if($firstCategory): ?>
@@ -691,21 +727,21 @@
 													<div class="top">
 														<div class="left pull-left">
 															<p>Custom Portrait</p>
-															<h2>Illustrations</h2>
+															<h2>Pets</h2>
 														</div>
 														<div class="right pull-right">
-															<h2><span>$</span>45</h2>
+															<h2><span>£</span>45</h2>
 														</div>
 													</div>
 													<ul>
-														<li>Custom Design<span class="icon-tick"></span></li>
-														<li>Multiple Design Style<span class="icon-tick"></span></li>
-														<li>Colour Selection<span class="icon-tick"></span></li>
-														<li>Choose Frame<span class="icon-tick"></span></li>
-														<li>Choose Colour<span class="icon-tick"></span></li>
-														<li>Multiple Size Options<span class="icon-tick"></span></li>
-														<li>Fastest Delivery<span class="icon-tick"></span></li>
-														<li>Best Price<span class="icon-tick"></span></li>
+														<li>Dogs<span class="icon-tick"></span></li>
+														<li>Birds<span class="icon-tick"></span></li>
+														<li>Rabits<span class="icon-tick"></span></li>
+														<li>Horses<span class="icon-tick"></span></li>
+														<li>Hamster<span class="icon-tick"></span></li>
+														<li>Cats<span class="icon-tick"></span></li>
+														<li>Guinea Pig<span class="icon-tick"></span></li>
+														<li>Fish and much more...<span class="icon-tick"></span></li>
 													</ul>
 													<div class="button">
 														<?php if($firstCategory): ?>
@@ -741,10 +777,10 @@
 		</div>
 		<div class="image-box2"><img src="<?php echo e(asset('site_assets')); ?>/images/testimonial/testimonial-image-2.png" alt="">
 		</div>
-		<div class="image-box3 paroller"><img src="<?php echo e(asset('site_assets')); ?>/images/testimonial/testimonial-image-3.png"
-				alt=""></div>
-		<div class="image-box4 paroller"><img src="<?php echo e(asset('site_assets')); ?>/images/testimonial/testimonial-image-4.png"
-				alt=""></div>
+		<!--<div class="image-box3 paroller"><img src="<?php echo e(asset('site_assets')); ?>/images/testimonial/testimonial-image-3.png"-->
+		<!--		alt=""></div>-->
+		<!--<div class="image-box4 paroller"><img src="<?php echo e(asset('site_assets')); ?>/images/testimonial/testimonial-image-4.png"-->
+		<!--		alt=""></div>-->
 		<div class="layer-outer" style="background-image: url(<?php echo e(asset('site_assets')); ?>/images/resources/map.png)"></div>
 		<div class="container">
 			<div class="sec-title text-center">
@@ -757,47 +793,28 @@
 				<div class="col-xl-12 col-lg-12">
 					<div class="testimonial-carousel owl-carousel owl-theme">
 
-						<!--Start Single Testimonial Style1-->
-						<div class="single-testimonial-style1 wow fadeInUp" data-wow-delay="100ms"
-							data-wow-duration="1500ms">
-							<div class="img-holder">
-								<img src="<?php echo e(asset('site_assets')); ?>/images/testimonial/tes-v1-1.png" alt="Customer Image">
-							</div>
-							<div class="text-holder">
-								<h2>Emily Johnson</h2>
-								<span>London, UK</span>
-								<div class="text-box">
-									<p>I ordered a customised portrait frame and it turned out absolutely stunning!
-										The quality is far beyond what I expected and it’s now the centrepiece of my living
-										room.</p>
+						<?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $testimonial): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+							<div class="single-testimonial-style1 wow fadeInUp" data-wow-delay="100ms"
+								data-wow-duration="1500ms">
+								<div class="img-holder">
+									<img src="<?php echo e($testimonial->author_image ? asset('storage/' . $testimonial->author_image) : asset('site_assets/images/testimonial/tes-v1-1.png')); ?>"
+										alt="Customer Image">
+								</div>
+								<div class="text-holder">
+									<h2><?php echo e($testimonial->author_name); ?></h2>
+									<span><?php echo e($testimonial->location); ?></span>
+									<div class="text-box">
+										<p><?php echo e($testimonial->feedback); ?></p>
+									</div>
 								</div>
 							</div>
-						</div>
-						<!--End Single Testimonial Style1-->
-
-						<!--Start Single Testimonial Style1-->
-						<div class="single-testimonial-style1 wow fadeInUp" data-wow-delay="200ms"
-							data-wow-duration="1500ms">
-							<div class="img-holder">
-								<img src="<?php echo e(asset('site_assets')); ?>/images/testimonial/tes-v1-2.png" alt="Customer Image">
-							</div>
-							<div class="text-holder">
-								<h2>James Williams</h2>
-								<span>Manchester, UK</span>
-								<div class="text-box">
-									<p>The customised frame I received was perfect!
-										From ordering to delivery, everything was smooth and professional.
-										I’ll definitely be ordering more as gifts for friends and family.</p>
-								</div>
-							</div>
-						</div>
-						<!--End Single Testimonial Style1-->
+						<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
 					</div>
 				</div>
 			</div>
 
-			<!--End Single Testimonial Style1-->
+
 
 		</div>
 		</div>
@@ -810,7 +827,7 @@
 	<section class="blog-style1-area">
 		<div class="container">
 			<div class="sec-title">
-				<h5>//<span>Insights</span>//</h5>
+				<!--	<h5>//<span>Insights</span>//</h5> -->
 				<h2>Recent Blogs<span class="round-box zoominout"></span></h2>
 			</div>
 			<div class="row">

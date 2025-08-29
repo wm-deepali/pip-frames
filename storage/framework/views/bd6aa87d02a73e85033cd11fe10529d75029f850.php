@@ -133,15 +133,15 @@
                                 style="font-weight:bold; font-size:1.25em;">£0.00</span>
                         </div>
 
-                        <div style="display:flex; flex-direction: column;
+                        <div style="display:flex; flex-direction: row;
     gap: 24px;
     align-items: center;">
                             <button class="prev-btn" type="button" onclick="goToStep(4)"
                                 style="flex:1; background:#fff; border:2px solid #ff3b7c; color:#ff3b7c; font-weight:bold; font-size:1.1rem; border-radius:30px; padding:13px 0; box-shadow:0 1px 8px rgba(0,0,0,0.07); cursor:pointer;">
-                                Previous step
+                                ← Previous step
                             </button>
                             <button class="next-btn" type="button"
-                                style="flex:2; background:#ff3b7c; color:#fff; font-weight:bold; font-size:1.13rem; border-radius:30px; border:none; padding:13px 0; box-shadow:0 1px 8px rgba(0,0,0,0.07); cursor:pointer;"
+                                style="margin-top:0px; flex:2; background:#ff3b7c; color:#fff; font-weight:bold; font-size:1.13rem; border-radius:30px; border:none; padding:13px 0; box-shadow:0 1px 8px rgba(0,0,0,0.07); cursor:pointer;"
                                 onclick="addToCart()">
                                 Add to cart →
                             </button>
@@ -178,7 +178,7 @@
                         src="<?php echo e(asset('storage/' . ($subcategories->first()->thumbnail ?? ''))); ?>"
                         alt="Pet Portrait Portrait" />
                     <!-- Frame overlay for portrait -->
-                    <img id="frameOverlayPortrait" class="frame-overlay" />
+                    <img id="frameOverlayPortrait" src="" class="frame-overlay" />
                 </div>
 
                 <!-- Landscape preview -->
@@ -289,7 +289,7 @@
     const totalSteps = 5;
     let currentCategoryId = null;
     let currentStep = 1;
-    let imageConditions = [];
+    // let imageConditions = [];
     let groupedImageConditions = [];
 
     // Show specified step and update UI and URL hash
@@ -571,9 +571,9 @@
                                 localStorage.removeItem(`selectedFrameLandscape_${currentCategoryId}`);
 
                                 // Remove frame overlay immediately
-                                const previewContainer = document.querySelector('.preview');
-                                const existingFrame = previewContainer.querySelector('.frame-overlay');
-                                if (existingFrame) existingFrame.remove();
+                                // const previewContainer = document.querySelector('.preview');
+                                // const existingFrame = previewContainer.querySelector('.frame-overlay');
+                                // if (existingFrame) existingFrame.remove();
                             } else {
                                 if (val.image_portrait_path) {
                                     localStorage.setItem(`selectedFramePortrait_${currentCategoryId}`, `/storage/${val.image_portrait_path}`);
@@ -654,6 +654,7 @@
                 heightErrorDiv.className = 'validation-error text-danger';
                 heightErrorDiv.dataset.attributeId = attr.id;
                 heightErrorDiv.dataset.field = 'height';
+                heightErrorDiv.style.fontSize = '0.9rem';
                 heightErrorDiv.style.display = 'none';
                 colHeight.appendChild(heightErrorDiv);
 
@@ -661,6 +662,7 @@
                 widthErrorDiv.className = 'validation-error text-danger';
                 widthErrorDiv.dataset.attributeId = attr.id;
                 widthErrorDiv.dataset.field = 'width';
+                widthErrorDiv.style.fontSize = '0.9rem';
                 widthErrorDiv.style.display = 'none';
                 colWidth.appendChild(widthErrorDiv);
 
@@ -1106,7 +1108,6 @@
         }
 
         if (mainFrameAttr) {
-
             const selectedValId = currentSelections[mainFrameAttr.id];
             // Find the option element in the DOM for the selected value
             const optionEl = document.querySelector(`[data-attribute-id='${mainFrameAttr.id}'] .option-card[data-value-id='${selectedValId}']`);
@@ -1128,7 +1129,6 @@
             // Get orientation from stored mapping or default to portrait
             const orientation = imgEl.getAttribute('data-orientation') || 'portrait';
 
-            console.log(orientation, 'orientation');
             if (orientation === 'portrait') {
                 portraitPreview.style.display = "block";
                 landscapePreview.style.display = "none";
@@ -1140,6 +1140,8 @@
 
                 const frameImg = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
                 if (frameImg) {
+                    console.log('frameOverlayPortrait', frameOverlayPortrait);
+
                     frameOverlayPortrait.src = frameImg;
                     frameOverlayPortrait.style.display = "block";
                 } else {
@@ -1159,7 +1161,7 @@
 
                 mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
 
-                const frameImg = localStorage.getItem(`selectedFrameLandscape_${mainFrameAttr.id}`) || localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
+                const frameImg = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
                 if (frameImg) {
                     frameOverlayLandscape.src = frameImg;
                     frameOverlayLandscape.style.display = "block";
@@ -1172,193 +1174,28 @@
             }
 
         } else {
-            // Fall back to original behavior with imageConditions, or default image
-            let matched = null;
-            for (const cond of imageConditions) {
-                let doesMatch = true;
-                for (const attrId in cond.combination) {
-                    if (currentSelections[attrId] !== cond.combination[attrId]) {
-                        doesMatch = false;
-                        break;
-                    }
-                }
-                if (doesMatch) {
-                    matched = cond;
-                    break;
-                }
-            }
+            // Fall back to original behavior default image
 
-            if (matched) {
-                if (matched.orientation === 'portrait') {
-                    portraitPreview.style.display = "block";
-                    landscapePreview.style.display = "none";
-                    mainImgPortrait.src = matched.image;
+            // Default fallback image when no matched condition
+            portraitPreview.style.display = "block";
+            landscapePreview.style.display = "none";
 
-                    const selectedColour = Object.values(currentSelections).find(val => typeof val === "string" && val.startsWith("#"));
-                    portraitPreview.style.backgroundColor = selectedColour || "";
-                    mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
-
-                    const frameImg = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
-                    if (frameImg) {
-                        frameOverlayPortrait.src = frameImg;
-                        frameOverlayPortrait.style.display = "block";
-                    } else {
-                        frameOverlayPortrait.style.display = "none";
-                    }
-                    frameOverlayLandscape.style.display = "none";
-
-                } else {
-                    landscapePreview.style.display = "block";
-                    portraitPreview.style.display = "none";
-                    mainImgLandscape.src = matched.image;
-
-                    const selectedColour = Object.values(currentSelections).find(val => typeof val === "string" && val.startsWith("#"));
-                    landscapePreview.style.backgroundColor = selectedColour || "";
-                    mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
-
-                    const frameImg = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
-                    if (frameImg) {
-                        frameOverlayLandscape.src = frameImg;
-                        frameOverlayLandscape.style.display = "block";
-                    } else {
-                        frameOverlayLandscape.style.display = "none";
-                    }
-                    frameOverlayPortrait.style.display = "none";
-                }
+            if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
+                mainImgPortrait.src = "/storage/" + subcategoryThumbnails[currentCategoryId];
             } else {
-                // Default fallback image when no matched condition
-                portraitPreview.style.display = "block";
-                landscapePreview.style.display = "none";
-
-                if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
-                    mainImgPortrait.src = "/storage/" + subcategoryThumbnails[currentCategoryId];
-                } else {
-                    mainImgPortrait.src = "https://mypetframe.co.uk/img/default-fallback.jpg";
-                }
-
-                const selectedColour = Object.values(currentSelections).find(val => typeof val === "string" && val.startsWith("#"));
-                portraitPreview.style.backgroundColor = selectedColour || "";
-                mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
-
-                frameOverlayPortrait.style.display = "none";
-                frameOverlayLandscape.style.display = "none";
+                mainImgPortrait.src = "https://mypetframe.co.uk/img/default-fallback.jpg";
             }
+
+            const selectedColour = Object.values(currentSelections).find(val => typeof val === "string" && val.startsWith("#"));
+            portraitPreview.style.backgroundColor = selectedColour || "";
+            mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : "";
+
+            frameOverlayPortrait.style.display = "none";
+            frameOverlayLandscape.style.display = "none";
         }
+
     }
 
-
-    // function updateMainImage() {
-    //     let matched = null;
-    //     for (const cond of imageConditions) {
-    //         let match = true;
-    //         for (const attrId in cond.combination) {
-    //             const key = Number(attrId);
-    //             if (!(key in currentSelections) || currentSelections[key] === null || currentSelections[key] !== cond.combination[key]) {
-    //                 match = false;
-    //                 break;
-    //             }
-    //         }
-    //         if (match) {
-    //             matched = cond;
-    //             break;
-    //         }
-    //     }
-
-
-
-
-    //     const portraitPreview = document.getElementById("portraitPreview");
-    //     const landscapePreview = document.getElementById("landscapePreview");
-
-    //     const mainImgPortrait = document.getElementById("mainImagePortrait");
-    //     const frameOverlayPortrait = document.getElementById("frameOverlayPortrait");
-
-    //     const mainImgLandscape = document.getElementById("mainImageLandscape");
-    //     const frameOverlayLandscape = document.getElementById("frameOverlayLandscape");
-
-    //     if (!mainImgPortrait || !mainImgLandscape || !portraitPreview || !landscapePreview) return;
-
-    //     if (matched) {
-    //         if (matched.orientation === 'portrait') {
-    //             // Show portrait, hide landscape
-    //             portraitPreview.style.display = 'block';
-    //             landscapePreview.style.display = 'none';
-
-    //             mainImgPortrait.src = matched.image;
-
-    //             var selectedColour = null;
-    //             for (const key in currentSelections) {
-    //                 if (key.includes('_colour_code') || key.includes('_color')) {
-    //                     selectedColour = currentSelections[key];
-    //                     break;
-    //                 }
-    //             }
-    //             portraitPreview.style.backgroundColor = selectedColour || '';
-    //             mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
-
-
-    //             // Set frame overlay for portrait
-    //             const framePortrait = localStorage.getItem(`selectedFramePortrait_${currentCategoryId}`);
-    //             if (framePortrait) {
-    //                 frameOverlayPortrait.src = framePortrait;
-    //                 frameOverlayPortrait.style.display = "block";
-    //             } else {
-    //                 frameOverlayPortrait.style.display = "none";
-    //             }
-    //         } else if (matched.orientation === 'landscape') {
-    //             // Show landscape, hide portrait
-    //             landscapePreview.style.display = 'block';
-    //             portraitPreview.style.display = 'none';
-
-    //             mainImgLandscape.src = matched.image;
-
-
-    //             var selectedColour = null;
-    //             for (const key in currentSelections) {
-    //                 if (key.includes('_colour_code') || key.includes('_color')) {
-    //                     selectedColour = currentSelections[key];
-    //                     break;
-    //                 }
-    //             }
-    //             landscapePreview.style.backgroundColor = selectedColour || '';
-    //             mainImgLandscape.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
-
-
-    //             // Set frame overlay for landscape
-    //             const frameLandscape = localStorage.getItem(`selectedFrameLandscape_${currentCategoryId}`);
-    //             if (frameLandscape) {
-    //                 frameOverlayLandscape.src = frameLandscape;
-    //                 frameOverlayLandscape.style.display = "block";
-    //             } else {
-    //                 frameOverlayLandscape.style.display = "none";
-    //             }
-    //         }
-    //     } else {
-    //         // Default fallback to portrait view
-    //         portraitPreview.style.display = 'block';
-    //         landscapePreview.style.display = 'none';
-
-    //         // Fallback image for portrait
-    //         if (currentCategoryId && subcategoryThumbnails[currentCategoryId]) {
-    //             mainImgPortrait.src = `/storage/${subcategoryThumbnails[currentCategoryId]}`;
-    //         } else {
-    //             mainImgPortrait.src = 'https://mypetframe.co.uk/cdn/shop/products/Ice.jpg';
-    //         }
-
-    //         var selectedColour = null;
-    //         for (const key in currentSelections) {
-    //             if (key.includes('_colour_code') || key.includes('_color')) {
-    //                 selectedColour = currentSelections[key];
-    //                 break;
-    //             }
-    //         }
-    //         portraitPreview.style.backgroundColor = selectedColour || '';
-    //         mainImgPortrait.style.border = selectedColour ? `0px solid ${selectedColour}` : ''
-
-    //         frameOverlayPortrait.style.display = "none";
-    //         frameOverlayLandscape.style.display = "none";
-    //     }
-    // }
 
 
     let loadedAttributes = {}; // Global object to store attributes by id
@@ -1446,17 +1283,17 @@
 
 
         // Load flattened combinations for main image
-        $.ajax({
-            url: '/get-attribute-images',
-            method: 'GET',
-            data: { category_id: currentCategoryId },
-            success: function (response) {
-                if (response.success) {
-                    imageConditions = response.conditions;
-                    updateMainImage();
-                }
-            }
-        });
+        // $.ajax({
+        //     url: '/get-attribute-images',
+        //     method: 'GET',
+        //     data: { category_id: currentCategoryId },
+        //     success: function (response) {
+        //         if (response.success) {
+        //             imageConditions = response.conditions;
+        //             updateMainImage();
+        //         }
+        //     }
+        // });
 
         // Load grouped image conditions for option images
         $.ajax({

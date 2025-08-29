@@ -52,7 +52,6 @@
   a {
   color: inherit;        /* Keep the color same as surrounding text */
   text-decoration: none; /* Remove underline */
-  cursor: default;       /* Optional: default cursor to avoid pointer hand */
 }
 
 </style>
@@ -258,33 +257,12 @@
 
                       <li><a href="{{ Route('about-us') }}">About</a></li>
                       <li><a href="{{ Route('how-it-works') }}">How it Works</a> </li>
-                      <!-- <ul>
-                          <li><a href="{{ Route('services') }}">View All Services</a></li>
-                          <li><a href="{{ Route('ser-pet-grooming') }}">Pet Grooming</a></li>
-                          <li><a href="{{ Route('ser-dog-setting') }}">Dog Setting</a></li>
-                          <li><a href="{{ Route('ser-healthy-meals') }}">Healthy Meals</a></li>
-                          <li><a href="{{ Route('ser-veterinary-service') }}">Veterinary Service</a></li>
-                        </ul> -->
+
 
                       <li><a href="{{ Route('faq') }}">Faq</a></li>
-                      <!-- <li><a href="{{ Route('team') }}">Our Team</a></li> -->
-                      <!--<li class="dropdown"><a href="#">Pages</a>
-                        <ul>
-                          <li><a href="{{ Route('shop') }}">Our Shop</a></li>
-                          <li><a href="{{ Route('shop-details') }}">Product Details</a></li>
-                          
-                          
-                          <li><a href="{{ Route('error') }}">404 Error page</a></li>
-                        </ul>
-                      </li> -->
+                     
                       <li><a href="{{ Route('blogs') }}">Blogs</a></li>
-                      <!-- <li class="dropdown"><a href="#">News</a>
-                        <ul>
-                          
-                          <li><a href="blog-v2.html">Blog Grid View</a></li>
-                          <li><a href="{{ Route('blog-details') }}">Blog Details</a></li>
-                        </ul>
-                      </li> -->
+                     
                       <li><a href="{{ Route('contact-us') }}">Contact</a></li>
                     </ul>
                   </div>
